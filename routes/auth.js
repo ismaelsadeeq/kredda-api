@@ -22,6 +22,9 @@ router.post('/forgot-password',
 router.post('/login',
   controller.login
 );
+router.post('/enter-auth-code',
+  controller.enter2FACode
+);
 
 
 module.exports = router;

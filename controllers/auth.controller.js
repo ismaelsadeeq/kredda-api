@@ -191,38 +191,115 @@ const changePassword = async (req,res)=>{
 }
 const login = async (req,res)=>{
   const data = req.body;
+  const email = data.email;
   const phoneNumber = data.phoneNumber;
+  let emailExist,phoneNumberExist;
+  let user;
   const password = data.pin;
-  const user = await models.user.findOne(
-    {
-      where:{phoneNumber:phoneNumber},
-      
-    }
+  if(email){
+    emailExist = await models.user.findOne(
+     {
+       where:{email:email}
+     }
+   );
+   user = emailExist
+  }
+  if(phoneNumber){
+    phoneNumberExist = await models.user.findOne(
+      {
+        where:{phoneNumber:phoneNumber}
+      }
     );
-  if (user){
+    user = phoneNumberExist
+  }
+  if (emailExist || phoneNumberExist){
     const checkPassword = bcrypt.compareSync(password, user.password);
     if (!checkPassword) {
       responseData.message = 'Incorrect passsword';
       responseData.status = false;
       return res.json(responseData)
     } else {
-      const jwt_payload ={
-        id:user.id,
-      }
-      await models.isLoggedOut.destroy({where:{userId:user.id}}) 
-      const token = jwt.sign(jwt_payload,process.env.SECRET);
-      user.password = undefined;
-      return res.json(
-        { "token":token,
-          "data":user,
-          "statusCode":200,
-          "status": 'success'
+      let val = helpers.generateOTP()
+      await models.otpCode.create(
+        {
+          userId:user.id,
+          code:val
         }
-      )
+      );
+      const summary = `Hello ${user.firstName}, use the code ${val} to login to Kredda Account`;
+      let names = user.firstName +" "+ user.lastName
+      const htmlPart = `<div>
+      <h3> Hello ${names}</h3
+      <p>${summary}</p>
+    
+      <footer></footer>
+      <p>This is a noreply email from Kredda.com</p>
+      </div>`
+        data.variables = {
+          "code": val,
+          "summary": summary,
+          "htmlPart":htmlPart,
+          "names": names,
+          "body":msg
+        }
+      data.val = val;
+      data.email = user.email;
+      await sendEmail(data);
+      responseData.status = true,
+      responseData.message = "Enter the code sent to your email to login";
+      responseData.data = data.email;
+      return res.json(responseData);
     }
   } else {
     return res.json('No account found')
   }
+}
+const enter2FACode = async (req,res)=>{
+  const data = req.body;
+  if(!data.code){
+    responseData.status = false;
+    responseData.message = "code required";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const codeExist = await models.otpCode.findOne(
+    {
+      where:{
+        code:data.code
+      }
+    }
+  );
+  if(!codeExist){
+    responseData.status = false;
+    responseData.message = "code is incorrect";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const user = await models.user.findOne(
+    {
+      where:{
+        id:codeExist.userId,
+      }
+    }
+  );
+  const jwt_payload ={
+    id:user.id,
+  }
+  const token = jwt.sign(jwt_payload,process.env.SECRET);
+  await models.otpCode.destroy(
+    {
+      where:{
+        code:data.code
+      }
+    }
+  );
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = {
+    token:token,
+    user:user
+  };
+  return res.json(responseData);
 }
 const forgetPassword = async (req,res)=>{
   const data = req.body;
@@ -308,5 +385,6 @@ module.exports = {
   setPassword,
   changePassword,
   forgetPassword,
-  login
+  login,
+  enter2FACode
 }
