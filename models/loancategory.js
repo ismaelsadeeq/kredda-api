@@ -5,6 +5,11 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class loanCategory extends Model {
   };
+  loanCategory.associate = function(models){
+    loanCategory.hasMany(models.loan,{
+      foreignKey:'loanCategoryId'
+    });
+  }
   loanCategory.init({
     name: DataTypes.STRING,
     type: DataTypes.STRING,
