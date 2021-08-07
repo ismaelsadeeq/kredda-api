@@ -28,6 +28,12 @@ module.exports = {
       profilePicture: {
         type: Sequelize.STRING
       },
+      permission : {
+        type: Sequelize.STRING
+      },
+      isSuperAdmin :{
+        type: Sequelize.BOOLEAN
+      },
       password: {
         type: Sequelize.STRING
       },

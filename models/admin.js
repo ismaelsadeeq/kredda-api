@@ -17,6 +17,8 @@ module.exports = (sequelize, DataTypes) => {
     phoneNumber: DataTypes.STRING,
     isVerified: DataTypes.STRING,
     profilePicture: DataTypes.STRING,
+    permission:DataTypes.STRING,
+    isSuperAdmin:DataTypes.BOOLEAN,
     password: DataTypes.STRING
   }, {
     sequelize,
