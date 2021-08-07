@@ -24,6 +24,9 @@ module.exports = (sequelize, DataTypes) => {
     user.hasMany(models.loan,{
       foreignKey:'userId'
     });
+    user.hasMany(models.saving,{
+      foreignKey:'userId'
+    });
   }
   user.init({
     firstName: DataTypes.STRING,
