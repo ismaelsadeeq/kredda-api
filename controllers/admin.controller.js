@@ -340,7 +340,6 @@ const sendCode = async (req,res)=>{
       "message":"No account with this email"
     })
   }
-
 }
 const resetPassword = async  (req,res)=>{
   data = req.body;
@@ -425,7 +424,6 @@ async function changePassword(req,res){
     responseData.message = "incorrect password"
     res.json(responseData);
   }
-  
 } 
 
 const sendEmail= (data)=>{
