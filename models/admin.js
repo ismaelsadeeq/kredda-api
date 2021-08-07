@@ -5,6 +5,11 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class admin extends Model {
   };
+  admin.associate = function(models){
+    admin.hasMany(models.otpCode,{
+      foreignKey:'adminId'
+    });
+  }
   admin.init({
     firstName: DataTypes.STRING,
     lastName: DataTypes.STRING,
