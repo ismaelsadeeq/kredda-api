@@ -213,6 +213,11 @@ const login = async (req,res)=>{
     user = phoneNumberExist
   }
   if (emailExist || phoneNumberExist){
+    if(!password){
+      responseData.message = 'pin is required';
+      responseData.status = false;
+      return res.json(responseData)
+    }
     const checkPassword = bcrypt.compareSync(password, user.password);
     if (!checkPassword) {
       responseData.message = 'Incorrect passsword';
@@ -222,6 +227,7 @@ const login = async (req,res)=>{
       let val = helpers.generateOTP()
       await models.otpCode.create(
         {
+          id:uuid.v4(),
           userId:user.id,
           code:val
         }
@@ -240,7 +246,7 @@ const login = async (req,res)=>{
           "summary": summary,
           "htmlPart":htmlPart,
           "names": names,
-          "body":msg
+          "body":summary
         }
       data.val = val;
       data.email = user.email;
