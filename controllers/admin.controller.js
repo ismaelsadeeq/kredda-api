@@ -7,7 +7,8 @@ const uuid = require('uuid');
 const mailer = require('../utilities/mailjet');
 const helpers = require('../utilities/helpers');
 const multer = require('multer');
-const multerConfig = require('../config/multer')
+const multerConfig = require('../config/multer');
+const { Unauthorized } = require('http-errors');
 require('dotenv').config();
 
 //response
@@ -125,6 +126,7 @@ const createAdmin = async (req,res) =>{
         lastName:data.lastName,
         email:data.email,
         phoneNumber:data.phoneNumber,
+        isSuperAdmin:false,
         permission:"1"
       }
     );
@@ -132,7 +134,7 @@ const createAdmin = async (req,res) =>{
   if(!admin){
     responseData.status = false;
     responseData.message = "Could not create account";
-    responseData.data=admin;
+    responseData.data = undefined;
     return res.json(responseData);
   }
   //generate otp and send email
@@ -158,6 +160,7 @@ const createAdmin = async (req,res) =>{
   sendEmail(data)
   responseData.status = true
   responseData.message = "Account created use the code sent the email provided to verify and set ppassword";
+  responseData.data = undefined;
   return res.json(responseData);
 
 }
@@ -353,8 +356,15 @@ const verifyEmail = async (req,res)=>{
       "body":msg
     }
     sendEmail(data)
+    const jwt_payload ={
+      id:userr.id,
+    }
+    const token = jwt.sign(jwt_payload,process.env.SECRET);
     responseData.message = 'Account Verified';
-    responseData.status = true;
+    responseData.data = {
+      token:token,
+      user:userr
+    };
     return res.json(responseData);
   }else{
     responseData.status = false,
@@ -500,32 +510,44 @@ async function changePassword(req,res){
 const editAdminPrioriy = async(req,res)=>{
   const adminId = req.params.adminId;
   const data = req.body;
+  const admin = req.user;
   if(!data.permission){
     responseData.status = false;
     responseData.message = "permission is required";
     responseData.data = undefined;
     return res.json(responseData);
   }
-  const updateAdmin = await models.admin.update(
-    {
-      permission:data.permission,
-    },
+  const user = await models.admin.findOne(
     {
       where:{
-        id:adminId
+        id:admin.id
       }
     }
   );
-  if(!updateAdmin){
-    responseData.status = false;
-    responseData.message = "something went wrong";
+  if(user.isSuperAdmin){
+    const updateAdmin = await models.admin.update(
+      {
+        permission:data.permission,
+      },
+      {
+        where:{
+          id:adminId
+        }
+      }
+    );
+    if(!updateAdmin){
+      responseData.status = false;
+      responseData.message = "something went wrong";
+      responseData.data = undefined;
+      return res.json(responseData);
+    }
+    responseData.status = true;
+    responseData.message = "priority updated";
     responseData.data = undefined;
     return res.json(responseData);
   }
-  responseData.status = true;
-  responseData.message = "priority updated";
-  responseData.data = undefined;
-  return res.json(responseData);
+  res.statusCode = 401;
+  return res.send('Unauthorized');
 }
 const sendEmail= (data)=>{
   const sendMail = mailer.sendMail(data.email, data.variables,data.msg)
@@ -548,5 +570,6 @@ module.exports = {
   sendCode,
   resetPassword,
   changePassword,
-  editProfilePicture
+  editProfilePicture,
+  editAdminPrioriy
 }

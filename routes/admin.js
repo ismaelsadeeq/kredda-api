@@ -36,10 +36,6 @@ router.post('/super',
 router.post('/', 
   controller.createAdmin
 );
-router.put('/profile-picture', 
-  passport.authenticate('jwt',{session:false}),
-  controller.editProfilePicture
-);
 router.put('/edit-priority/:adminId', 
   passport.authenticate('jwt',{session:false}),
   controller.editAdminPrioriy
