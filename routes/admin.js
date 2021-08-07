@@ -26,15 +26,13 @@ router.post('/change-password',
   passport.authenticate('jwt',{session:false}),
   controller.changePassword
 );
-router.post('/logout', 
+router.get('/logout', 
   passport.authenticate('jwt',{session:false}),
   controller.logout
 );
-
 router.post('/', 
   controller.createAdmin
 );
-
 router.put('/profile-picture', 
   passport.authenticate('jwt',{session:false}),
   controller.editProfilePicture
@@ -43,8 +41,6 @@ router.put('/',
   passport.authenticate('jwt',{session:false}),
   controller.editAdmin
 );
-
-
 router.delete('/', 
   passport.authenticate('jwt',{session:false}),
   controller.deleteAdmin

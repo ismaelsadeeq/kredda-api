@@ -11,7 +11,7 @@ const request = mailjet.post("send", {'version': 'v3.1'}).request({
 		"Messages":[
 			{
 		  "From": {
-			  "Email": "noreply@nobaafrica.com", //will be changed to kredda
+			  "Email": "ask4ismailsadiq@gmail.com", //will be changed to kredda
 				"Name": "Customer Success"
 			},
 			"To": [

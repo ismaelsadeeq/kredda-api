@@ -12,7 +12,7 @@ module.exports = {
       },
       userId:{
         type:Sequelize.UUID,
-        allowNull:false,
+        allowNull:true,
         onDelete:'CASCADE',
         references:{
           model:'users',
@@ -22,7 +22,7 @@ module.exports = {
       },
       adminId:{
         type:Sequelize.UUID,
-        allowNull:false,
+        allowNull:true,
         onDelete:'CASCADE',
         references:{
           model:'admins',

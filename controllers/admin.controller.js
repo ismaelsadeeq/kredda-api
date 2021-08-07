@@ -7,6 +7,7 @@ const uuid = require('uuid');
 const mailer = require('../utilities/mailjet');
 const helpers = require('../utilities/helpers');
 const multer = require('multer');
+const multerConfig = require('../config/multer')
 require('dotenv').config();
 
 //response
@@ -242,7 +243,9 @@ const verifyEmail = async (req,res)=>{
     const hash = bcrypt.hashSync(data.password,salt)
     const userr = await models.admin.findOne(
       {
-        where:{id:code.adminId}
+        where:{
+          id:code.adminId
+        }
       }
     );
     await models.admin.update(
