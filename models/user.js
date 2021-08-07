@@ -27,6 +27,9 @@ module.exports = (sequelize, DataTypes) => {
     user.hasMany(models.saving,{
       foreignKey:'userId'
     });
+    user.hasMany(models.transaction,{
+      foreignKey:'userId'
+    });
   }
   user.init({
     firstName: DataTypes.STRING,

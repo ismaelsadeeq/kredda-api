@@ -2,7 +2,7 @@
 const uuid = require('uuid');
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('investments', {
+    await queryInterface.createTable('transactions', {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -20,18 +20,29 @@ module.exports = {
           as:'userId'
         }
       },
-      investmentCategoryId:{
-        type:Sequelize.UUID,
-        allowNull:false,
-        onDelete:'CASCADE',
-        references:{
-          model:'investmentCategories',
-          key:'id',
-          as:'investmentCategoryId'
-        }
-      },
-      isRedemmed: {
+      transactionType: {
         type: Sequelize.STRING
+      },
+      message: {
+        type: Sequelize.STRING
+      },
+      reference: {
+        type: Sequelize.STRING
+      },
+      amount: {
+        type: Sequelize.STRING
+      },
+      beneficiary: {
+        type: Sequelize.STRING
+      },
+      description: {
+        type: Sequelize.STRING
+      },
+      time:{
+        type: Sequelize.STRING
+      },
+      status:{
+        type:Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
@@ -48,6 +59,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('investments');
+    await queryInterface.dropTable('transactions');
   }
 };
