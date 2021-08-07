@@ -18,7 +18,78 @@ const responseData = {
 }
 
 //controller handlers
+const createSuperAdmin = async (req,res) =>{
+  const data = req.body;
+  function isEmpty(obj) {
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+  }
+  if(isEmpty(data)) {
+    responseData.status = false;
+    responseData.message = "empty post"
+    return res.json(responseData)
+  }
+  const checkAdmin = await models.admin.findOne(
+    {
+      where:{email:data.email}
+    }
+  );
+  var admin = undefined;
+  if (checkAdmin){
+    responseData.message = 'you have an account sign in';
+    responseData.status=false
+    responseData.data = undefined;
+    return res.json(responseData);
+  } 
+  else
+  {
+    admin = await models.admin.create(
+      {
+        id:uuid.v4(),
+        firstName:data.firstName,
+        lastName:data.lastName,
+        email:data.email,
+        phoneNumber:data.phoneNumber,
+        isSuperAdmin:true,
+        permission:"1"
+      }
+    );
+  }
+  if(!admin){
+    responseData.status = false;
+    responseData.message = "Could not create account";
+    responseData.data=admin;
+    return res.json(responseData);
+  }
+  //generate otp and send email
+  let val = helpers.generateOTP();
+  let names = data.firstName;
+  const msg = "Welcome "+names+", use the code "+ val+" to verify your email and create your Kredda Password";
+  const htmlPart = `<div>
+  <h3> Hello ${names}</h3
+  <p>${msg}</p>
 
+  <footer></footer>
+  <p>This is a noreply email from Kredda.com</p>
+</div>`
+  data.variables = {
+    "names":names,
+    "code": val,
+    "summary": msg,
+    "html":htmlPart,
+    "body":msg
+  }
+  data.val = val
+  await models.otpCode.create({id:uuid.v4(),code:val,adminId:admin.id});
+  sendEmail(data)
+  responseData.status = true
+  responseData.message = "Account created use the code sent the email provided to verify and set ppassword";
+  return res.json(responseData);
+
+}
 const createAdmin = async (req,res) =>{
   const data = req.body;
   function isEmpty(obj) {
@@ -54,6 +125,7 @@ const createAdmin = async (req,res) =>{
         lastName:data.lastName,
         email:data.email,
         phoneNumber:data.phoneNumber,
+        permission:"1"
       }
     );
   }
@@ -425,7 +497,36 @@ async function changePassword(req,res){
     res.json(responseData);
   }
 } 
-
+const editAdminPrioriy = async(req,res)=>{
+  const adminId = req.params.adminId;
+  const data = req.body;
+  if(!data.permission){
+    responseData.status = false;
+    responseData.message = "permission is required";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const updateAdmin = await models.admin.update(
+    {
+      permission:data.permission,
+    },
+    {
+      where:{
+        id:adminId
+      }
+    }
+  );
+  if(!updateAdmin){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "priority updated";
+  responseData.data = undefined;
+  return res.json(responseData);
+}
 const sendEmail= (data)=>{
   const sendMail = mailer.sendMail(data.email, data.variables,data.msg)
  if(sendMail){
@@ -440,6 +541,7 @@ module.exports = {
   logout,
   adminLogin,
   createAdmin,
+  createSuperAdmin,
   deleteAdmin,
   editAdmin,
   verifyEmail,

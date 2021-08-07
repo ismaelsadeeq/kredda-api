@@ -30,8 +30,19 @@ router.get('/logout',
   passport.authenticate('jwt',{session:false}),
   controller.logout
 );
+router.post('/super', 
+  controller.createSuperAdmin
+);
 router.post('/', 
   controller.createAdmin
+);
+router.put('/profile-picture', 
+  passport.authenticate('jwt',{session:false}),
+  controller.editProfilePicture
+);
+router.put('/edit-priority/:adminId', 
+  passport.authenticate('jwt',{session:false}),
+  controller.editAdminPrioriy
 );
 router.put('/profile-picture', 
   passport.authenticate('jwt',{session:false}),
