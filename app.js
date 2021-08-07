@@ -24,9 +24,11 @@ require('./config/passport')(passport);
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var adminRouter = require('./routes/admin');
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api/v1', indexRouter);
+app.use('/api/v1/user', usersRouter);
+app.use('/api/v1/admin',adminRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
