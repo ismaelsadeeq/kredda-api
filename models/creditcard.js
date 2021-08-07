@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     isDefault: DataTypes.STRING
   }, {
     sequelize,
+    paranoid:true,
     modelName: 'creditCard',
   });
   return creditCard;

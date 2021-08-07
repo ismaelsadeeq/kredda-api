@@ -15,6 +15,9 @@ module.exports = (sequelize, DataTypes) => {
     user.hasMany(models.creditCard,{
       foreignKey:'userId'
     });
+    user.hasOne(models.wallet,{
+      foreignKey:'userId'
+    });
   }
   user.init({
     firstName: DataTypes.STRING,
