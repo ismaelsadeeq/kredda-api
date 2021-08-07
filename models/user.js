@@ -18,6 +18,9 @@ module.exports = (sequelize, DataTypes) => {
     user.hasOne(models.wallet,{
       foreignKey:'userId'
     });
+    user.hasMany(models.investment,{
+      foreignKey:'userId'
+    });
   }
   user.init({
     firstName: DataTypes.STRING,
