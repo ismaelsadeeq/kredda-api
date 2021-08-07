@@ -5,6 +5,11 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class kyc extends Model {
   };
+  kyc.associate = function(models){
+    kyc.belongsTo(models.user,{
+      foreignKey:'userId'
+    });
+  }
   kyc.init({
     dob: DataTypes.STRING,
     bvnNumber: DataTypes.STRING,

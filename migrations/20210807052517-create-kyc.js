@@ -10,6 +10,16 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue:uuid.v4()
       },
+      userd:{
+        type:Sequelize.UUID,
+        allowNull:false,
+        onDelete:'CASCADE',
+        references:{
+          model:'users',
+          key:'id',
+          as:'userd'
+        }
+      },
       dob: {
         type: Sequelize.STRING
       },
