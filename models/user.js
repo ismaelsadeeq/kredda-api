@@ -8,7 +8,10 @@ module.exports = (sequelize, DataTypes) => {
   user.associate = function(models){
     user.hasOne(models.kyc,{
       foreignKey:'userId'
-    })
+    });
+    user.hasMany(models.bank,{
+      foreignKey:'userId'
+    });
   }
   user.init({
     firstName: DataTypes.STRING,

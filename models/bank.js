@@ -5,6 +5,11 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class bank extends Model {
   };
+  bank.associate = function(models){
+    bank.belongsTo(models.user,{
+      foreignKey:'userId'
+    })
+  }
   bank.init({
     bankName: DataTypes.STRING,
     bankCode: DataTypes.STRING,
