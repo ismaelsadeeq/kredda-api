@@ -1,5 +1,3 @@
-const crypto = require('crypto');
-var CryptoJS = require("crypto-js");
 require("dotenv").config();
 
 const generateOTP =()=>{
