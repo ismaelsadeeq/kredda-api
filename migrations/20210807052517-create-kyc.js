@@ -10,14 +10,14 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue:uuid.v4()
       },
-      userd:{
+      userId:{
         type:Sequelize.UUID,
         allowNull:false,
         onDelete:'CASCADE',
         references:{
           model:'users',
           key:'id',
-          as:'userd'
+          as:'userId'
         }
       },
       dob: {

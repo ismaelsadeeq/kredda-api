@@ -2,7 +2,7 @@
 const uuid = require('uuid');
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('banks', {
+    await queryInterface.createTable('creditCards', {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -20,19 +20,28 @@ module.exports = {
           as:'userId'
         }
       },
+      cardType: {
+        type: Sequelize.STRING
+      },
+      cardNumber: {
+        type: Sequelize.STRING
+      },
+      expiryMonth: {
+        type: Sequelize.STRING
+      },
+      expiryYear: {
+        type: Sequelize.STRING
+      },
+      authCode: {
+        type: Sequelize.STRING
+      },
       bankName: {
         type: Sequelize.STRING
       },
       bankCode: {
         type: Sequelize.STRING
       },
-      accountNumber: {
-        type: Sequelize.STRING
-      },
-      isAccountValid: {
-        type: Sequelize.BOOLEAN
-      },
-      recipientCode: {
+      isDefault: {
         type: Sequelize.STRING
       },
       createdAt: {
@@ -50,6 +59,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('banks');
+    await queryInterface.dropTable('creditCards');
   }
 };
