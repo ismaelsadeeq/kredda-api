@@ -23,7 +23,7 @@ router.get('/all',
   passport.authenticate('jwt',{session:false}),
   controller.getSettings
 );
-router.get('/',
+router.get('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getSetting
 );

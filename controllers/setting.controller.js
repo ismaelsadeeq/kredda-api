@@ -26,8 +26,22 @@ const createSetting = async (req,res)=>{
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
+  const settingExist = await models.appSetting.findOne(
+    {
+      where:{
+        siteName:data.siteName
+      }
+    }
+  );
+  if(settingExist){
+    responseData.status = false;
+    responseData.message = "setting exist";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   const createSetting = await models.appSetting.create(
     {
+      id:uuid.v4(),
       siteName:data.siteName,
       publicKey:data.publicKey,
       privateKey:data.privateKey,
@@ -198,7 +212,7 @@ const changeStatusToActive = async (req,res)=>{
     return res.send('Unauthorized');
   }
   const id = req.params.id;
-  let settings = await models.appSettings.findAll(
+  let settings = await models.appSetting.findAll(
     {
       where:{
         purpose:data.purpose
@@ -206,7 +220,7 @@ const changeStatusToActive = async (req,res)=>{
     }
   );
   for (let i = 0; i < settings.length; i++) {
-    await models.appSettings.update(
+    await models.appSetting.update(
       {
         isActive:false
       },
@@ -220,6 +234,11 @@ const changeStatusToActive = async (req,res)=>{
   const setStatus = await models.appSetting.update(
     {
       isActive:true
+    },
+    {
+      where:{
+        id:id
+      }
     }
   );
   responseData.status = true;
