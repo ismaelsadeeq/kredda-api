@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const uuid = require('uuid');
 const { getPayment } = require('../middlewares/appSetting');
+const multer = require('multer');
+const multerConfig = require('../config/multer');
 const paystackApi = require('../utilities/paystack.api');
 
 require('dotenv').config();
@@ -125,6 +127,68 @@ const deleteAccount = async (req,res)=>{
   responseData.data = account;
   return res.json(responseData); 
 }
+const updateProfilePicture = async (req,res)=>{
+  multerConfig.singleUpload(req, res, async function(err) {
+		if (err instanceof multer.MulterError) {
+			return res.json(err.message);
+		} else if (err) {
+			return res.json(err);
+		} else if(req.body){
+			if(req.file){
+        const user = req.user;
+				await models.user.update(
+					{
+						profilePicture:req.file.path
+					},
+					{
+						where:{
+              id:user.id
+            }
+					}
+				);
+				responseData.status = true;
+				responseData.message = "completed";
+				responseData.data = req.file;
+				return res.json(responseData)
+      }
+			responseData.status = false;
+			responseData.message = "file not selected";
+			responseData.data = undefined;
+			return res.json(responseData);
+		}	
+	})
+}
+const verifyEmail = async (req,res)=>{
+  const user = req.user;
+  const data = req.body;
+  const codeExist = await models.otpCode.findOne(
+    {
+      where:{
+        code:data.code
+      }
+    }
+  );
+  if(codeExist){
+    const updateUser = await models.user.update(
+      {
+        emailVerifiedAt:new Date()
+      },
+      {
+        where:{
+          id:user.id
+        }
+      }
+    );
+    responseData.status = true;
+		responseData.message = "email verified";
+		responseData.data = undefined;
+		return res.json(responseData)
+  }
+  responseData.status = false;
+	responseData.message = "invalid code";
+	responseData.data = undefined;
+	return res.json(responseData);
+}
 const sendEmail= (data)=>{
   const sendMail = mailer.sendMail(data.email, data.variables,data.msg)
  if(sendMail){
@@ -136,5 +200,6 @@ const sendEmail= (data)=>{
 module.exports = {
   deleteAccount,
   getAccount,
-  updateAccount
+  updateAccount,
+  verifyEmail
 }
