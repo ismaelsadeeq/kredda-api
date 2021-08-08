@@ -9,6 +9,7 @@ const responseData = {
 }
 
 async function createCustomer(payload,paystack){
+  console.log(paystack)
   const https = require('https')
   const params = JSON.stringify({
     "email": payload.email
@@ -30,15 +31,19 @@ async function createCustomer(payload,paystack){
     });
     res.on('end',async () => {
       const response = JSON.parse(data)
-      const createWallet = await models.wallet.create(
-        {
-          id:uuid.v4(),
-          userId:payload.id,
-          customerCode:response.data.customer_code,
-          accountBalance:"0.0"
-        }
-      );
-      return "customer created"
+      console.log(response);
+      if(response.status == true){
+        const createWallet = await models.wallet.create(
+          {
+            id:uuid.v4(),
+            userId:payload.id,
+            customerCode:response.data.customer_code,
+            accountBalance:"0.0"
+          }
+        );
+        return "customer created"
+      }
+      return "something went wrong"
     })
   }).on('error', error => {
     console.error(error)

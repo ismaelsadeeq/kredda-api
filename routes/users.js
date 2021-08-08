@@ -11,11 +11,11 @@ router.put('/verify-email',
   passport.authenticate('jwt',{session:false}),
   controller.verifyEmail
 );
-router.put('/',
+router.put('/create',
   passport.authenticate('jwt',{session:false}),
   controller.updateAccount
 );
-router.get('/',
+router.get('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getAccount
 );

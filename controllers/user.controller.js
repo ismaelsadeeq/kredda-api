@@ -28,6 +28,11 @@ const updateAccount = async (req,res)=>{
       email:data.email,
       city:data.city,
       refferalCode:referralCode
+    },
+    {
+      where:{
+        id:user.id
+      }
     }
   );
   if(data.email){
@@ -198,6 +203,7 @@ const sendEmail= (data)=>{
  }
 }
 module.exports = {
+  updateProfilePicture,
   deleteAccount,
   getAccount,
   updateAccount,
