@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     privateKey: DataTypes.STRING,
     currency: DataTypes.STRING,
     purpose: DataTypes.STRING,
-    isActive: DataTypes.STRING
+    isActive: DataTypes.BOOLEAN
   }, {
     sequelize,
     paranoid:true,

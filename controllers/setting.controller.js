@@ -1,0 +1,237 @@
+const helpers = require('../utilities/helpers');
+const models = require('../models');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const uuid = require('uuid');
+
+require('dotenv').config();
+//response
+const responseData = {
+	status: true,
+	message: "Completed",
+	data: null
+}
+
+const createSetting = async (req,res)=>{
+  const user = req.user;
+  const data = req.body;
+  const isAdmin = await models.admin.findOne(
+    {
+      where:{
+        id:user.id
+      }
+    }
+  );
+  if(!isAdmin){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const createSetting = await models.appSetting.create(
+    {
+      siteName:data.siteName,
+      publicKey:data.publicKey,
+      privateKey:data.privateKey,
+      currency:data.currency || "NGN",
+      purpose:data.purpose,
+      isActive:false
+    }
+  );
+  if(createSetting){
+    responseData.status = true;
+    responseData.message = "completed";
+    responseData.data = createSetting;
+    return res.json(responseData);
+  }
+  responseData.status = false;
+  responseData.message = "something went wrong";
+  responseData.data = undefined;
+  return res.json(responseData);
+}
+const editSetting = async (req,res)=>{
+  const user = req.user;
+  const data = req.body;
+  const isAdmin = await models.admin.findOne(
+    {
+      where:{
+        id:user.id
+      }
+    }
+  );
+  if(!isAdmin){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const editSetting = await models.appSetting.create(
+    {
+      siteName:data.siteName,
+      publicKey:data.publicKey,
+      privateKey:data.privateKey,
+      currency:data.currency || "NGN",
+      purpose:data.purpose
+    },
+    {
+      where:{
+        id:req.params.id
+      }
+    }
+  );
+  if(editSetting){
+    responseData.status = true;
+    responseData.message = "completed";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = false;
+  responseData.message = "something went wrong";
+  responseData.data = undefined;
+  return res.json(responseData);
+}
+const deleteSetting = async (req,res)=>{
+  const user = req.user;
+  const isAdmin = await models.admin.findOne(
+    {
+      where:{
+        id:user.id
+      }
+    }
+  );
+  if(!isAdmin){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const deleteSetting = await models.appSetting.destroy(
+    {
+      where:{
+        id:req.params.id
+      }
+    }
+  );
+  if(deleteSetting){
+    responseData.status = true;
+    responseData.message = "completed";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = false;
+  responseData.message = "something went wrong";
+  responseData.data = undefined;
+  return res.json(responseData);
+}
+const getSettings = async (req,res)=>{
+  const user = req.user;
+  const isAdmin = await models.admin.findOne(
+    {
+      where:{
+        id:user.id
+      }
+    }
+  );
+  if(!isAdmin){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const currentPage = parseInt(req.query.currentPage);
+  const pageLimit = parseInt(req.query.pageLimit);
+
+  const skip = currentPage * pageLimit;
+  const settings = await models.appSetting.findAll(
+    {
+      order:[['createdAt','DESC']],
+      offset:skip,
+      limit:pageLimit,
+    }
+  );
+  if(settings){
+    responseData.status = true;
+    responseData.message = "completed";
+    responseData.data = settings;
+    return res.json(responseData);
+  }
+  responseData.status = false;
+  responseData.message = "something went wrong";
+  responseData.data = undefined;
+  return res.json(responseData);
+}
+const getSetting = async (req,res)=>{
+  const user = req.user;
+  const isAdmin = await models.admin.findOne(
+    {
+      where:{
+        id:user.id
+      }
+    }
+  );
+  if(!isAdmin){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const setting = await models.appSetting.findOne(
+    {
+      where:{
+        id:req.params.id
+      }
+    }
+  );
+  if(setting){
+    responseData.status = true;
+    responseData.message = "completed";
+    responseData.data = setting;
+    return res.json(responseData);
+  }
+  responseData.status = false;
+  responseData.message = "something went wrong";
+  responseData.data = undefined;
+  return res.json(responseData);
+}
+const changeStatusToActive = async (req,res)=>{
+  const user = req.user;
+  const data = req.body;
+  const isAdmin = await models.admin.findOne(
+    {
+      where:{
+        id:user.id
+      }
+    }
+  );
+  if(!isAdmin){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const id = req.params.id;
+  let settings = await models.appSettings.findAll(
+    {
+      where:{
+        purpose:data.purpose
+      }
+    }
+  );
+  for (let i = 0; i < settings.length; i++) {
+    await models.appSettings.update(
+      {
+        isActive:false
+      },
+      {
+        where:{
+          id:settings[i].id
+        }
+      }
+    );
+  }
+  const setStatus = await models.appSetting.update(
+    {
+      isActive:true
+    }
+  );
+  responseData.status = true;
+  responseData.message = "status changed to true";
+  responseData.data = undefined;
+  return res.json(responseData);
+}
+module.exports = {
+  createSetting,
+  editSetting,
+  deleteSetting,
+  getSettings,
+  getSetting,
+  changeStatusToActive
+}
