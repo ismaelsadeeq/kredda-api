@@ -3,7 +3,7 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/user.controller');
 
-router.put('/kyc',
+router.post('/kyc',
   passport.authenticate('jwt',{session:false}),
   controller.updateKyc
 );

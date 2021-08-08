@@ -88,7 +88,7 @@ async function updateCustomer(customerCode,payload){
   req.end()
 }
 
-async function validateCustomer(customerCode,payload){
+async function validateCustomer(customerCode,payload,paystack){
   const https = require('https')
   const params = JSON.stringify({
     "country": "NG",
@@ -103,7 +103,7 @@ async function validateCustomer(customerCode,payload){
     path: `/customer/${customerCode}/identification`,
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      Authorization: `Bearer ${paystack.secretKey}`,
       'Content-Type': 'application/json'
     }
   }

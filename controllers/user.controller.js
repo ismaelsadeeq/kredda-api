@@ -239,6 +239,16 @@ const updateKyc =  async (req,res)=>{
           }
         );
         if(kyc){
+          // if(!kyc.isBvnVerified){
+          //   const wallet = await models.wallet.findOne(
+          //     {
+          //       where:{
+          //         userId:user.id
+          //       }
+          //     }
+          //   );
+          //   await paystackApi.validateCustomer(wallet.customerCode,user,)
+          // }
           await models.kyc.update(
             {
               meansOfIdentification:req.file.path,
@@ -248,13 +258,16 @@ const updateKyc =  async (req,res)=>{
             },
             {
               where:{
-                id:user.id
+                userId:user.id
               }
             }
           );
           responseData.status = true;
           responseData.message = "completed";
-          responseData.data = req.file;
+          responseData.data =  {
+            file:req.file,
+            data:data
+          };
           return res.json(responseData)
         }
         await models.kyc.create(
@@ -268,7 +281,10 @@ const updateKyc =  async (req,res)=>{
         );
         responseData.status = true;
         responseData.message = "completed";
-        responseData.data = req.file;
+        responseData.data = {
+          file:req.file,
+          data:data
+        };
         return res.json(responseData)
       }
 			responseData.status = false;
