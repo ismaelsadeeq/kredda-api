@@ -1,0 +1,140 @@
+const helpers = require('../utilities/helpers');
+const models = require('../models');
+const mailer = require('../utilities/mailjet');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const uuid = require('uuid');
+const { getPayment } = require('../middlewares/appSetting');
+const paystackApi = require('../utilities/paystack.api');
+
+require('dotenv').config();
+//response
+const responseData = {
+	status: true,
+	message: "Completed",
+	data: null
+}
+const updateAccount = async (req,res)=>{
+  const data = req.body;
+  const user = req.user;
+  let referralCode = helpers.generateOTP()
+  const updateUser = await models.user.update(
+    {
+      firstName:data.firstName,
+      lastName:data.lastName,
+      gender:data.gender,
+      email:data.email,
+      city:data.city,
+      refferalCode:referralCode
+    }
+  );
+  if(data.email){
+    let val = helpers.generateOTP();
+    let names = data.firstName;
+    const msg = "Welcome "+names+", use the code "+ val+" to verify your email";
+    const htmlPart = `<div>
+    <h3> Hello ${names}</h3
+    <p>${msg}</p>
+
+    <footer></footer>
+    <p>This is a noreply email from Kredda.com</p>
+  </div>`
+    data.variables = {
+      "names":names,
+      "code": val,
+      "summary": msg,
+      "html":htmlPart,
+      "body":msg
+    }
+    data.val = val
+    await models.otpCode.create({id:uuid.v4(),code:val,userId:user.id});
+    sendEmail(data)
+  }
+  const payment = await getPayment();
+  if(payment.siteName =='paystack'){
+    const wallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:user.id
+        }
+      }
+    );
+    if(!wallet){
+      const newUser = await models.user.findOne(
+        {
+          where:{
+            id:user.id
+          }
+        }
+      );
+      if(!newUser.email){
+        responseData.status = false;
+        responseData.message = "no email provided";
+        responseData.data = undefined;
+        return res.json(responseData);
+      }
+      let payload = {
+        email:newUser.email,
+        id:user.id
+      }
+      await paystackApi.createCustomer(payload,payment);
+    }
+  }
+  responseData.status = true;
+  responseData.message = "updated";
+  responseData.data = undefined;
+  return res.json(responseData);
+}
+const getAccount = async (req,res)=>{
+  const user = req.user;
+  const account = await models.user.findOne(
+    {
+      where:{
+        id:user.id
+      }
+    }
+  );
+  if(!account){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = account;
+  return res.json(responseData);
+}
+const deleteAccount = async (req,res)=>{
+  const user = req.user;
+  const account = await models.user.destroy(
+    {
+      where:{
+        id:user.id
+      }
+    }
+  );
+  if(!account){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "user deleted";
+  responseData.data = account;
+  return res.json(responseData); 
+}
+const sendEmail= (data)=>{
+  const sendMail = mailer.sendMail(data.email, data.variables,data.msg)
+ if(sendMail){
+ return true
+ } else{
+   return false
+ }
+}
+module.exports = {
+  deleteAccount,
+  getAccount,
+  updateAccount
+}
