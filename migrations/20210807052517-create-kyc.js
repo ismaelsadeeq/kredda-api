@@ -35,6 +35,9 @@ module.exports = {
       status: {
         type: Sequelize.STRING
       },
+      kycLevel: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

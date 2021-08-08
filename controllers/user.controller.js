@@ -211,6 +211,13 @@ const verifyEmail = async (req,res)=>{
         }
       }
     );
+    const kycLevel = await models.kyc.create(
+      {
+        id:uuid.v4(),
+        kycLevel:"1",
+        userId:user.id
+      }
+    );
     responseData.status = true;
 		responseData.message = "email verified";
 		responseData.data = undefined;
@@ -238,60 +245,43 @@ const updateKyc =  async (req,res)=>{
             }
           }
         );
-        if(kyc){
-          // if(!kyc.isBvnVerified){
-          //   const wallet = await models.wallet.findOne(
-          //     {
-          //       where:{
-          //         userId:user.id
-          //       }
+        if(!kyc.isBvnVerified){
+          //ca;; payment and verify with monify or paystack or fluterwave
+          // const wallet = await models.wallet.findOne(
+          //   {
+          //     where:{
+          //       userId:user.id
           //     }
-          //   );
-          //   await paystackApi.validateCustomer(wallet.customerCode,user,)
-          // }
-          await models.kyc.update(
-            {
-              meansOfIdentification:req.file.path,
-              userId:user.id,
-              dob:data.dob,
-              bvnNumber:data.bvnNumber
-            },
-            {
-              where:{
-                userId:user.id
-              }
-            }
-          );
-          responseData.status = true;
-          responseData.message = "completed";
-          responseData.data =  {
-            file:req.file,
-            data:data
-          };
-          return res.json(responseData)
+          //   }
+          // );
+          // await paystackApi.validateCustomer(wallet.customerCode,user,)
         }
-        await models.kyc.create(
+        await models.kyc.update(
           {
-            id:uuid.v4(),
             meansOfIdentification:req.file.path,
             userId:user.id,
             dob:data.dob,
             bvnNumber:data.bvnNumber
+          },
+          {
+            where:{
+              userId:user.id
+            }
           }
         );
         responseData.status = true;
         responseData.message = "completed";
-        responseData.data = {
+        responseData.data =  {
           file:req.file,
           data:data
         };
         return res.json(responseData)
       }
-			responseData.status = false;
-			responseData.message = "file not selected";
-			responseData.data = undefined;
-			return res.json(responseData);
-		}	
+    }
+		responseData.status = false;
+		responseData.message = "file not selected";
+		responseData.data = undefined;
+		return res.json(responseData);
 	})
 }
 const sendEmail= (data)=>{
