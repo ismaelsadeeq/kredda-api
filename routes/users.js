@@ -3,6 +3,10 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/user.controller');
 
+router.put('/kyc',
+  passport.authenticate('jwt',{session:false}),
+  controller.updateKyc
+);
 router.put('/profile-picture',
   passport.authenticate('jwt',{session:false}),
   controller.updateProfilePicture

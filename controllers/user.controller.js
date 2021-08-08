@@ -35,6 +35,33 @@ const updateAccount = async (req,res)=>{
       }
     }
   );
+  const kyc = await models.kyc.findOne(
+    {
+      where:{
+        userId:user.id
+      }
+    }
+  );
+  if(!kyc){
+    await models.kyc.create(
+      {
+        id:uuid.v4(),
+        userId:user.id,
+        dob:data.dob
+      }
+    )
+  }
+  if(!kyc.dob){
+    await models.kyc.update(
+      {
+        dob:data.dob
+      },{
+        where:{
+          userId:user.id
+        }
+      }
+    )
+  }
   if(data.email){
     let val = helpers.generateOTP();
     let names = data.firstName;
@@ -194,6 +221,63 @@ const verifyEmail = async (req,res)=>{
 	responseData.data = undefined;
 	return res.json(responseData);
 }
+const updateKyc =  async (req,res)=>{
+  multerConfig.singleUpload(req, res, async function(err) {
+		if (err instanceof multer.MulterError) {
+			return res.json(err.message);
+		} else if (err) {
+			return res.json(err);
+		} else if(req.body){
+			if(req.file){
+        const user = req.user;
+        const data = req.body;
+        const kyc = await models.kyc.findOne(
+          {
+            where:{
+              userId:user.id
+            }
+          }
+        );
+        if(kyc){
+          await models.kyc.update(
+            {
+              meansOfIdentification:req.file.path,
+              userId:user.id,
+              dob:data.dob,
+              bvnNumber:data.bvnNumber
+            },
+            {
+              where:{
+                id:user.id
+              }
+            }
+          );
+          responseData.status = true;
+          responseData.message = "completed";
+          responseData.data = req.file;
+          return res.json(responseData)
+        }
+        await models.kyc.create(
+          {
+            id:uuid.v4(),
+            meansOfIdentification:req.file.path,
+            userId:user.id,
+            dob:data.dob,
+            bvnNumber:data.bvnNumber
+          }
+        );
+        responseData.status = true;
+        responseData.message = "completed";
+        responseData.data = req.file;
+        return res.json(responseData)
+      }
+			responseData.status = false;
+			responseData.message = "file not selected";
+			responseData.data = undefined;
+			return res.json(responseData);
+		}	
+	})
+}
 const sendEmail= (data)=>{
   const sendMail = mailer.sendMail(data.email, data.variables,data.msg)
  if(sendMail){
@@ -207,5 +291,6 @@ module.exports = {
   deleteAccount,
   getAccount,
   updateAccount,
-  verifyEmail
+  verifyEmail,
+  updateKyc
 }
