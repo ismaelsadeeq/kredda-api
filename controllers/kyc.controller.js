@@ -61,7 +61,7 @@ const getAllUnverified = async (req,res)=>{
         offset:skip,
         limit:pageLimit,
         where:{
-          status:false
+          status:false||null
         }
       }
     );
