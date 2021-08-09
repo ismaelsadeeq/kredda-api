@@ -148,9 +148,29 @@ const getInvestmentPlan = async (req,res)=>{
   responseData.data = investmentPlan;
   return res.json(responseData);
 }
+const deleteInvestmentPlan = async (req,res)=>{
+  const investmentPlan = await models.investmentCategory.delete(
+    {
+      where:{
+        id:req.params.id
+      }
+    }
+  );
+  if(!investmentPlan){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = investmentPlan;
+  return res.json(responseData);
+}
 module.exports = {
   createInvestmentPlan,
   editInvestmentPlan,
   getAllInvestmentPlan,
-  getInvestmentPlan
+  getInvestmentPlan,
+  deleteInvestmentPlan
 }

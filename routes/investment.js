@@ -19,7 +19,10 @@ router.get('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getInvestmentPlan
 );
-
+router.delete('/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.deleteInvestmentPlan
+);
 
 
 module.exports = router;
