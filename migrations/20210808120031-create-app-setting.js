@@ -13,6 +13,12 @@ module.exports = {
       siteName: {
         type: Sequelize.STRING
       },
+      testPublicKey: {
+        type: Sequelize.STRING
+      },
+      testPrivateKey: {
+        type: Sequelize.STRING
+      },
       publicKey: {
         type: Sequelize.STRING
       },

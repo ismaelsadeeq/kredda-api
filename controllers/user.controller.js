@@ -246,15 +246,15 @@ const updateKyc =  async (req,res)=>{
           }
         );
         if(!kyc.isBvnVerified){
-          //ca;; payment and verify with monify or paystack or fluterwave
-          // const wallet = await models.wallet.findOne(
-          //   {
-          //     where:{
-          //       userId:user.id
-          //     }
-          //   }
-          // );
-          // await paystackApi.validateCustomer(wallet.customerCode,user,)
+          //payment and verify with monify or paystack or fluterwave
+          const wallet = await models.wallet.findOne(
+            {
+              where:{
+                userId:user.id
+              }
+            }
+          );
+          await paystackApi.validateCustomer(wallet.customerCode,user,)
         }
         await models.kyc.update(
           {

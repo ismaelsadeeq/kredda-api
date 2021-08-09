@@ -7,6 +7,8 @@ module.exports = (sequelize, DataTypes) => {
   };
   appSetting.init({
     siteName: DataTypes.STRING,
+    testPublicKey:DataTypes.STRING,
+    testPrivateKey:DataTypes.STRING,
     publicKey: DataTypes.STRING,
     privateKey: DataTypes.STRING,
     currency: DataTypes.STRING,
