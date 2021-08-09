@@ -149,6 +149,25 @@ const updateProfilePicture = async (req,res)=>{
             }
 					}
 				);
+        await models.kyc.findOne(
+          {
+            where:{
+              userId:user.id
+            }
+          }
+        );
+        if(kyc.status && kyc.isBvnVerified){
+          await models.kyc.update(
+            {
+              kycLevel:'2'
+            },
+            {
+              where:{
+                userId:user.id
+              }
+            }
+          );
+        }
 				responseData.status = true;
 				responseData.message = "completed";
 				responseData.data = req.file;
@@ -234,14 +253,25 @@ const updateKyc =  async (req,res)=>{
             await models.kyc.update(
               {
                 isBvnVerified:true,
-                kycLevel:'2'
               },
               {
                 where:{
-                  userId:payload.id
+                  userId:user.id
                 }
               }
             );
+            if(user.profilePicture && kyc.status ==true){
+              await models.kyc.update(
+                {
+                  kycLevel:'2'
+                },
+                {
+                  where:{
+                    userId:user.id
+                  }
+                }
+              );
+            }
             // const payment = await getPayment();
             // if(payment.siteName =='paystack'){
             //   let payload = {
