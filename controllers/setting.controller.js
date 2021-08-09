@@ -43,6 +43,8 @@ const createSetting = async (req,res)=>{
     {
       id:uuid.v4(),
       siteName:data.siteName,
+      testPublicKey:data.publicKey,
+      testPrivateKey:data.privateKey,
       publicKey:data.publicKey,
       privateKey:data.privateKey,
       currency:data.currency || "NGN",
@@ -78,6 +80,8 @@ const editSetting = async (req,res)=>{
   const editSetting = await models.appSetting.create(
     {
       siteName:data.siteName,
+      testPublicKey:data.publicKey,
+      testPrivateKey:data.privateKey,
       publicKey:data.publicKey,
       privateKey:data.privateKey,
       currency:data.currency || "NGN",
