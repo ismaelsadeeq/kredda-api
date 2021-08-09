@@ -337,6 +337,77 @@ const updateKyc =  async (req,res)=>{
 		return res.json(responseData);
 	})
 }
+const getAllUsers = async (req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(user){
+    let pageLimit = parseInt(req.query.pageLimit);
+    let currentPage = parseInt(req.query.currentPage);
+    let	skip = currentPage * pageLimit;
+    const kyc = await models.user.findAll(
+      {
+        order:[['createdAt','DESC']],
+        offset:skip,
+        limit:pageLimit,
+      }
+    );
+    if(!kyc){
+      responseData.status = false;
+      responseData.message = "something went wrong";
+      responseData.data = undefined;
+      return res.json(responseData);
+    }
+    responseData.status = true;
+    responseData.message = "completed";
+    responseData.data = kyc;
+    return res.json(responseData);
+  }
+  res.statusCode = 401;
+  return res.send('Unauthorized');
+}
+const getActiveUsers = async (req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(user){
+    let pageLimit = parseInt(req.query.pageLimit);
+    let currentPage = parseInt(req.query.currentPage);
+    let	skip = currentPage * pageLimit;
+    const kyc = await models.user.findAll(
+      {
+        order:[['createdAt','DESC']],
+        offset:skip,
+        limit:pageLimit,
+        where:{
+          isActive:true
+        }
+      }
+    );
+    if(!kyc){
+      responseData.status = false;
+      responseData.message = "something went wrong";
+      responseData.data = undefined;
+      return res.json(responseData);
+    }
+    responseData.status = true;
+    responseData.message = "completed";
+    responseData.data = kyc;
+    return res.json(responseData);
+  }
+  res.statusCode = 401;
+  return res.send('Unauthorized');
+}
 const sendEmail= (data)=>{
   const sendMail = mailer.sendMail(data.email, data.variables,data.msg)
  if(sendMail){
@@ -351,5 +422,7 @@ module.exports = {
   getAccount,
   updateAccount,
   verifyEmail,
-  updateKyc
+  updateKyc,
+  getAllUsers,
+  getActiveUsers
 }
