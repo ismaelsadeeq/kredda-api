@@ -43,25 +43,27 @@ const updateAccount = async (req,res)=>{
       }
     }
   );
-  if(!kyc){
-    await models.kyc.create(
-      {
-        id:uuid.v4(),
-        userId:user.id,
-        dob:data.dob
-      }
-    )
-  }
-  if(!kyc.dob){
-    await models.kyc.update(
-      {
-        dob:data.dob
-      },{
-        where:{
-          userId:user.id
+  if(data.dob){
+    if(!kyc){
+      await models.kyc.create(
+        {
+          id:uuid.v4(),
+          userId:user.id,
+          dob:data.dob
         }
-      }
-    )
+      )
+    }
+    if(!kyc.dob){
+      await models.kyc.update(
+        {
+          dob:data.dob
+        },{
+          where:{
+            userId:user.id
+          }
+        }
+      )
+    }
   }
   if(data.email){
     let val = helpers.generateOTP();
@@ -228,19 +230,37 @@ const updateKyc =  async (req,res)=>{
 			if(req.file){
         const user = req.user;
         const data = req.body;
-        await models.kyc.update(
+        const kycExist = await models.kyc.findOne(
           {
-            meansOfIdentification:req.file.path,
-            userId:user.id,
-            dob:data.dob,
-            bvnNumber:data.bvnNumber
-          },
-          {
-            where:{
-              userId:user.id
-            }
+          where:{
+            userId:user.id
           }
-        );
+        });
+        if(!kycExist){
+           await models.kyc.create(
+            {
+              id:uuid.v4(),
+              meansOfIdentification:req.file.path,
+              userId:user.id,
+              dob:data.dob,
+              bvnNumber:data.bvnNumber
+            }
+          );
+        }else{
+          await models.kyc.update(
+            {
+              meansOfIdentification:req.file.path,
+              userId:user.id,
+              dob:data.dob,
+              bvnNumber:data.bvnNumber
+            },
+            {
+              where:{
+                userId:user.id
+              }
+            }
+          );
+        }
         const kyc = await models.kyc.findOne(
           {
             where:{
