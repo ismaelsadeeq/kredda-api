@@ -26,8 +26,8 @@ async function validateBvn(payload,flutterwave){
   };
   request(options, async function (error, response) { 
     if (error) throw new Error(error);
-    let response = response.body;
-    if(response.status=="status" && response.message =="BVN details fetched"){
+    let payload = response.body;
+    if(payload.status=="status" && payload.message =="BVN details fetched"){
       await models.kyc.update(
         {
           isBvnVerified:true,
