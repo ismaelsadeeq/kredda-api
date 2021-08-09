@@ -28,6 +28,7 @@ var adminRouter = require('./routes/admin');
 var authRouter = require('./routes/auth');
 var settingRouter = require('./routes/setting');
 var kycRouter = require('./routes/kyc');
+var 
 
 app.use('/api/v1', indexRouter);
 app.use('/api/v1',authRouter);
