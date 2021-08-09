@@ -89,6 +89,13 @@ async function updateCustomer(customerCode,payload){
 }
 
 async function validateCustomer(customerCode,payload,paystack){
+  let privateKey ;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }
+  else{
+    privateKey = paystack.testPrivateKey
+  }
   const https = require('https')
   const params = JSON.stringify({
     "country": "NG",
@@ -103,7 +110,7 @@ async function validateCustomer(customerCode,payload,paystack){
     path: `/customer/${customerCode}/identification`,
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${paystack.secretKey}`,
+      Authorization: `Bearer ${privateKey}`,
       'Content-Type': 'application/json'
     }
   }
