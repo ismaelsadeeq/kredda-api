@@ -72,7 +72,7 @@ const updateAccount = async (req,res)=>{
 
     <footer></footer>
     <p>This is a noreply email from Kredda.com</p>
-  </div>`
+   </div>`
     data.variables = {
       "names":names,
       "code": val,
@@ -82,37 +82,7 @@ const updateAccount = async (req,res)=>{
     }
     data.val = val
     await models.otpCode.create({id:uuid.v4(),code:val,userId:user.id});
-    sendEmail(data)
-  }
-  const payment = await getPayment();
-  if(payment.siteName =='paystack'){
-    const wallet = await models.wallet.findOne(
-      {
-        where:{
-          userId:user.id
-        }
-      }
-    );
-    if(!wallet){
-      const newUser = await models.user.findOne(
-        {
-          where:{
-            id:user.id
-          }
-        }
-      );
-      if(!newUser.email){
-        responseData.status = false;
-        responseData.message = "no email provided";
-        responseData.data = undefined;
-        return res.json(responseData);
-      }
-      let payload = {
-        email:newUser.email,
-        id:user.id
-      }
-      await paystackApi.createCustomer(payload,payment);
-    }
+    sendEmail(data);
   }
   responseData.status = true;
   responseData.message = "updated";
