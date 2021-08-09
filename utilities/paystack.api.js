@@ -8,106 +8,25 @@ const responseData = {
 	data: null
 }
 
-async function createCustomer(payload,paystack){
-  console.log(paystack)
-  const https = require('https')
-  const params = JSON.stringify({
-    "email": payload.email
-  })
-  const options = {
-    hostname: 'api.paystack.co',
-    port: 443,
-    path: '/customer',
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${paystack.secretKey}`,
-      'Content-Type': 'application/json'
-    }
-  }
-  const req = https.request(options, res => {
-    let data = ''
-    res.on('data', (chunk) => {
-      data += chunk
-    });
-    res.on('end',async () => {
-      const response = JSON.parse(data)
-      console.log(response);
-      if(response.status == true){
-        const createWallet = await models.wallet.create(
-          {
-            id:uuid.v4(),
-            userId:payload.id,
-            customerCode:response.data.customer_code,
-            accountBalance:"0.0"
-          }
-        );
-        return "customer created"
-      }
-      return "something went wrong"
-    })
-  }).on('error', error => {
-    console.error(error)
-  })
-  req.write(params)
-  req.end()
-}
-async function updateCustomer(customerCode,payload){
-  const https = require('https')
-  const params = JSON.stringify({
-    "first_name": payload.firstName,
-    "last_name":payload.lastName,
-    "phone":payload.phoneNumber
-  })
-  const options = {
-    hostname: 'api.paystack.co',
-    port: 443,
-    path: `/customer/${customerCode}`,
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
-      'Content-Type': 'application/json'
-    }
-  }
-  const req = https.request(options, res => {
-    let data = ''
-    res.on('data', (chunk) => {
-      data += chunk
-    });
-    res.on('end',async () => {
-      const response = JSON.parse(data)
-      console.log(response);
-      if(response.status == true && response.message=="Customer updated"){
-        return "Customer updated"
-      }
-      return "something went wrong"
-    })
-  }).on('error',async  error => {
-    console.error(error)
-  })
-  req.write(params)
-  req.end()
-}
 
-async function validateCustomer(customerCode,payload,paystack){
-  let privateKey ;
+async function validateBvn(payload,paystack){
+  let privateKey;
   if(paystack.privateKey){
     privateKey = paystack.privateKey;
-  }
-  else{
+  }else{
     privateKey = paystack.testPrivateKey
   }
   const https = require('https')
   const params = JSON.stringify({
-    "country": "NG",
-    "type": "bvn",
-    "value": payload.bvnNumber,
-    "first_name": payload.firstName,
-    "last_name": payload.lastName
+    bvn: payload.bvnNumber,
+    first_name: payload.firstName,
+    last_name: payload.lastName,
+    // middle_name: "Loren"
   })
   const options = {
     hostname: 'api.paystack.co',
     port: 443,
-    path: `/customer/${customerCode}/identification`,
+    path: '/bvn/match',
     method: 'POST',
     headers: {
       Authorization: `Bearer ${privateKey}`,
@@ -119,10 +38,22 @@ async function validateCustomer(customerCode,payload,paystack){
     res.on('data', (chunk) => {
       data += chunk
     });
-    res.on('end', () => {
+    res.on('end',async () => {
       const response = JSON.parse(data);
-      console.log(response)
-      return response;
+      console.log(response);
+      if(response.status = true && response.message =="BVN lookup successful"){
+        await models.kyc.update(
+          {
+            isBvnVerified:true,
+            kycLevel:'2'
+          },
+          {
+            where:{
+              userId:payload.id
+            }
+          }
+        );
+      }
     })
   }).on('error', error => {
     console.error(error)
@@ -130,95 +61,7 @@ async function validateCustomer(customerCode,payload,paystack){
   req.write(params)
   req.end()
 }
-async function createNobaDedicatedAccount(customerCode,userId){
-  const https = require('https')
-  const params = JSON.stringify({
-    "customer": customerCode, 
-    "preferred_bank": "wema-bank"
-  })
-  const options = {
-    hostname: 'api.paystack.co',
-    port: 443,
-    path: '/dedicated_account',
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
-      'Content-Type': 'application/json'
-    }
-  }
-  const req = https.request(options, res => {
-    let data = ''
-    res.on('data', (chunk) => {
-      data += chunk
-    });
-    res.on('end',async () => {
-      const response = JSON.parse(data);
-      console.log(response);
-      if(response.status === true && response.message === "NUBAN successfully created"){
-        const updateWallet = await models.wallet.update(
-          {
-            bank:response.data.bank.name,
-            accountNumber:response.data.account_number,
-            accountName:response.data.account_name
-          },
-          {
-            where:{
-              userId:userId
-            }
-          }
-        )
-        return response
-      }
-      return "something went wrong"
-    })
-  }).on('error',async error => {
-    console.error(error)
-  })
-  req.write(params)
-  req.end()
-}
-
-async function deactivateAccount(id){
-  const https = require('https')
-  const options = {
-    hostname: 'api.paystack.co',
-    port: 443,
-    path: `/dedicated_account/${id}`,
-    method: 'DELETE',
-    headers: {
-      Authorization: 'Bearer SECRET_KEY'
-    }
-  }
-  https.request(options, res => {
-    let data = ''
-    res.on('data', (chunk) => {
-      data += chunk
-    });
-    res.on('end',async () => {
-      const response = JSON.parse(data);
-      if(response.status === true && response.message === "Managed Account Successfully Unassigned"){
-        const updateWallet = await models.wallet.update(
-          {
-            bank:null,
-            accountNumber:null,
-            accountName:null
-          }
-        )
-        return "account deleted";
-      }
-      return "something went wrong"
-    })
-  }).on('error',async error => {
-    console.error(error)
-  })
-}
 
 module.exports = {
-  //2nd implementation exports
-  createCustomer,
-  validateCustomer,
-  updateCustomer,
-  validateCustomer,
-  createNobaDedicatedAccount,
-  deactivateAccount
+  validateBvn
 }

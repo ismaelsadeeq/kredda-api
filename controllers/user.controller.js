@@ -8,6 +8,7 @@ const { getPayment } = require('../middlewares/appSetting');
 const multer = require('multer');
 const multerConfig = require('../config/multer');
 const paystackApi = require('../utilities/paystack.api');
+const flutterwaveApi = require('../utilities/flutterwave.api');
 
 require('dotenv').config();
 //response
@@ -208,26 +209,6 @@ const updateKyc =  async (req,res)=>{
 			if(req.file){
         const user = req.user;
         const data = req.body;
-        const kyc = await models.kyc.findOne(
-          {
-            where:{
-              userId:user.id
-            }
-          }
-        );
-        if(!kyc.isBvnVerified){
-          const payment = await getPayment();
-          if(payment.siteName =='paystack'){
-            const wallet = await models.wallet.findOne(
-              {
-                where:{
-                  userId:user.id
-                }
-              }
-            );
-            await paystackApi.validateCustomer(wallet.customerCode,user,payment)
-          }
-        }
         await models.kyc.update(
           {
             meansOfIdentification:req.file.path,
@@ -241,6 +222,56 @@ const updateKyc =  async (req,res)=>{
             }
           }
         );
+        const kyc = await models.kyc.findOne(
+          {
+            where:{
+              userId:user.id
+            }
+          }
+        );
+        if(kyc.bvnNumber){
+          if(!kyc.isBvnVerified){
+            await models.kyc.update(
+              {
+                isBvnVerified:true,
+                kycLevel:'2'
+              },
+              {
+                where:{
+                  userId:payload.id
+                }
+              }
+            );
+            // const payment = await getPayment();
+            // if(payment.siteName =='paystack'){
+            //   let payload = {
+            //     bvnNumber:data.bvnNumber,
+            //     firstName:user.firstName,
+            //     lastName:data.lastName,
+            //     id:user.id
+            //   }
+            //   await paystackApi.validateBvn(payload,payment)
+            // }else if(payment.siteName =='flutterwave'){
+            //   let payload = {
+            //     bvnNumber:data.bvnNumber,
+            //     firstName:user.firstName,
+            //     lastName:data.lastName,
+            //     id:user.id
+            //   }
+            //   await flutterwaveApi.validateBvn(payload,payment)
+            // }else if(payment.siteName =='monnify'){
+            //   let payload = {
+            //     bvnNumber:data.bvnNumber,
+            //     firstName:user.firstName,
+            //     lastName:data.lastName,
+            //     id:user.id,
+            //     dob:kyc.dob,
+            //     phoneNumber:payload.phoneNumber
+            //   }
+            //   await flutterwaveApi.validateBvn(payload,payment)
+            // }
+          };
+        }
         responseData.status = true;
         responseData.message = "completed";
         responseData.data =  {
