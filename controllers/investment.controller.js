@@ -1,5 +1,6 @@
 const models = require('../models');
-
+const multer = require('multer');
+const multerConfig = require('../config/multer');
 require('dotenv').config();
 //response
 const responseData = {

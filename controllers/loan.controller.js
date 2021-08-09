@@ -56,7 +56,7 @@ const changeStatusToFalse = async (req,res)=>{
   );
   if(user){
     const data = req.body;
-    const createLoan = await models.loanCategory.update(
+    const loan = await models.loanCategory.update(
       {
         status:false
       },
@@ -66,15 +66,15 @@ const changeStatusToFalse = async (req,res)=>{
         }
       }
     );
-    if(!createLoan){
+    if(!loan){
       responseData.status = false;
       responseData.message = "something went wrong";
       responseData.data = undefined;
       return res.json(responseData);
     }
     responseData.status = true;
-    responseData.message = "completed";
-    responseData.data = createLoan;
+    responseData.message = "loan category updated to false";
+    responseData.data = undefined;
     return res.json(responseData);
   }
   res.statusCode = 401;
@@ -91,7 +91,7 @@ const changeStatusToTrue = async (req,res)=>{
   );
   if(user){
     const data = req.body;
-    const createLoan = await models.loanCategory.update(
+    const loan = await models.loanCategory.update(
       {
         status:true
       },
@@ -108,8 +108,8 @@ const changeStatusToTrue = async (req,res)=>{
       return res.json(responseData);
     }
     responseData.status = true;
-    responseData.message = "completed";
-    responseData.data = createLoan;
+    responseData.message = "loan category updated to false";
+    responseData.data = undefined;
     return res.json(responseData);
   }
   res.statusCode = 401;
@@ -126,7 +126,7 @@ const editLoanCategory = async (req,res)=>{
   );
   if(user){
     const data = req.body;
-    const createLoan = await models.loanCategory.update(
+    const loan = await models.loanCategory.update(
       {
         name:data.name,
         type:data.type,
@@ -142,15 +142,15 @@ const editLoanCategory = async (req,res)=>{
         }
       }
     );
-    if(!createLoan){
+    if(!loan){
       responseData.status = false;
       responseData.message = "something went wrong";
       responseData.data = undefined;
       return res.json(responseData);
     }
     responseData.status = true;
-    responseData.message = "completed";
-    responseData.data = createLoan;
+    responseData.message = "updated";
+    responseData.data = undefined;
     return res.json(responseData);
   }
   res.statusCode = 401;

@@ -10,6 +10,16 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue:uuid.v4()
       },
+      serviceCategoryId:{
+        type:Sequelize.UUID,
+        allowNull:true,
+        onDelete:'CASCADE',
+        references:{
+          model:'serviceCategories',
+          key:'id',
+          as:'serviceCategoryId'
+        }
+      },
       name: {
         type: Sequelize.STRING
       },

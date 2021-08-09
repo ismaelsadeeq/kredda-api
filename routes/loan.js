@@ -7,9 +7,21 @@ router.post('/create',
   passport.authenticate('jwt',{session:false}),
   controller.createLoanCategory
 );
+router.put('/false/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.changeStatusToFalse
+);
+router.put('/true/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.changeStatusToTrue
+);
 router.put('/edit',
   passport.authenticate('jwt',{session:false}),
   controller.editLoanCategory
+);
+router.get('/all/active',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllActiveLoanCategories
 );
 router.get('/all',
   passport.authenticate('jwt',{session:false}),
