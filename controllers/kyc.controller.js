@@ -226,7 +226,8 @@ const unVerifyKyc = async (req,res)=>{
     let id = req.params.id;
     const kyc = await models.kyc.update(
       {
-        status:false
+        status:false,
+        kycLevel:"1"
       },
       {
         where:{
