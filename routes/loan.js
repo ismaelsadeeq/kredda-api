@@ -3,6 +3,7 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/loan.controller');
 
+// Not Tested
 router.post('/create',
   passport.authenticate('jwt',{session:false}),
   controller.createLoanCategory
@@ -25,11 +26,11 @@ router.get('/all/active',
 );
 router.get('/all',
   passport.authenticate('jwt',{session:false}),
-  controller.getAllLoanCategory
+  controller.getAllLoanCategories
 );
 router.get('/:id',
   passport.authenticate('jwt',{session:false}),
-  controller.getLoanCategoty
+  controller.getLoanCategory
 );
 router.delete('/:id',
   passport.authenticate('jwt',{session:false}),

@@ -3,6 +3,7 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/investment.controller');
 
+// Not Tested
 router.post('/create',
   passport.authenticate('jwt',{session:false}),
   controller.createInvestmentPlan

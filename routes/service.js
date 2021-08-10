@@ -1,8 +1,9 @@
 var express = require('express');
 var router = express.Router();
 const passport = require('passport');
-const controller = require('../controllers/loan.controller');
+const controller = require('../controllers/service.controller');
 
+ //Not tested
 // service category
 router.post('/create',
   passport.authenticate('jwt',{session:false}),
