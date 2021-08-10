@@ -28,7 +28,9 @@ var adminRouter = require('./routes/admin');
 var authRouter = require('./routes/auth');
 var settingRouter = require('./routes/setting');
 var kycRouter = require('./routes/kyc');
-var investmentRouter = require('./routes/investment')
+var investmentRouter = require('./routes/investment');
+var serviceRouter = require('./routes/service');
+var creditCardRouter = require('./routes/creditCard');
 
 app.use('/api/v1', indexRouter);
 app.use('/api/v1',authRouter);
@@ -37,7 +39,9 @@ app.use('/api/v1/admin',adminRouter);
 app.use('/api/v1/auth',authRouter);
 app.use('/api/v1/setting',settingRouter);
 app.use('/api/v1/kyc',kycRouter);
-app.use('/api/v1/investment',investmentRouter)
+app.use('/api/v1/investment',investmentRouter);
+app.use('/api/v1/service',serviceRouter);
+app.use('/api/v1/credit-card',creditCardRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
