@@ -61,7 +61,65 @@ async function validateBvn(payload,paystack){
   req.write(params)
   req.end()
 }
-
+async function chargeAuthorization(payload,paystack){
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }else{
+    privateKey = paystack.testPrivateKey
+  }
+  const https = require('https')
+  const amount = parseFloat(payload.amount) * 100
+  const params = JSON.stringify({
+    "email": payload.email,
+    "amount": amount,
+    "authorization_code": payload.authorizationCode
+  })
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: '/transaction/charge_authorization',
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${privateKey}`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const req = https.request(options, res => {
+    let data = ''
+    res.on('data', (chunk) => {
+      data += chunk
+    });
+    res.on('end',async () => {
+      const response = JSON.parse(data)
+      console.log(response);
+      if(response.status === true && response.message == "Charge attempted"){
+        const transaction = await models.transaction.create(
+          {
+            id:uuid.v4(),
+            transactionType:"debit",
+            // trxId:response.data.id,
+            message:"funding of wallet",
+            beneficiary:"self",
+            description:payload.firstName + "funding his/her wallet to perform transaction",
+            userId:payload.userId,
+            reference:response.data.reference,
+            amount:payload.amount,
+            status:"initiated",
+            time: new Date()
+          }
+        );
+        return "charge initiated"
+      }
+      return "something went wrong"
+    })
+  }).on('error', error => {
+    console.error(error)
+  })
+  req.write(params)
+  req.end()
+}
 module.exports = {
-  validateBvn
+  validateBvn,
+  chargeAuthorization
 }

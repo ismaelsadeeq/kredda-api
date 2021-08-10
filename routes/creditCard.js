@@ -12,9 +12,13 @@ router.post('/charge-new/:id',
   passport.authenticate('jwt',{session:false}),
   controller.chargeSavedCreditCard
 );
-router.post('/save/charge',
+router.post('/charge',
   passport.authenticate('jwt',{session:false}),
   controller.saveAndChargeCreditCard
+);
+router.post('/charge-default',
+  passport.authenticate('jwt',{session:false}),
+  controller.chargeDefaultCreditCard
 );
 router.post('/charge/:id',
   passport.authenticate('jwt',{session:false}),

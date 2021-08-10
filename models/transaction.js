@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     transactionType: DataTypes.STRING,
     message: DataTypes.STRING,
     reference: DataTypes.STRING,
-    status:DataTypes.BOOLEAN,
+    status:DataTypes.STRING,
     amount: DataTypes.STRING,
     time:DataTypes.STRING,
     beneficiary: DataTypes.STRING,
