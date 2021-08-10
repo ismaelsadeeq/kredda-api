@@ -281,7 +281,7 @@ const createService = async (req,res)=>{
         const service = await models.service.create(
           {
             id:uuid.v4(),
-            serviceCategoryId:req.params.categoryId
+            serviceCategoryId:req.params.categoryId,
             name:data.name,
             code:data.code,
             discount:data.discount,
@@ -397,7 +397,7 @@ const editService = async (req,res)=>{
           {
             name:data.name,
             code:data.code,
-            serviceCategoryId:req.params.categoryId
+            serviceCategoryId:req.params.categoryId,
             discount:data.discount,
             amount:data.amount,
             logo:req.file.path
@@ -424,7 +424,7 @@ const editService = async (req,res)=>{
   res.statusCode = 401;
   return res.send('Unauthorized');
 }
-const getAllService = async (req,res)=>{
+const getAllServices = async (req,res)=>{
   let pageLimit = parseInt(req.query.pageLimit);
   let currentPage = parseInt(req.query.currentPage);
   let	skip = currentPage * pageLimit;
@@ -536,7 +536,7 @@ const deleteService = async (req,res)=>{
 }
 module.exports = {
   createServiceCategory,
-  editServiceCategory
+  editServiceCategory,
   changeStatusToFalse,
   changeStatusToTrue,
   getAllServiceCategories,
