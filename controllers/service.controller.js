@@ -56,7 +56,7 @@ const createServiceCategory = async (req,res)=>{
   res.statusCode = 401;
   return res.send('Unauthorized');
 }
-const changeStatusToFalse = async (req,res)=>{
+const changeCategoryStatusToFalse = async (req,res)=>{
   const admin = req.user;
   const user = await models.admin.findOne(
     {
@@ -91,7 +91,7 @@ const changeStatusToFalse = async (req,res)=>{
   res.statusCode = 401;
   return res.send('Unauthorized');
 }
-const changeStatusToTrue = async (req,res)=>{
+const changeServiceStatusToTrue = async (req,res)=>{
   const admin = req.user;
   const user = await models.admin.findOne(
     {
@@ -538,8 +538,8 @@ const deleteService = async (req,res)=>{
 module.exports = {
   createServiceCategory,
   editServiceCategory,
-  changeStatusToFalse,
-  changeStatusToTrue,
+  changeCategoryStatusToFalse,
+  changeServiceStatusToTrue,
   getAllServiceCategories,
   getServiceCategory,
   getAllActiveServiceCategories,
