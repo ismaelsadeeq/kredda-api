@@ -18,7 +18,7 @@ const saveCreditCard = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData)
   }
-  const cardExist = await models.creditcard.findOne(
+  const cardExist = await models.creditCard.findOne(
     {
       where:{
         cardNumber:data.cardNumber
@@ -31,19 +31,19 @@ const saveCreditCard = async (req,res)=>{
     responseData.data = data;
     return res.json(responseData)
   }
-  const createCard = await models.creditcard.create(
+  const createCard = await models.creditCard.create(
     {
       id:uuid.v4(),
       userId:user.id,
       authCode:null,
+      cardNumber:data.cardNumber,
       cardType:data.cardType,
-      lastDigits:data.last4,
+      lastDigits:data.lastDigits,
       // accountName:data.accountName,
-      bank:data.bank,
       bankName:data.bankName,
       bankCode:data.bankCode,
-      expMonth:data.expMonth,
-      expYear:data.expYear
+      expiryMonth:data.expiryMonth,
+      expiryYear:data.expiryYear
     }
   );
   if(!createCard){
@@ -54,14 +54,14 @@ const saveCreditCard = async (req,res)=>{
   }
   responseData.message = "completed";
   responseData.status = true;
-  responseData.data = data;
+  responseData.data = createCard;
   return res.json(responseData)
 }
 const chargeSavedCreditCard = async (req,res)=>{
   const data = req.body;
   const id = req.params.id;
   const user = req.user;
-  const payment = options.getPayment();
+  const payment = await options.getPayment();
   const creditCard = await models.creditCard.findOne(
     {
       where:{
@@ -75,10 +75,11 @@ const chargeSavedCreditCard = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData)
   }
-  if(!creditCard.authCode){
+  if(creditCard.authCode == null){
     responseData.status = 200;
     responseData.message = "pay with widget auth code not generated";
     responseData.data = creditCard
+    return res.json(responseData)
   }
   if(payment.siteName =='paystack'){
     const payload = {
@@ -93,6 +94,9 @@ const chargeSavedCreditCard = async (req,res)=>{
     responseData.message = "charge initiated";
     responseData.data = creditCard
   }
+  responseData.status = 200;
+  responseData.message = "something went wrong";
+  responseData.data = undefined
 }
 const saveAndChargeCreditCard = async (req,res)=>{
   const data = req.body;
@@ -105,7 +109,7 @@ const saveAndChargeCreditCard = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData)
   }
-  const cardExist = await models.creditcard.findOne(
+  const cardExist = await models.creditCard.findOne(
     {
       where:{
         cardNumber:data.cardNumber
@@ -113,7 +117,7 @@ const saveAndChargeCreditCard = async (req,res)=>{
     }
   );
   if(!cardExist){
-    const createCard = await models.creditcard.create(
+    const createCard = await models.creditCard.create(
       {
         id:uuid.v4(),
         userId:user.id,
@@ -325,7 +329,15 @@ const deleteCreditCard = async (req,res)=>{
   responseData.data = creditCard;
   return res.json(responseData)
 }
-
+const verifyTransaction = async (req,res)=>{
+  const reference = req.params.reference;
+  if(payment.siteName =='paystack'){
+    const payload = {
+      reference:reference
+    }
+    await paystackApi.verifyPayment(payload,payment,res);
+  }
+}
 module.exports = {
   saveCreditCard,
   chargeSavedCreditCard,
@@ -335,5 +347,6 @@ module.exports = {
   getCreditCard,
   editCreditCard,
   deleteCreditCard,
-  changeToDefault
+  changeToDefault,
+  verifyTransaction
 }

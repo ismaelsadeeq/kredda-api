@@ -119,7 +119,142 @@ async function chargeAuthorization(payload,paystack){
   req.write(params)
   req.end()
 }
+async function verifyPayment(payload,paystack,res){
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }else{
+    privateKey = paystack.testPrivateKey
+  }
+  const https = require('https')
+  const params = JSON.stringify({})
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: `/transaction/verify/${payload.reference}`,
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${privateKey}`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const req = https.request(options, res => {
+    let data = ''
+    res.on('data', (chunk) => {
+      data += chunk
+    });
+    res.on('end',async () => {
+      const response = JSON.parse(data)
+      console.log(response);
+      if(response.status === true && response.message =="Verification successful"){
+        if(response.data.status =="success"){
+           const reference = response.data.reference;
+           const wallet = await models.wallet.findOne(
+             {
+               where:{
+                 reference:reference
+               }
+             }
+           );
+            await transaction.update(
+              {
+                status:"successful"
+              },
+              {
+                where:{
+                  reference:reference
+                }
+              }
+            );
+            const authorization = response.data.authorization;
+            const authCodeExist = await models.creditCard.findOne(
+              {
+                where:{
+                  authorizationCode:authorization.authorization_code
+                }
+              }
+            );
+            if(!authCodeExist){
+              const cardExist = await models.creditCard.findOne(
+                {
+                  where:{
+                    lastDigits:authorization.last4,
+                    expMonth:authorization.exp_month,
+                    expYear:authorization.exp_year
+                  }
+                }
+              );
+              if(cardExist){
+                const createCard = await models.creditCard.update(
+                  {
+                    authCode:authorization.authorization_code,
+                  },{
+                    where:{
+                      id:cardExist.id
+                    }
+                  }
+                )
+              }else{
+                const createCard = await models.creditCard.create(
+                  {
+                    id:uuid.v4(),
+                    userId:wallet.userId,
+                    authorizationCode:authorization.authorization_code,
+                    cardType:authorization.card_type,
+                    lastDigits:authorization.last4,
+                    accountName:authorization.account_name,
+                    bank:authorization.bank,
+                    expMonth:authorization.exp_month,
+                    expYear:authorization.exp_year
+                  }
+                )
+              }
+            }
+            responseData.status = 200;
+            responseData.message = "charge successful";
+            responseData.data = response
+        } else{
+          const reference = response.data.reference;
+           const wallet = await models.wallet.findOne(
+             {
+               where:{
+                 reference:reference
+               }
+             }
+           );
+            const transaction = await models.transaction.findOne(
+              {
+                where:{
+                  reference:reference
+                }
+              }
+            );
+            await transaction.update(
+              {
+                status:"failed"
+              },
+              {
+                where:{
+                  reference:reference
+                }
+              }
+            );
+            responseData.status = 200;
+            responseData.message = "charge failed";
+            responseData.data = response
+        }
+        return response
+      }
+      return "something went wrong";
+    })
+  }).on('error', error => {
+    console.error(error)
+  })
+  req.write(params)
+  req.end()
+}
 module.exports = {
   validateBvn,
-  chargeAuthorization
+  chargeAuthorization,
+  verifyPayment
 }

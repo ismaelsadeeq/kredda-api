@@ -36,6 +36,10 @@ router.put('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editCreditCard
 );
+router.put('verify/:reference',
+  passport.authenticate('jwt',{session:false}),
+  controller.verifyTransaction
+);
 router.delete('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.deleteCreditCard
