@@ -41,6 +41,9 @@ module.exports = {
       bankCode: {
         type: Sequelize.STRING
       },
+      lastDigits: {
+        type: Sequelize.STRING
+      },
       isDefault: {
         type: Sequelize.STRING
       },

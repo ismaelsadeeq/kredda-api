@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     authCode: DataTypes.STRING,
     bankName: DataTypes.STRING,
     bankCode: DataTypes.STRING,
+    lastDigits: DataTypes.STRING,
     isDefault: DataTypes.STRING
   }, {
     sequelize,
