@@ -2,6 +2,7 @@ const models = require('../models');
 const uuid = require('uuid');
 const options = require('../middlewares/appSetting');
 const paystackApi = require('../utilities/paystack.api');
+const helpers = require('../utilities/helpers')
 require('dotenv').config();
 //response
 const responseData = {
@@ -78,7 +79,7 @@ const chargeSavedCreditCard = async (req,res)=>{
   if(creditCard.authCode == null){
     responseData.status = 200;
     responseData.message = "pay with widget auth code not generated";
-    responseData.data = creditCard
+    responseData.data = creditCard;
     return res.json(responseData)
   }
   if(payment.siteName =='paystack'){
@@ -147,6 +148,10 @@ const saveAndChargeCreditCard = async (req,res)=>{
       time: new Date()
     }
   );
+  let digits = helpers.generateFourDigitOTP();
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `MC-${digits}${firstDigit}`
   responseData.status = true;
   responseData.message = "charge initiated";
   responseData.data = {

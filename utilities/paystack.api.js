@@ -202,7 +202,7 @@ async function verifyPayment(payload,paystack,res){
                     authorizationCode:authorization.authorization_code,
                     cardType:authorization.card_type,
                     lastDigits:authorization.last4,
-                    accountName:authorization.account_name,
+                    // accountName:authorization.account_name,
                     bank:authorization.bank,
                     expMonth:authorization.exp_month,
                     expYear:authorization.exp_year
@@ -213,6 +213,7 @@ async function verifyPayment(payload,paystack,res){
             responseData.status = 200;
             responseData.message = "charge successful";
             responseData.data = response
+            return res.JSON(responseData);
         } else{
           const reference = response.data.reference;
            const wallet = await models.wallet.findOne(
@@ -242,8 +243,8 @@ async function verifyPayment(payload,paystack,res){
             responseData.status = 200;
             responseData.message = "charge failed";
             responseData.data = response
+            return res.JSON(responseData);
         }
-        return response
       }
       return "something went wrong";
     })
