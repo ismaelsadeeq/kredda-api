@@ -8,7 +8,7 @@ router.post('/create',
   passport.authenticate('jwt',{session:false}),
   controller.createInvestmentPlan
 );
-router.put('/edit',
+router.put('/edit/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editInvestmentPlan
 );

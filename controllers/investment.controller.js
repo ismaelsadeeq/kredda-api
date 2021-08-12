@@ -18,44 +18,44 @@ const createInvestmentPlan = async (req,res)=>{
       }
     }
   );
-  if(user){
-    multerConfig.singleUpload(req, res, async function(err) {
-      if (err instanceof multer.MulterError) {
-        return res.json(err.message);
-      } else if (err) {
-        return res.json(err);
-      } else if(req.body){
-        const data = req.body;
-        const createInvestment = await models.investmentCategory.create(
-          {
-            id:uuid.v4(),
-            name:data.name,
-            type:data.type,
-            organization:data.organization,
-            interestRate:data.interestRate,
-            period:data.period,
-            picture:req.file.path
-          }
-        );
-        if(!createInvestment){
-          responseData.status = false;
-          responseData.message = "something went wrong";
-          responseData.data = undefined;
-          return res.json(responseData);
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  multerConfig.singleUpload(req, res, async function(err) {
+    if (err instanceof multer.MulterError) {
+      return res.json(err.message);
+    } else if (err) {
+      return res.json(err);
+    } else if(req.body) {
+      const data = req.body;
+      const createInvestment = await models.investmentCategory.create(
+        {
+          id:uuid.v4(),
+          name:data.name,
+          type:data.type,
+          organization:data.organization,
+          interestRate:data.interestRate,
+          period:data.period,
+          picture:req.file.path
         }
-        responseData.status = true;
-        responseData.message = "completed";
-        responseData.data = createInvestment;
+      );
+      if(!createInvestment){
+        responseData.status = false;
+        responseData.message = "something went wrong";
+        responseData.data = undefined;
         return res.json(responseData);
       }
-      responseData.status = false;
-      responseData.message = "empty post";
-      responseData.data = undefined;
+      responseData.status = true;
+      responseData.message = "completed";
+      responseData.data = createInvestment;
       return res.json(responseData);
-    })
-  }
-  res.statusCode = 401;
-  return res.send('Unauthorized');
+    }
+    responseData.status = false;
+    responseData.message = "empty post";
+    responseData.data = undefined;
+    return res.json(responseData);
+  })
 }
 const editInvestmentPlan = async (req,res)=>{
   const admin = req.user;
@@ -66,48 +66,48 @@ const editInvestmentPlan = async (req,res)=>{
       }
     }
   );
-  if(user){
-    multerConfig.singleUpload(req, res, async function(err) {
-      if (err instanceof multer.MulterError) {
-        return res.json(err.message);
-      } else if (err) {
-        return res.json(err);
-      } else if(req.body){
-        const data = req.body;
-        const createInvestment = await models.investmentCategory.update(
-          {
-            name:data.name,
-            type:data.type,
-            organization:data.organization,
-            interestRate:data.interestRate,
-            period:data.period,
-            picture:req.file.path
-          },
-          {
-            where:{
-              id:req.params.index
-            }
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  multerConfig.singleUpload(req, res, async function(err) {
+    if (err instanceof multer.MulterError) {
+      return res.json(err.message);
+    } else if (err) {
+      return res.json(err);
+    } else if(req.body){
+      const data = req.body;
+      const createInvestment = await models.investmentCategory.update(
+        {
+          name:data.name,
+          type:data.type,
+          organization:data.organization,
+          interestRate:data.interestRate,
+          period:data.period,
+          picture:req.file.path
+        },
+        {
+          where:{
+            id:req.params.id
           }
-        );
-        if(!createInvestment){
-          responseData.status = false;
-          responseData.message = "something went wrong";
-          responseData.data = undefined;
-          return res.json(responseData);
         }
-        responseData.status = true;
-        responseData.message = "updated";
-        responseData.data = undefined;
-        return res.json(responseData);
-      }
+      );
+      if(!createInvestment){
       responseData.status = false;
-      responseData.message = "empty post";
+      responseData.message = "something went wrong";
       responseData.data = undefined;
       return res.json(responseData);
-    })
-  }
-  res.statusCode = 401;
-  return res.send('Unauthorized');
+      }
+      responseData.status = true;
+      responseData.message = "updated";
+      responseData.data = undefined;
+      return res.json(responseData);
+    }
+    responseData.status = false;
+    responseData.message = "empty post";
+    responseData.data = undefined;
+    return res.json(responseData);
+  })
 }
 const getAllInvestmentPlan = async (req,res)=>{
   let pageLimit = parseInt(req.query.pageLimit);
@@ -151,7 +151,7 @@ const getInvestmentPlan = async (req,res)=>{
   return res.json(responseData);
 }
 const deleteInvestmentPlan = async (req,res)=>{
-  const investmentPlan = await models.investmentCategory.delete(
+  const investmentPlan = await models.investmentCategory.destroy(
     {
       where:{
         id:req.params.id

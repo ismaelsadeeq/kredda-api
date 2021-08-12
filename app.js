@@ -29,6 +29,7 @@ var authRouter = require('./routes/auth');
 var settingRouter = require('./routes/setting');
 var kycRouter = require('./routes/kyc');
 var investmentRouter = require('./routes/investment');
+var loanRouter = require('./routes/loan')
 var serviceRouter = require('./routes/service');
 var creditCardRouter = require('./routes/creditCard');
 
@@ -40,6 +41,7 @@ app.use('/api/v1/auth',authRouter);
 app.use('/api/v1/setting',settingRouter);
 app.use('/api/v1/kyc',kycRouter);
 app.use('/api/v1/investment',investmentRouter);
+app.use('/api/v1/loan',loanRouter);
 app.use('/api/v1/service',serviceRouter);
 app.use('/api/v1/credit-card',creditCardRouter);
 
