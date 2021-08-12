@@ -16,34 +16,34 @@ const createLoanCategory = async (req,res)=>{
       }
     }
   );
-  if(user){
-    const data = req.body;
-    const createLoan = await models.loanCategory.create(
-      {
-        id:uuid.v4(),
-        name:data.name,
-        type:data.type,
-        interestRate:data.interestRate,
-        defaultInterest:data.defaultInterest,
-        interestAmount:data.interestAmount,
-        maximumAmount:data.maximumAmount,
-        maximumDuration:data.maximumDuration,
-        status:true
-      }
-    );
-    if(!createLoan){
-      responseData.status = false;
-      responseData.message = "something went wrong";
-      responseData.data = undefined;
-      return res.json(responseData);
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const data = req.body;
+  const createLoan = await models.loanCategory.create(
+    {
+      id:uuid.v4(),
+      name:data.name,
+      type:data.type,
+      interestRate:data.interestRate,
+      defaultInterest:data.defaultInterest,
+      interestAmount:data.interestAmount,
+      maximumAmount:data.maximumAmount,
+      maximumDuration:data.maximumDuration,
+      status:true
     }
-    responseData.status = true;
-    responseData.message = "completed";
-    responseData.data = createLoan;
+  );
+  if(!createLoan){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
     return res.json(responseData);
   }
-  res.statusCode = 401;
-  return res.send('Unauthorized');
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = createLoan;
+  return res.json(responseData);
 }
 const changeStatusToFalse = async (req,res)=>{
   const admin = req.user;
@@ -101,14 +101,14 @@ const changeStatusToTrue = async (req,res)=>{
         }
       }
     );
-    if(!createLoan){
+    if(!loan){
       responseData.status = false;
       responseData.message = "something went wrong";
       responseData.data = undefined;
       return res.json(responseData);
     }
     responseData.status = true;
-    responseData.message = "loan category updated to false";
+    responseData.message = "loan category updated to true";
     responseData.data = undefined;
     return res.json(responseData);
   }
@@ -223,7 +223,7 @@ const getLoanCategory = async (req,res)=>{
   return res.json(responseData);
 }
 const deleteLoanCategory = async (req,res)=>{
-  const loanCategory = await models.loanCategory.delete(
+  const loanCategory = await models.loanCategory.destroy(
     {
       where:{
         id:req.params.id
@@ -237,7 +237,7 @@ const deleteLoanCategory = async (req,res)=>{
     return res.json(responseData);
   }
   responseData.status = true;
-  responseData.message = "completed";
+  responseData.message = "deleted";
   responseData.data = loanCategory;
   return res.json(responseData);
 }

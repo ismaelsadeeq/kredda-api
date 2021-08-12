@@ -3,7 +3,6 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/loan.controller');
 
-// Not Tested
 router.post('/create',
   passport.authenticate('jwt',{session:false}),
   controller.createLoanCategory
@@ -16,11 +15,11 @@ router.put('/true/:id',
   passport.authenticate('jwt',{session:false}),
   controller.changeStatusToTrue
 );
-router.put('/edit',
+router.put('/edit/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editLoanCategory
 );
-router.get('/all/active',
+router.get('/active/all',
   passport.authenticate('jwt',{session:false}),
   controller.getAllActiveLoanCategories
 );
