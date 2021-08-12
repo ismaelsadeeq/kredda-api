@@ -1,7 +1,6 @@
 const models = require('../models');
 require('dotenv').config();
 const uuid = require('uuid');
-const { verifyPayment } = require('./paystack.api');
 //New Implementation
 const responseData = {
 	status: true,
