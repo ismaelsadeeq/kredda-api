@@ -2,6 +2,7 @@ const models = require('../models');
 const uuid = require('uuid');
 const options = require('../middlewares/appSetting');
 const paystackApi = require('../utilities/paystack.api');
+const flutterwaveApi = require('../utilities/flutterwave.api');
 const helpers = require('../utilities/helpers')
 require('dotenv').config();
 //response
@@ -95,6 +96,12 @@ const chargeSavedCreditCard = async (req,res)=>{
     responseData.message = "charge initiated";
     responseData.data = creditCard
   }
+  if(payment.siteName =='flutterwave'){
+    responseData.status = 200;
+    responseData.message = "pay with widget";
+    responseData.data = creditCard;
+    return res.json(responseData);
+  }
   responseData.status = 200;
   responseData.message = "something went wrong";
   responseData.data = undefined
@@ -142,7 +149,7 @@ const saveAndChargeCreditCard = async (req,res)=>{
       message:"funding of wallet",
       reference:reference,
       beneficiary:"self",
-      description:user.firstName + "funding his/her wallet to perform transaction",
+      description:user.firstName + " funding his/her wallet to perform transaction",
       amount:amount,
       status:"initiated",
       time: new Date()
@@ -245,7 +252,6 @@ const editCreditCard = async (req,res)=>{
       cardType:data.cardType,
       lastDigits:data.last4,
       // accountName:data.accountName,
-      bank:data.bank,
       bankName:data.bankName,
       bankCode:data.bankCode,
       expMonth:data.expMonth,
@@ -336,12 +342,23 @@ const deleteCreditCard = async (req,res)=>{
 }
 const verifyTransaction = async (req,res)=>{
   const reference = req.params.reference;
+  const user = req.user;
   if(payment.siteName =='paystack'){
     const payload = {
       reference:reference
     }
     await paystackApi.verifyPayment(payload,payment,res);
   }
+  if(payment.siteName =='flutterwave'){
+    const payload = {
+      reference:reference,
+      userId:user.id,
+      firstName:user.firstName,
+      id:req.body.id
+    }
+    await flutterwaveApi.verifyPayment(payload,payment,res);
+  }
+
 }
 module.exports = {
   saveCreditCard,

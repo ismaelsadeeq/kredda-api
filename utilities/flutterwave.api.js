@@ -1,6 +1,7 @@
 const models = require('../models');
 require('dotenv').config();
 const uuid = require('uuid');
+const { verifyPayment } = require('./paystack.api');
 //New Implementation
 const responseData = {
 	status: true,
@@ -42,6 +43,77 @@ async function validateBvn(payload,flutterwave){
     }
   });
 }
+async function verifyPayment(payload,flutterwave,res){
+  let privateKey;
+  if(flutterwave.privateKey){
+    privateKey = flutterwave.privateKey;
+  }else{
+    privateKey = flutterwave.testPrivateKey
+  }
+  var request = require('request');
+  var options = {
+    'method': 'GET',
+    'url': `https://api.flutterwave.com/v3/transactions/${payload.id}/verify`,
+    'headers': {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer {{${privateKey}}}`
+    }
+  };
+  request(options,async function (error, data) { 
+    if (error) throw new Error(error);
+    const response = data.body;
+    if(response.status == "success" && response.message == "Transaction fetched successfully"){
+      if(response.data.status=="successful"){
+        res.statusCode = 200;
+        const trxRef = response.data.tx_ref;
+        await transaction.create(
+          {
+            id:uuid.v4(),
+            userId:user.id,
+            message:"funding of wallet",
+            reference:trxRef,
+            transactionType:"debit",
+            beneficiary:"self",
+            amount:response.data.amount,
+            description:payload.firstName + " funding his/her wallet to perform transaction",
+            status:"successful",
+            time: new Date()
+          }
+        );
+        
+        responseData.message = "Success";
+        responseData.status = true;
+        responseData.data = undefined;
+        return res.json(responseData)
+      }
+      if(response.data.status=="FAILED"){
+        res.statusCode = 200;
+        const trxRef = response.data.tx_ref;
+        const flwRef = response.data.flw_ref;
+        await transaction.create(
+          {
+            id:uuid.v4(),
+            userId:user.id,
+            message:"funding of wallet",
+            reference:trxRef,
+            transactionType:"debit",
+            beneficiary:"self",
+            amount:response.data.amount,
+            description:payload.firstName + " funding his/her wallet to perform transaction",
+            status:"failed",
+            time: new Date()
+          }
+        );
+        responseData.message = "Success";
+        responseData.status = true;
+        responseData.data = undefined;
+        return res.json(responseData)
+      }
+    }
+    return "invalid Id"
+  });
+}
 module.exports = {
-  validateBvn
+  validateBvn,
+  verifyPayment
 }

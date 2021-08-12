@@ -34,9 +34,23 @@ const webhook =async (req,res)=>{
           }
         }
       );
+      if(!transaction.isRedemmed){
+        const balance = parseFloat(wallet.accountBalance) + (parseFloat(data.data.amount) /100) ;
+        await models.wallet.update(
+          {
+            accountBalance:balance
+          },
+          {
+            where:{
+              id:wallet.id
+            }
+          }
+        );
+      }
       await transaction.update(
         {
           status:"successful",
+          isRedemmed:true,
         },
         {
           where:{
@@ -44,22 +58,11 @@ const webhook =async (req,res)=>{
           }
         }
       );
-      const balance = parseFloat(wallet.accountBalance) + (parseFloat(data.data.amount) /100) ;
-      await models.wallet.update(
-        {
-          accountBalance:balance
-        },
-        {
-          where:{
-            id:wallet.id
-          }
-        }
-      );
       const authorization = data.data.authorization
       const authCodeExist = await models.creditCard.findOne(
         {
           where:{
-            authorizationCode:authorization.authorization_code
+            authCode:authorization.authorization_code
           }
         }
       );
@@ -96,8 +99,8 @@ const webhook =async (req,res)=>{
             authorizationCode:authorization.authorization_code,
             cardType:authorization.card_type,
             lastDigits:authorization.last4,
-            accountName:authorization.account_name,
-            bank:authorization.bank,
+            // accountName:authorization.account_name,
+            bankName:authorization.bank,
             expMonth:authorization.exp_month,
             expYear:authorization.exp_year
           }

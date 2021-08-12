@@ -119,7 +119,7 @@ async function chargeAuthorization(payload,paystack){
   req.write(params)
   req.end()
 }
-async function verifyPayment(payload,paystack,res){
+async function verifyPayment(payload,paystack,respond){
   let privateKey;
   if(paystack.privateKey){
     privateKey = paystack.privateKey;
@@ -147,74 +147,99 @@ async function verifyPayment(payload,paystack,res){
       const response = JSON.parse(data)
       console.log(response);
       if(response.status === true && response.message =="Verification successful"){
-        if(response.data.status =="success"){
-           const reference = response.data.reference;
-           const wallet = await models.wallet.findOne(
-             {
-               where:{
-                 reference:reference
-               }
-             }
-           );
-            await transaction.update(
-              {
-                status:"successful"
-              },
+        if(response.data.status == "success"){
+            const reference = response.data.reference;
+            const transaction = await models.transaction.findOne(
               {
                 where:{
-                  reference:reference
+                  reference:reference,
+                  isRedemmed:false
                 }
               }
             );
-            const authorization = response.data.authorization;
-            const authCodeExist = await models.creditCard.findOne(
-              {
-                where:{
-                  authorizationCode:authorization.authorization_code
-                }
-              }
-            );
-            if(!authCodeExist){
-              const cardExist = await models.creditCard.findOne(
+            if(!transaction){
+              const wallet = await models.wallet.findOne(
                 {
                   where:{
-                    lastDigits:authorization.last4,
-                    expMonth:authorization.exp_month,
-                    expYear:authorization.exp_year
+                    reference:reference
                   }
                 }
               );
-              if(cardExist){
-                const createCard = await models.creditCard.update(
+              await transaction.update(
+                {
+                  status:"successful"
+                },
+                {
+                  where:{
+                    reference:reference
+                  }
+                }
+              );
+              const balance = parseFloat(wallet.accountBalance) + (parseFloat(response.data.amount) /100) ;
+              await models.wallet.update(
+                {
+                  accountBalance:balance
+                },
+                {
+                  where:{
+                    id:wallet.id
+                  }
+                }
+              );
+              const authorization = response.data.authorization;
+              const authCodeExist = await models.creditCard.findOne(
+                {
+                  where:{
+                    authCode:authorization.authorization_code
+                  }
+                }
+              );
+              if(!authCodeExist){
+                const cardExist = await models.creditCard.findOne(
                   {
-                    authCode:authorization.authorization_code,
-                  },{
                     where:{
-                      id:cardExist.id
+                      lastDigits:authorization.last4,
+                      expMonth:authorization.exp_month,
+                      expYear:authorization.exp_year
                     }
                   }
-                )
-              }else{
-                const createCard = await models.creditCard.create(
-                  {
-                    id:uuid.v4(),
-                    userId:wallet.userId,
-                    authorizationCode:authorization.authorization_code,
-                    cardType:authorization.card_type,
-                    lastDigits:authorization.last4,
-                    // accountName:authorization.account_name,
-                    bank:authorization.bank,
-                    expMonth:authorization.exp_month,
-                    expYear:authorization.exp_year
-                  }
-                )
+                );
+                if(cardExist){
+                  const createCard = await models.creditCard.update(
+                    {
+                      authCode:authorization.authorization_code,
+                    },{
+                      where:{
+                        id:cardExist.id
+                      }
+                    }
+                  )
+                }else{
+                  const createCard = await models.creditCard.create(
+                    {
+                      id:uuid.v4(),
+                      userId:wallet.userId,
+                      authorizationCode:authorization.authorization_code,
+                      cardType:authorization.card_type,
+                      lastDigits:authorization.last4,
+                      // accountName:authorization.account_name,
+                      bankName:authorization.bank,
+                      expMonth:authorization.exp_month,
+                      expYear:authorization.exp_year
+                    }
+                  )
+                }
               }
+              responseData.status = 200;
+              responseData.message = "charge successful";
+              responseData.data = response
+              return respond.json(responseData); 
             }
             responseData.status = 200;
             responseData.message = "charge successful";
             responseData.data = response
-            return res.JSON(responseData);
-        } else{
+            return respond.json(responseData); 
+        } else {
           const reference = response.data.reference;
            const wallet = await models.wallet.findOne(
              {
@@ -243,7 +268,7 @@ async function verifyPayment(payload,paystack,res){
             responseData.status = 200;
             responseData.message = "charge failed";
             responseData.data = response
-            return res.JSON(responseData);
+            return respond.json(responseData);
         }
       }
       return "something went wrong";
