@@ -98,13 +98,13 @@ async function chargeAuthorization(payload,paystack){
           {
             id:uuid.v4(),
             transactionType:"debit",
-            // trxId:response.data.id,
             message:"funding of wallet",
             beneficiary:"self",
             description:payload.firstName + "funding his/her wallet to perform transaction",
             userId:payload.userId,
             reference:response.data.reference,
             amount:payload.amount,
+            isRedemmed:false,
             status:"initiated",
             time: new Date()
           }
@@ -149,6 +149,8 @@ async function verifyPayment(payload,paystack,respond){
       if(response.status === true && response.message =="Verification successful"){
         if(response.data.status == "success"){
             const reference = response.data.reference;
+            const balance = parseFloat(wallet.accountBalance) + (parseFloat(response.data.amount) /100);
+            const authorization = response.data.authorization;
             const transaction = await models.transaction.findOne(
               {
                 where:{
@@ -175,7 +177,6 @@ async function verifyPayment(payload,paystack,respond){
                   }
                 }
               );
-              const balance = parseFloat(wallet.accountBalance) + (parseFloat(response.data.amount) /100) ;
               await models.wallet.update(
                 {
                   accountBalance:balance
@@ -186,7 +187,6 @@ async function verifyPayment(payload,paystack,respond){
                   }
                 }
               );
-              const authorization = response.data.authorization;
               const authCodeExist = await models.creditCard.findOne(
                 {
                   where:{
@@ -195,40 +195,19 @@ async function verifyPayment(payload,paystack,respond){
                 }
               );
               if(!authCodeExist){
-                const cardExist = await models.creditCard.findOne(
+                const createCard = await models.creditCard.create(
                   {
-                    where:{
-                      lastDigits:authorization.last4,
-                      expMonth:authorization.exp_month,
-                      expYear:authorization.exp_year
-                    }
+                    id:uuid.v4(),
+                    userId:wallet.userId,
+                    authorizationCode:authorization.authorization_code,
+                    cardType:authorization.card_type,
+                    lastDigits:authorization.last4,
+                    accountName:authorization.account_name,
+                    bankName:authorization.bank,
+                    expMonth:authorization.exp_month,
+                    expYear:authorization.exp_year
                   }
                 );
-                if(cardExist){
-                  const createCard = await models.creditCard.update(
-                    {
-                      authCode:authorization.authorization_code,
-                    },{
-                      where:{
-                        id:cardExist.id
-                      }
-                    }
-                  )
-                }else{
-                  const createCard = await models.creditCard.create(
-                    {
-                      id:uuid.v4(),
-                      userId:wallet.userId,
-                      authorizationCode:authorization.authorization_code,
-                      cardType:authorization.card_type,
-                      lastDigits:authorization.last4,
-                      // accountName:authorization.account_name,
-                      bankName:authorization.bank,
-                      expMonth:authorization.exp_month,
-                      expYear:authorization.exp_year
-                    }
-                  )
-                }
               }
               responseData.status = 200;
               responseData.message = "charge successful";

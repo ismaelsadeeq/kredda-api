@@ -11,54 +11,6 @@ const responseData = {
 	message: "Completed",
 	data: null
 }
-const saveCreditCard = async (req,res)=>{
-  const data = req.body;
-  const user = req.user;
-  if(!data){
-    responseData.message = "empty post";
-    responseData.status = false;
-    responseData.data = undefined;
-    return res.json(responseData)
-  }
-  const cardExist = await models.creditCard.findOne(
-    {
-      where:{
-        cardNumber:data.cardNumber
-      }
-    }
-  );
-  if(cardExist){
-    responseData.message = "card exist";
-    responseData.status = false;
-    responseData.data = data;
-    return res.json(responseData)
-  }
-  const createCard = await models.creditCard.create(
-    {
-      id:uuid.v4(),
-      userId:user.id,
-      authCode:null,
-      cardNumber:data.cardNumber,
-      cardType:data.cardType,
-      lastDigits:data.lastDigits,
-      // accountName:data.accountName,
-      bankName:data.bankName,
-      bankCode:data.bankCode,
-      expiryMonth:data.expiryMonth,
-      expiryYear:data.expiryYear
-    }
-  );
-  if(!createCard){
-    responseData.message = "something went wrong";
-    responseData.status = false;
-    responseData.data = data;
-    return res.json(responseData)
-  }
-  responseData.message = "completed";
-  responseData.status = true;
-  responseData.data = createCard;
-  return res.json(responseData)
-}
 const chargeSavedCreditCard = async (req,res)=>{
   const data = req.body;
   const id = req.params.id;
@@ -77,13 +29,13 @@ const chargeSavedCreditCard = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData)
   }
-  if(creditCard.authCode == null){
-    responseData.status = 200;
-    responseData.message = "pay with widget auth code not generated";
-    responseData.data = creditCard;
-    return res.json(responseData)
-  }
   if(payment.siteName =='paystack'){
+    if(creditCard.authCode == null){
+      responseData.status = 200;
+      responseData.message = "pay with widget auth code not generated";
+      responseData.data = creditCard;
+      return res.json(responseData)
+    }
     const payload = {
       amount : data.amount,
       email : user.email,
@@ -106,41 +58,10 @@ const chargeSavedCreditCard = async (req,res)=>{
   responseData.message = "something went wrong";
   responseData.data = undefined
 }
-const saveAndChargeCreditCard = async (req,res)=>{
-  const data = req.body;
+const initiateCardChargePaystack = async (req,res)=>{
+  const reference = req.params.reference;
   const user = req.user;
-  let reference = data.reference;
   const amount = data.amount;
-  if(!data){
-    responseData.message = "empty post";
-    responseData.status = false;
-    responseData.data = undefined;
-    return res.json(responseData)
-  }
-  const cardExist = await models.creditCard.findOne(
-    {
-      where:{
-        cardNumber:data.cardNumber
-      }
-    }
-  );
-  if(!cardExist){
-    const createCard = await models.creditCard.create(
-      {
-        id:uuid.v4(),
-        userId:user.id,
-        authCode:null,
-        cardType:data.cardType,
-        lastDigits:data.last4,
-        // accountName:data.accountName,
-        bank:data.bank,
-        bankName:data.bankName,
-        bankCode:data.bankCode,
-        expMonth:data.expMonth,
-        expYear:data.expYear
-      }
-    );
-  }
   const transaction = await models.transaction.create(
     {
       id:uuid.v4(),
@@ -151,18 +72,15 @@ const saveAndChargeCreditCard = async (req,res)=>{
       beneficiary:"self",
       description:user.firstName + " funding his/her wallet to perform transaction",
       amount:amount,
+      isRedemmed:false,
       status:"initiated",
       time: new Date()
     }
   );
-  let digits = helpers.generateFourDigitOTP();
-  let name = user.firstName;
-  let firstDigit = name.substring(0,1);
-  let trxRef = `MC-${digits}${firstDigit}`
   responseData.status = true;
   responseData.message = "charge initiated";
   responseData.data = {
-    transactionReference:trxRef
+    transactionReference:reference
   }
   return res.json(responseData);
 }
@@ -183,12 +101,15 @@ const chargeDefaultCreditCard = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData)
   }
-  if(!creditCard.authCode){
-    responseData.status = 200;
-    responseData.message = "pay with widget auth code not generated";
-    responseData.data = creditCard
-  }
   if(payment.siteName =='paystack'){
+    if(!creditCard.authCode){
+      responseData.status = true;
+      responseData.message = "pay with widget";
+      responseData.data = {
+        transactionReference:trxRef
+      }
+      return res.json(responseData);
+    }
     const payload = {
       amount : data.amount,
       email : user.email,
@@ -251,7 +172,8 @@ const editCreditCard = async (req,res)=>{
     {
       cardType:data.cardType,
       lastDigits:data.last4,
-      // accountName:data.accountName,
+      accountName:data.accountName,
+      bank:data.bank,
       bankName:data.bankName,
       bankCode:data.bankCode,
       expMonth:data.expMonth,
@@ -361,14 +283,13 @@ const verifyTransaction = async (req,res)=>{
 
 }
 module.exports = {
-  saveCreditCard,
   chargeSavedCreditCard,
-  saveAndChargeCreditCard,
   chargeDefaultCreditCard,
   getAllCreditCards,
   getCreditCard,
   editCreditCard,
   deleteCreditCard,
   changeToDefault,
-  verifyTransaction
+  verifyTransaction,
+  initiateCardChargePaystack
 }

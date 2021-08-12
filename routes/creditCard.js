@@ -4,17 +4,13 @@ const passport = require('passport');
 const controller = require('../controllers/creditCard.controller');
 
 // Not Tested
-router.post('/save',
-  passport.authenticate('jwt',{session:false}),
-  controller.saveCreditCard
-);
 router.post('/charge/:id',
   passport.authenticate('jwt',{session:false}),
   controller.chargeSavedCreditCard
 );
-router.post('/charge',
+router.post('/paystack-initiate/:reference',
   passport.authenticate('jwt',{session:false}),
-  controller.saveAndChargeCreditCard
+  controller.chargeSavedCreditCard
 );
 router.post('/charge-default',
   passport.authenticate('jwt',{session:false}),

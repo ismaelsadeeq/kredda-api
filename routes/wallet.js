@@ -3,9 +3,13 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/wallet.controller');
 
-router.get('/admin',
+router.post('/paystack-webhook',
   passport.authenticate('jwt',{session:false}),
-  controller.getAllUsers
+  controller.webhook
+);
+router.post('/flutterwave-webhook',
+  passport.authenticate('jwt',{session:false}),
+  controller.flutterwaveWebhook
 );
 
 module.exports = router;
