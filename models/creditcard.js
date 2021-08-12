@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   creditCard.init({
     cardType: DataTypes.STRING,
+    accountName:DataTypes.STRING,
     cardNumber: DataTypes.STRING,
     expiryMonth: DataTypes.STRING,
     expiryYear: DataTypes.STRING,
