@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
     amount: DataTypes.STRING,
     time:DataTypes.STRING,
     beneficiary: DataTypes.STRING,
-    description: DataTypes.STRING
+    description: DataTypes.STRING,
+    isRedemmed: DataTypes.BOOLEAN
   }, {
     sequelize,
     paranoid:true,

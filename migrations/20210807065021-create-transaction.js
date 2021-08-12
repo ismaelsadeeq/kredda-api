@@ -44,6 +44,9 @@ module.exports = {
       status:{
         type:Sequelize.STRING
       },
+      isRedemmed :{
+        type:Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
