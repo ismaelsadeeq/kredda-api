@@ -72,6 +72,7 @@ async function verifyPayment(payload,flutterwave,res){
           }
         );
         if(transaction){
+          res.statusCode = 200;
           responseData.message = "Success";
           responseData.status = true;
           responseData.data = response;
@@ -110,6 +111,7 @@ async function verifyPayment(payload,flutterwave,res){
             }
           }
         );
+        res.statusCode = 200;
         responseData.message = "Success";
         responseData.status = true;
         responseData.data = response;

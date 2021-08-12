@@ -3,6 +3,7 @@ const uuid = require('uuid');
 const options = require('../middlewares/appSetting');
 const paystackApi = require('../utilities/paystack.api');
 const flutterwaveApi = require('../utilities/flutterwave.api');
+const monnifyApi = require('../utilities/monnify.api')
 const helpers = require('../utilities/helpers')
 require('dotenv').config();
 //response
@@ -121,6 +122,18 @@ const chargeDefaultCreditCard = async (req,res)=>{
     responseData.status = 200;
     responseData.message = "charge initiated";
     responseData.data = creditCard
+  }
+  if(payment.siteName =='flutterwave'){
+    responseData.status = 200;
+    responseData.message = "pay with widget";
+    responseData.data = creditCard;
+    return res.json(responseData);
+  }
+  if(payment.siteName =='monnify'){
+    responseData.status = 200;
+    responseData.message = "pay with widget";
+    responseData.data = creditCard;
+    return res.json(responseData);
   }
 }
 const getAllCreditCards = async (req,res)=>{
@@ -279,6 +292,15 @@ const verifyTransaction = async (req,res)=>{
       id:req.body.id
     }
     await flutterwaveApi.verifyPayment(payload,payment,res);
+  }
+  if(payment.siteName =='monnify'){
+    const payload = {
+      reference:reference,
+      userId:user.id,
+      firstName:user.firstName,
+      id:req.body.id
+    }
+    await monnifyApi.validatePayment(payload,payment,res);
   }
 
 }

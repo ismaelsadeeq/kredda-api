@@ -8,12 +8,15 @@ const responseData = {
 	data: null
 }
 async function validateBvn(payload,monnify){
-  let privateKey;
+  let apiKey,privateKey;
   if(monnify.privateKey){
+    apiKey = monnify.publicKey
     privateKey = monnify.privateKey;
   }else{
-    privateKey = monnify.testPrivateKey
+    apiKey = monnify.testPublicKey;
+    privateKey = monnify.testPrivateKey;
   }
+  const authKey = Buffer.from(apiKey+":"+privateKey).toString('base64');
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -25,12 +28,12 @@ async function validateBvn(payload,monnify){
     },
     'url': ` https://api.monnify.com/api/v1/vas/bvn-details-match`,
     'headers': {
-      'Authorization': `Bearer {{${privateKey}}}`
+      'Authorization': `Basic ${authKey}`
     }
   };
-  request(options, async function (error, response) { 
+  request(options, async function (error, data) { 
     if (error) throw new Error(error);
-    let response = response.body;
+    let response = data.body;
     if(response.status=="status" && response.message =="BVN details fetched"){
       await models.kyc.update(
         {
@@ -46,6 +49,88 @@ async function validateBvn(payload,monnify){
     }
   });
 }
+async function validatePayment(payload,monnify,res){
+  let apiKey,privateKey;
+  if(monnify.privateKey){
+    apiKey = monnify.publicKey
+    privateKey = monnify.privateKey;
+  }else{
+    apiKey = monnify.testPublicKey;
+    privateKey = monnify.testPrivateKey;
+  }
+  const authKey = Buffer.from(apiKey+":"+privateKey).toString('base64');
+  var request = require('request');
+  var options = {
+    'method': 'GET',
+    'url': `https://sandbox.monnify.com/api/v1/merchant/transactions/querytransactionReference=${payload.reference}`,
+    'headers': {
+      'Authorization': `Basic ${authKey}`
+    }
+  };
+  request(options, async function (error, data) { 
+    if (error) throw new Error(error);
+    let response = data.body;
+    if(response.requestSuccessful==true && response.responseMessage =="success"){
+      if(response.responseBody.paymentStatus ==="PAID"){
+        const trxRef = response.responseBody.transactionReference;
+        const transaction = await models.transaction.findOne(
+          {
+            where:{
+              reference:trxRef,
+              isRedemmed:true
+            }
+          }
+        );
+        if(transaction){
+          res.statusCode = 200;
+          responseData.message = "Success";
+          responseData.status = true;
+          responseData.data = response;
+          return res.json(responseData)
+        }
+        await transaction.create(
+          {
+            id:uuid.v4(),
+            userId:payload.userId,
+            message:"funding of wallet",
+            reference:trxRef,
+            transactionType:"debit",
+            beneficiary:"self",
+            isRedemmed:true,
+            amount:response.responseBody.amount,
+            description:payload.firstName + " funding his/her wallet to perform transaction",
+            status:"successful",
+            time: new Date()
+          }
+        );
+        const wallet = await models.wallet.findOne(
+          {
+            where:{
+              userId:payload.userId,
+            }
+          }
+        );
+        const balance = parseFloat(wallet.accountBalance) + parseFloat(response.data.amount);
+        await models.wallet.update(
+          {
+            accountBalance:balance
+          },
+          {
+            where:{
+              id:wallet.id
+            }
+          }
+        );
+        res.statusCode = 200;
+        responseData.message = "Success";
+        responseData.status = true;
+        responseData.data = response;
+        return res.json(responseData)
+      }
+    }
+  });
+}
 module.exports = {
-  validateBvn
+  validateBvn,
+  validatePayment
 }
