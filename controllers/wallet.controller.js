@@ -2,6 +2,8 @@ const models = require('../models');
 const uuid = require('uuid');
 const options = require('../middlewares/appSetting');
 const paystackApi = require('../utilities/paystack.api');
+const options = require('../middlewares/appSetting');
+let crypto = require('crypto');
 require('dotenv').config();
 //response
 const responseData = {
@@ -9,8 +11,19 @@ const responseData = {
 	message: "Completed",
 	data: null
 }
+async function getSecret(){
+  const payment = await options.getPayment();
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = payment.privateKey;
+  }else{
+    privateKey = payment.testPrivateKey
+  }
+  return privateKey;
+}
 const webhook =async (req,res)=>{
   //validate event
+  let secret = await getSecret();
   let hash = crypto.createHmac('sha512', secret).update(JSON.stringify(req.body)).digest('hex');
   console.log(hash);
   if (hash == req.headers['x-paystack-signature']) {
