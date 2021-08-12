@@ -7,8 +7,6 @@ const responseData = {
 	message: "Completed",
 	data: null
 }
-
-
 async function validateBvn(payload,monnify){
   let privateKey;
   if(monnify.privateKey){
