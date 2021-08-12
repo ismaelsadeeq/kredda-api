@@ -3,29 +3,36 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/service.controller');
 
- //Not tested
 // service category
-router.post('/create',
+router.post('/category/create',
   passport.authenticate('jwt',{session:false}),
   controller.createServiceCategory
 );
-router.put('/edit',
+router.put('/category/edit/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editServiceCategory
 );
-router.get('/all/active',
+router.get('/category/all/active',
   passport.authenticate('jwt',{session:false}),
   controller.getAllActiveServiceCategories
 );
-router.get('/all',
+router.get('/category/true/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.changeServiceCategoryStatusToTrue
+);
+router.get('/category/false/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.changeServiceCategoryStatusToFalse
+);
+router.get('/category/all',
   passport.authenticate('jwt',{session:false}),
   controller.getAllServiceCategories
 );
-router.get('/:id',
+router.get('/category/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getServiceCategory
 );
-router.delete('/:id',
+router.delete('/category/:id',
   passport.authenticate('jwt',{session:false}),
   controller.deleteServiceCategory
 );
@@ -34,11 +41,11 @@ router.post('/create/:categoryId',
   passport.authenticate('jwt',{session:false}),
   controller.createService
 );
-router.put('/edit/service/:categoryId',
+router.put('/edit/:categoryId',
   passport.authenticate('jwt',{session:false}),
   controller.editService
 );
-router.get('/all/service',
+router.get('/all',
   passport.authenticate('jwt',{session:false}),
   controller.getAllServices
 );
@@ -46,11 +53,23 @@ router.get('/all/:categoryId',
   passport.authenticate('jwt',{session:false}),
   controller.getAllCategoryServices
 );
-router.get('/service/:id',
+router.get('/active',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllCategoryServices
+);
+router.get('/true/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.changeStatusToTrue
+);
+router.get('/false/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.changeStatusToFalse
+);
+router.get('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getService
 );
-router.delete('/service/:id',
+router.delete('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.deleteService
 );

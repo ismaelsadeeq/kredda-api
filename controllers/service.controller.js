@@ -19,44 +19,45 @@ const createServiceCategory = async (req,res)=>{
       }
     }
   );
-  if(user){
-    multerConfig.singleUpload(req, res, async function(err) {
-      if (err instanceof multer.MulterError) {
-        return res.json(err.message);
-      } else if (err) {
-        return res.json(err);
-      } else if(req.body){
-        const createServiceCategory = await models.serviceCategory.create(
-          {
-            id:uuid.v4(),
-            name:data.name,
-            type:data.type,
-            serviceCharge: data.serviceCharge,
-            logo: req.file.path,
-            status:true
-          }
-        );
-        if(!createServiceCategory){
-          responseData.status = false;
-          responseData.message = "something went wrong";
-          responseData.data = undefined;
-          return res.json(responseData);
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  multerConfig.singleUpload(req, res, async function(err) {
+    if (err instanceof multer.MulterError) {
+      return res.json(err.message);
+    } else if (err) {
+      return res.json(err);
+    } else if(req.body){
+      const data = req.body;
+      const createServiceCategory = await models.serviceCategory.create(
+        {
+          id:uuid.v4(),
+          name:data.name,
+          type:data.type,
+          serviceCharge: data.serviceCharge,
+          logo: req.file.path,
+          status:true
         }
-        responseData.status = true;
-        responseData.message = "completed";
-        responseData.data = createServiceCategory;
+      );
+      if(!createServiceCategory){
+        responseData.status = false;
+        responseData.message = "something went wrong";
+        responseData.data = undefined;
         return res.json(responseData);
       }
-      responseData.status = false;
-      responseData.message = "empty post";
-      responseData.data = undefined;
+      responseData.status = true;
+      responseData.message = "completed";
+      responseData.data = createServiceCategory;
       return res.json(responseData);
-    })
-  }
-  res.statusCode = 401;
-  return res.send('Unauthorized');
+    }
+    responseData.status = false;
+    responseData.message = "empty post";
+    responseData.data = undefined;
+    return res.json(responseData);
+  })
 }
-const changeCategoryStatusToFalse = async (req,res)=>{
+const changeServiceCategoryStatusToFalse = async (req,res)=>{
   const admin = req.user;
   const user = await models.admin.findOne(
     {
@@ -66,32 +67,33 @@ const changeCategoryStatusToFalse = async (req,res)=>{
     }
   );
   if(user){
-    const data = req.body;
-    const serviceCategory = await models.serviceCategory.update(
-      {
-        status:false
-      },
-      {
-        where:{
-          id:req.params.id
-        }
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const data = req.body;
+  const serviceCategory = await models.serviceCategory.update(
+    {
+      status:false
+    },
+    {
+      where:{
+        id:req.params.id
       }
-    );
-    if(!serviceCategory){
-      responseData.status = false;
-      responseData.message = "something went wrong";
-      responseData.data = undefined;
-      return res.json(responseData);
     }
-    responseData.status = true;
-    responseData.message = "status changed to false";
+  );
+  if(!serviceCategory){
+    responseData.status = false;
+    responseData.message = "something went wrong";
     responseData.data = undefined;
     return res.json(responseData);
   }
-  res.statusCode = 401;
-  return res.send('Unauthorized');
+  responseData.status = true;
+  responseData.message = "status changed to false";
+  responseData.data = undefined;
+  return res.json(responseData);
+  
 }
-const changeServiceStatusToTrue = async (req,res)=>{
+const changeServiceCategoryStatusToTrue = async (req,res)=>{
   const admin = req.user;
   const user = await models.admin.findOne(
     {
@@ -101,30 +103,30 @@ const changeServiceStatusToTrue = async (req,res)=>{
     }
   );
   if(user){
-    const data = req.body;
-    const serviceCategory = await models.serviceCategory.update(
-      {
-        status:true
-      },
-      {
-        where:{
-          id:req.params.id
-        }
-      }
-    );
-    if(!serviceCategory){
-      responseData.status = false;
-      responseData.message = "something went wrong";
-      responseData.data = undefined;
-      return res.json(responseData);
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const data = req.body;
+  const serviceCategory = await models.serviceCategory.update(
+    {
+      status:true
+    },
+    {
+      where:{
+        id:req.params.id
     }
-    responseData.status = true;
-    responseData.message = "status changed to true";
+    }
+  );
+  if(!serviceCategory){
+    responseData.status = false;
+    responseData.message = "something went wrong";
     responseData.data = undefined;
     return res.json(responseData);
   }
-  res.statusCode = 401;
-  return res.send('Unauthorized');
+  responseData.status = true;
+  responseData.message = "status changed to true";
+  responseData.data = undefined;
+  return res.json(responseData);
 }
 const editServiceCategory = async (req,res)=>{
   const admin = req.user;
@@ -136,44 +138,44 @@ const editServiceCategory = async (req,res)=>{
     }
   );
   if(user){
-    multerConfig.singleUpload(req, res, async function(err) {
-      if (err instanceof multer.MulterError) {
-        return res.json(err.message);
-      } else if (err) {
-        return res.json(err);
-      } else if(req.body){
-        const createServiceCategory = await models.serviceCategory.create(
-          {
-            name:data.name,
-            type:data.type,
-            serviceCharge: data.serviceCharge,
-            logo: req.file.path
-          },
-          {
-            where:{
-              id:req.params.id
-            }
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  multerConfig.singleUpload(req, res, async function(err) {
+    if (err instanceof multer.MulterError) {
+      return res.json(err.message);
+    } else if (err) {
+      return res.json(err);
+    } else if(req.body){
+      const createServiceCategory = await models.serviceCategory.create(
+        {
+          name:data.name,
+          type:data.type,
+          serviceCharge: data.serviceCharge,
+          logo: req.file.path
+        },
+        {
+          where:{
+            id:req.params.id
           }
-        );
-        if(!createServiceCategory){
-          responseData.status = false;
-          responseData.message = "something went wrong";
-          responseData.data = undefined;
-          return res.json(responseData);
         }
-        responseData.status = true;
-        responseData.message = "service category updated";
+      );
+      if(!createServiceCategory){
+        responseData.status = false;
+        responseData.message = "something went wrong";
         responseData.data = undefined;
         return res.json(responseData);
       }
-      responseData.status = false;
-      responseData.message = "empty post";
+      responseData.status = true;
+      responseData.message = "service category updated";
       responseData.data = undefined;
       return res.json(responseData);
-    })
-  }
-  res.statusCode = 401;
-  return res.send('Unauthorized');
+    }
+    responseData.status = false;
+    responseData.message = "empty post";
+    responseData.data = undefined;
+    return res.json(responseData);
+  })
 }
 const getAllServiceCategories = async (req,res)=>{
   let pageLimit = parseInt(req.query.pageLimit);
@@ -271,40 +273,40 @@ const createService = async (req,res)=>{
     }
   );
   if(user){
-    multerConfig.singleUpload(req, res, async function(err) {
-      if (err instanceof multer.MulterError) {
-        return res.json(err.message);
-      } else if (err) {
-        return res.json(err);
-      } else if(req.body){
-        const data = req.body;
-        const categoryId = req.params.categoryId
-        const service = await models.service.create(
-          {
-            id:uuid.v4(),
-            serviceCategoryId:req.params.categoryId,
-            name:data.name,
-            code:data.code,
-            discount:data.discount,
-            amount:data.amount,
-            logo:req.file.path
-          }
-        );
-        if(!service){
-          responseData.status = false;
-          responseData.message = "something went wrong";
-          responseData.data = undefined;
-          return res.json(responseData);
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  multerConfig.singleUpload(req, res, async function(err) {
+    if (err instanceof multer.MulterError) {
+      return res.json(err.message);
+    } else if (err) {
+      return res.json(err);
+    } else if(req.body){
+      const data = req.body;
+      const categoryId = req.params.categoryId
+      const service = await models.service.create(
+        {
+          id:uuid.v4(),
+          serviceCategoryId:categoryId,
+          name:data.name,
+          code:data.code,
+          discount:data.discount,
+          amount:data.amount,
+          logo:req.file.path
         }
-        responseData.status = true;
-        responseData.message = "completed";
-        responseData.data = service;
+      );
+      if(!service){
+        responseData.status = false;
+        responseData.message = "something went wrong";
+        responseData.data = undefined;
         return res.json(responseData);
       }
-    })
-  }    
-  res.statusCode = 401;
-  return res.send('Unauthorized');
+      responseData.status = true;
+      responseData.message = "completed";
+      responseData.data = service;
+      return res.json(responseData);
+    }
+  })
 }
 const changeStatusToFalse = async (req,res)=>{
   const admin = req.user;
@@ -316,31 +318,32 @@ const changeStatusToFalse = async (req,res)=>{
     }
   );
   if(user){
-    const data = req.body;
-    const service = await models.service.update(
-      {
-        status:false
-      },
-      {
-        where:{
-          id:req.params.id
-        }
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const data = req.body;
+  const service = await models.service.update(
+    {
+      status:false
+    },
+    {
+      where:{
+        id:req.params.id
       }
-    );
-    if(!createLoan){
-      responseData.status = false;
-      responseData.message = "something went wrong";
-      responseData.data = undefined;
-      return res.json(responseData);
     }
-    responseData.status = true;
-    responseData.message = "completed";
-    responseData.data = service;
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
     return res.json(responseData);
   }
-  res.statusCode = 401;
-  return res.send('Unauthorized');
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = service;
+  return res.json(responseData);
 }
+
 const changeStatusToTrue = async (req,res)=>{
   const admin = req.user;
   const user = await models.admin.findOne(
@@ -351,30 +354,30 @@ const changeStatusToTrue = async (req,res)=>{
     }
   );
   if(user){
-    const data = req.body;
-    const service = await models.service.update(
-      {
-        status:true
-      },
-      {
-        where:{
-          id:req.params.id
-        }
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const data = req.body;
+  const service = await models.service.update(
+    {
+      status:true
+    },
+    {
+      where:{
+        id:req.params.id
       }
-    );
-    if(!service){
-      responseData.status = false;
-      responseData.message = "something went wrong";
-      responseData.data = undefined;
-      return res.json(responseData);
     }
-    responseData.status = true;
-    responseData.message = "completed";
-    responseData.data = service;
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
     return res.json(responseData);
   }
-  res.statusCode = 401;
-  return res.send('Unauthorized');
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = service;
+  return res.json(responseData);
 }
 const editService = async (req,res)=>{
   const admin = req.user;
@@ -386,44 +389,44 @@ const editService = async (req,res)=>{
     }
   );
   if(user){
-    multerConfig.singleUpload(req, res, async function(err) {
-      if (err instanceof multer.MulterError) {
-        return res.json(err.message);
-      } else if (err) {
-        return res.json(err);
-      } else if(req.body){
-        const data = req.body;
-        const categoryId = req.params.categoryId
-        const service = await models.service.create(
-          {
-            name:data.name,
-            code:data.code,
-            serviceCategoryId:req.params.categoryId,
-            discount:data.discount,
-            amount:data.amount,
-            logo:req.file.path
-          },
-          {
-            where:{
-              id:req.params.id
-            }
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  multerConfig.singleUpload(req, res, async function(err) {
+    if (err instanceof multer.MulterError) {
+      return res.json(err.message);
+    } else if (err) {
+      return res.json(err);
+    } else if(req.body){
+      const data = req.body;
+      const categoryId = req.params.categoryId
+      const service = await models.service.create(
+        {
+          name:data.name,
+          code:data.code,
+          serviceCategoryId:categoryId,
+          discount:data.discount,
+          amount:data.amount,
+          logo:req.file.path
+        },
+        {
+          where:{
+            id:req.params.id
           }
-        );
-        if(!service){
-          responseData.status = false;
-          responseData.message = "something went wrong";
-          responseData.data = undefined;
-          return res.json(responseData);
         }
-        responseData.status = true;
-        responseData.message = "completed";
-        responseData.data = service;
+      );
+      if(!service){
+        responseData.status = false;
+        responseData.message = "something went wrong";
+        responseData.data = undefined;
         return res.json(responseData);
       }
-    })
-  }
-  res.statusCode = 401;
-  return res.send('Unauthorized');
+      responseData.status = true;
+      responseData.message = "completed";
+      responseData.data = service;
+      return res.json(responseData);
+    }
+  })
 }
 const getAllServices = async (req,res)=>{
   let pageLimit = parseInt(req.query.pageLimit);
@@ -524,7 +527,7 @@ const deleteService = async (req,res)=>{
       }
     }
   );
-  if(!loanCategory){
+  if(!service){
     responseData.status = false;
     responseData.message = "something went wrong";
     responseData.data = undefined;
@@ -538,8 +541,8 @@ const deleteService = async (req,res)=>{
 module.exports = {
   createServiceCategory,
   editServiceCategory,
-  changeCategoryStatusToFalse,
-  changeServiceStatusToTrue,
+  changeServiceCategoryStatusToFalse,
+  changeServiceCategoryStatusToTrue,
   getAllServiceCategories,
   getServiceCategory,
   getAllActiveServiceCategories,
