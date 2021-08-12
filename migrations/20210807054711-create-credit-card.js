@@ -20,6 +20,9 @@ module.exports = {
           as:'userId'
         }
       },
+      accountName :{
+        type: Sequelize.STRING
+      },
       cardType: {
         type: Sequelize.STRING
       },
