@@ -121,7 +121,7 @@ const flutterwaveWebhook = async (req,res)=>{
   }
   
   // Get signature stored as env variable on your server
-  const secretHash = process.env.FlUTTERWAVE_HASH;
+  let secretHash = await getSecret();
   
   // check if signatures match
   if(hash !== secretHash) {
