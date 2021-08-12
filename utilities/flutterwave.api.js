@@ -8,8 +8,6 @@ const responseData = {
 	message: "Completed",
 	data: null
 }
-
-
 async function validateBvn(payload,flutterwave){
   let privateKey;
   if(flutterwave.privateKey){
