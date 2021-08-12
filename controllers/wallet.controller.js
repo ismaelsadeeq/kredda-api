@@ -78,6 +78,7 @@ const webhook =async (req,res)=>{
         }
       );
       if(authCodeExist){
+        res.statusCode = 200;
         responseData.message = "Success";
         responseData.status = true;
         responseData.data = undefined;
@@ -96,11 +97,13 @@ const webhook =async (req,res)=>{
           expYear:authorization.exp_year
         }
       )
+      res.statusCode = 200;
       responseData.message = "Success";
       responseData.status = true;
       responseData.data = undefined;
       return res.json(responseData)
     }
+    res.statusCode = 200;
     responseData.message = "Invalid payload";
     responseData.status = false;
     responseData.data = null;
@@ -149,6 +152,7 @@ const flutterwaveWebhook = async (req,res)=>{
       }
     );
     if(transaction){
+      res.statusCode = 200;
       responseData.message = "Success";
       responseData.status = true;
       responseData.data = undefined;
@@ -164,7 +168,7 @@ const flutterwaveWebhook = async (req,res)=>{
         beneficiary:"self",
         isRedemmed:true,
         amount:response.data.amount,
-        description:payload.firstName + " funding his/her wallet to perform transaction",
+        description:user.firstName + " funding his/her wallet to perform transaction",
         status:"successful",
         time: new Date()
       }
@@ -187,6 +191,7 @@ const flutterwaveWebhook = async (req,res)=>{
         }
       }
     );
+    res.statusCode = 200;
     responseData.message = "Success";
     responseData.status = true;
     responseData.data = response;
@@ -221,6 +226,7 @@ const flutterwaveWebhook = async (req,res)=>{
           }
         }
       );
+      res.statusCode = 200;
       responseData.message = "Success";
       responseData.status = true;
       responseData.data = undefined;
@@ -236,11 +242,173 @@ const flutterwaveWebhook = async (req,res)=>{
         beneficiary:"self",
         isRedemmed:false,
         amount:response.data.amount,
-        description:payload.firstName + " funding his/her wallet to perform transaction",
+        description:user.firstName + " funding his/her wallet to perform transaction",
         status:"failed",
         time: new Date()
       }
     );
+    res.statusCode = 200;
+    responseData.message = "Success";
+    responseData.status = true;
+    responseData.data = undefined;
+    return res.json(responseData)
+  }
+  responseData.message = "Invalid Payload";
+  responseData.status = true;
+  responseData.data = undefined;
+  return res.json(responseData);
+}
+const monnifyWebhook = async (req,res)=>{
+  //creating hash object 
+  const payload = req.body;
+  let sha = crypto.createHash('sha512');
+  let secretHash = await getSecret();
+  let unHashedValue = `${secretHash}|${payload.paymentReference}|${payload.amountPaid}|${payload.paidOn}|${payload.transactionReference}`;
+
+  let hash = sha.update(unHashedValue, 'utf-8');
+  //Creating the hash in the required format
+  let genHash = hash.digest('hex');
+  if(genHash!==payload.transactionHash){
+    res.statusCode = 401;
+	  return res.send('Unauthorize');
+  }
+  const trxRef = payload.transactionReference;
+  if(payload.paymentStatus === "PAID" && payload.paymentMethod === "CARD"){
+    const transaction = await models.transaction.findOne(
+      {
+        where:{
+          reference:trxRef,
+          isRedemmed:true
+        }
+      }
+    );
+    const user = await models.user.findOne(
+      {
+        where:{
+          email:payload.customer.email
+        }
+      }
+    );
+    if(transaction){
+      res.statusCode = 200;
+      responseData.message = "Success";
+      responseData.status = true;
+      responseData.data = undefined;
+      return res.json(responseData)
+    }
+    await transaction.create(
+      {
+        id:uuid.v4(),
+        userId:user.id,
+        message:"funding of wallet",
+        reference:trxRef,
+        transactionType:"debit",
+        beneficiary:"self",
+        isRedemmed:true,
+        amount:payload.paidOn,
+        description:payload.firstName + " funding his/her wallet to perform transaction",
+        status:"successful",
+        time: new Date()
+      }
+    );
+    const wallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:user.id,
+        }
+      }
+    );
+    const balance = parseFloat(wallet.accountBalance) + parseFloat(response.data.amount);
+    await models.wallet.update(
+      {
+        accountBalance:balance
+      },
+      {
+        where:{
+          id:wallet.id
+        }
+      }
+    );
+    const authCodeExist = await models.creditCard.findOne(
+      {
+        where:{
+          authCode:payload.cardDetails.authorizationCode
+        }
+      }
+    );
+    if(authCodeExist){
+      res.statusCode = 200;
+      responseData.message = "Success";
+      responseData.status = true;
+      responseData.data = undefined;
+      return res.json(responseData)
+    }
+    const createCard = await models.creditCard.create(
+      {
+        id:uuid.v4(),
+        userId:wallet.userId,
+        authorizationCode:payload.cardDetails.authorizationCode,
+        cardType:payload.cardDetails.cardType,
+        lastDigits:payload.cardDetails.last4,
+        expMonth:payload.cardDetails.expMonth,
+        expYear:payload.cardDetails.expYear
+      }
+    )
+    res.statusCode = 200;
+    responseData.message = "Success";
+    responseData.status = true;
+    responseData.data = response;
+    return res.json(responseData);
+    }
+    if(payload.paymentStatus === "PAID" && payload.paymentMethod === "CARD"){
+      const transaction = await models.transaction.findOne(
+        {
+          where:{
+            reference:trxRef
+          }
+        }
+      );
+      const user = await models.user.findOne(
+        {
+          where:{
+            email:payload.customer.email
+          }
+        }
+      );
+      if(transaction){
+        await transaction.update(
+          {
+            status:"failed",
+            isRedemmed:false
+          },
+          {
+            where:{
+              reference:trxRef
+            }
+          }
+        );
+        res.statusCode = 200;
+        responseData.message = "Success";
+        responseData.status = true;
+        responseData.data = undefined;
+        return res.json(responseData)
+      }
+      await transaction.create(
+        {
+          id:uuid.v4(),
+          userId:user.id,
+          message:"funding of wallet",
+          reference:trxRef,
+          transactionType:"debit",
+          beneficiary:"self",
+          isRedemmed:false,
+          amount:response.data.amount,
+          description:user.firstName + " funding his/her wallet to perform transaction",
+          status:"failed",
+          time: new Date()
+        }
+      );
+    res.statusCode = 200;
     responseData.message = "Success";
     responseData.status = true;
     responseData.data = undefined;
@@ -253,5 +421,6 @@ const flutterwaveWebhook = async (req,res)=>{
 }
 module.exports = {
   webhook,
-  flutterwaveWebhook
+  flutterwaveWebhook,
+  monnifyWebhook
 }
