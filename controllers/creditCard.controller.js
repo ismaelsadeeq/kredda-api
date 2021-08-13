@@ -287,6 +287,7 @@ const verifyTransaction = async (req,res)=>{
   const payment =await options.getPayment();
   if(payment.siteName =='paystack'){
     const payload = {
+      userId:user.id,
       reference:reference
     }
     await paystackApi.verifyPayment(payload,payment,res);

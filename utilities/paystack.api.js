@@ -164,7 +164,7 @@ async function verifyPayment(payload,paystack,respond){
               const wallet = await models.wallet.findOne(
                 {
                   where:{
-                    reference:reference
+                    userId:payload.userId
                   }
                 }
               );
@@ -181,7 +181,7 @@ async function verifyPayment(payload,paystack,respond){
               const otherAccount = await models.otherAccount.findOne(
                 {
                   where:{
-                    userId:wallet.userId,
+                    userId:payload.userId,
                     status:true
                   }
                 }
