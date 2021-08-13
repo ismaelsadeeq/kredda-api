@@ -108,9 +108,7 @@ const chargeDefaultCreditCard = async (req,res)=>{
     if(!creditCard.authCode){
       responseData.status = true;
       responseData.message = "pay with widget";
-      responseData.data = {
-        transactionReference:trxRef
-      }
+      responseData.data = undefined
       return res.json(responseData);
     }
     const payload = {
@@ -123,7 +121,8 @@ const chargeDefaultCreditCard = async (req,res)=>{
     await paystackApi.chargeAuthorization(payload,payment);
     responseData.status = 200;
     responseData.message = "charge initiated";
-    responseData.data = creditCard
+    responseData.data = creditCard;
+    return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
     responseData.status = 200;
@@ -183,6 +182,7 @@ const getCreditCard = async (req,res)=>{
 const editCreditCard = async (req,res)=>{
   const user = req.user;
   const id = req.params.id;
+  const data = req.body;
   const creditCard = await models.creditCard.update(
     {
       cardType:data.cardType,
@@ -208,7 +208,7 @@ const editCreditCard = async (req,res)=>{
     return res.json(responseData);
   }
   responseData.status = true;
-  responseData.message = "updated";
+  responseData.message = "credit card updated";
   responseData.data = undefined;
   return res.json(responseData)
 }
@@ -223,17 +223,19 @@ const changeToDefault = async (req,res)=>{
       }
     }
   );
-  await models.creditCard.update(
-    {
-      isDefault:false
-    },
-    {
-      where:
+  if(trueCreditCard){
+    await models.creditCard.update(
       {
-        id:trueCreditCard.id
+        isDefault:false
+      },
+      {
+        where:
+        {
+          id:trueCreditCard.id
+        }
       }
-    }
-  );
+    );
+  }
   const creditCard = await models.creditCard.update(
     {
       isDefault:true
@@ -252,7 +254,7 @@ const changeToDefault = async (req,res)=>{
     return res.json(responseData);
   }
   responseData.status = true;
-  responseData.message = "updated";
+  responseData.message = "credit card set to default";
   responseData.data = creditCard;
   return res.json(responseData)
 }

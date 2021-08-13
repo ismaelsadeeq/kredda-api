@@ -87,7 +87,7 @@ const webhook =async (req,res)=>{
         {
           id:uuid.v4(),
           userId:wallet.userId,
-          authorizationCode:authorization.authorization_code,
+          authCode:authorization.authorization_code,
           cardType:authorization.card_type,
           lastDigits:authorization.last4,
           accountName:authorization.account_name,
@@ -346,11 +346,11 @@ const monnifyWebhook = async (req,res)=>{
       {
         id:uuid.v4(),
         userId:wallet.userId,
-        authorizationCode:payload.cardDetails.authorizationCode,
+        authCode:payload.cardDetails.authorizationCode,
         cardType:payload.cardDetails.cardType,
         lastDigits:payload.cardDetails.last4,
-        expMonth:payload.cardDetails.expMonth,
-        expYear:payload.cardDetails.expYear
+        expiryMonth:payload.cardDetails.expMonth,
+        expiryYear:payload.cardDetails.expYear
       }
     )
     res.statusCode = 200;

@@ -126,7 +126,6 @@ async function verifyPayment(payload,paystack,respond){
   }else{
     privateKey = paystack.testPrivateKey
   }
-  console.log(privateKey);
   const https = require('https')
   const params = JSON.stringify({})
   const options = {
@@ -200,7 +199,7 @@ async function verifyPayment(payload,paystack,respond){
                   {
                     id:uuid.v4(),
                     userId:wallet.userId,
-                    authorizationCode:authorization.authorization_code,
+                    authCode:authorization.authorization_code,
                     cardType:authorization.card_type,
                     lastDigits:authorization.last4,
                     accountName:authorization.account_name,
