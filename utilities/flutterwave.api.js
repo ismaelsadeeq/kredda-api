@@ -53,12 +53,14 @@ async function verifyPayment(payload,flutterwave,res){
     'url': `https://api.flutterwave.com/v3/transactions/${payload.id}/verify`,
     'headers': {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer {{${privateKey}}}`
+      'Authorization': `Bearer ${privateKey}`
     }
   };
   request(options,async function (error, data) { 
     if (error) throw new Error(error);
-    const response = data.body;
+    let response = data.body;
+    response =  JSON.parse(response)
+    console.log(response)
     if(response.status == "success" && response.message == "Transaction fetched successfully"){
       if(response.data.status=="successful"){
         res.statusCode = 200;
@@ -192,7 +194,10 @@ async function verifyPayment(payload,flutterwave,res){
         return res.json(responseData)
       }
     }
-    return "invalid Id"
+    responseData.message = "Success";
+    responseData.status = true;
+    responseData.data = response;
+    return res.json(responseData)
   });
 }
 module.exports = {
