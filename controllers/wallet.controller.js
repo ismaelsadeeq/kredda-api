@@ -45,8 +45,9 @@ const webhook =async (req,res)=>{
           }
         }
       );
-      if(!transaction.isRedemmed){
+      if(transaction.isRedemmed==false){
         const balance = parseFloat(wallet.accountBalance) + (parseFloat(data.data.amount) /100) ;
+        console.log(wallet.id);
         await models.wallet.update(
           {
             accountBalance:balance
@@ -116,14 +117,13 @@ const flutterwaveWebhook = async (req,res)=>{
 
   // retrieve the signature from the header
   var hash = req.headers["verif-hash"];
-  
+  // Get signature stored as env variable on your server
+  let secretHash = await getSecret();
+  console.log(secretHash);
   if(!hash) {
     res.statusCode = 401;
 	  return res.send('Unauthorize')
   }
-  
-  // Get signature stored as env variable on your server
-  let secretHash = await getSecret();
   
   // check if signatures match
   if(hash !== secretHash) {
@@ -146,7 +146,7 @@ const flutterwaveWebhook = async (req,res)=>{
     const user = await models.user.findOne(
       {
         where:{
-          email:payload.customer.email
+          email:payload.data.customer.email
         }
       }
     );
@@ -157,7 +157,9 @@ const flutterwaveWebhook = async (req,res)=>{
       responseData.data = undefined;
       return res.json(responseData)
     }
-    await transaction.create(
+    let time = new Date();
+    time = time.toLocaleString()
+    await models.transaction.create(
       {
         id:uuid.v4(),
         userId:user.id,
@@ -166,10 +168,10 @@ const flutterwaveWebhook = async (req,res)=>{
         transactionType:"debit",
         beneficiary:"self",
         isRedemmed:true,
-        amount:response.data.amount,
+        amount:payload.data.amount,
         description:user.firstName + " funding his/her wallet to perform transaction",
         status:"successful",
-        time: new Date()
+        time: time
       }
     );
     const wallet = await models.wallet.findOne(
@@ -179,7 +181,7 @@ const flutterwaveWebhook = async (req,res)=>{
         }
       }
     );
-    const balance = parseFloat(wallet.accountBalance) + parseFloat(response.data.amount);
+    const balance = parseFloat(wallet.accountBalance) + parseFloat(payload.data.amount);
     await models.wallet.update(
       {
         accountBalance:balance
@@ -193,7 +195,7 @@ const flutterwaveWebhook = async (req,res)=>{
     res.statusCode = 200;
     responseData.message = "Success";
     responseData.status = true;
-    responseData.data = response;
+    responseData.data = undefined;
     return res.json(responseData);
   }
   if(payload.event=="charge.completed" && payload.data.status=="FAILED"){
@@ -231,7 +233,9 @@ const flutterwaveWebhook = async (req,res)=>{
       responseData.data = undefined;
       return res.json(responseData)
     }
-    await transaction.create(
+    let time = new Date();
+    time = time.toLocaleString()
+    await models.transaction.create(
       {
         id:uuid.v4(),
         userId:user.id,
@@ -243,7 +247,7 @@ const flutterwaveWebhook = async (req,res)=>{
         amount:response.data.amount,
         description:user.firstName + " funding his/her wallet to perform transaction",
         status:"failed",
-        time: new Date()
+        time: time
       }
     );
     res.statusCode = 200;
@@ -295,6 +299,8 @@ const monnifyWebhook = async (req,res)=>{
       responseData.data = undefined;
       return res.json(responseData)
     }
+    let time = new Date();
+    time = time.toLocaleString()
     await transaction.create(
       {
         id:uuid.v4(),
@@ -307,7 +313,7 @@ const monnifyWebhook = async (req,res)=>{
         amount:payload.paidOn,
         description:payload.firstName + " funding his/her wallet to perform transaction",
         status:"successful",
-        time: new Date()
+        time: time
       }
     );
     const wallet = await models.wallet.findOne(
@@ -392,6 +398,8 @@ const monnifyWebhook = async (req,res)=>{
         responseData.data = undefined;
         return res.json(responseData)
       }
+      let time = new Date();
+      time = time.toLocaleString()
       await transaction.create(
         {
           id:uuid.v4(),
@@ -404,7 +412,7 @@ const monnifyWebhook = async (req,res)=>{
           amount:response.data.amount,
           description:user.firstName + " funding his/her wallet to perform transaction",
           status:"failed",
-          time: new Date()
+          time: time
         }
       );
     res.statusCode = 200;

@@ -88,6 +88,8 @@ async function validatePayment(payload,monnify,res){
           responseData.data = response;
           return res.json(responseData)
         }
+        let time = new Date();
+        time = time.toLocaleString()
         await transaction.create(
           {
             id:uuid.v4(),
@@ -100,7 +102,7 @@ async function validatePayment(payload,monnify,res){
             amount:response.responseBody.amount,
             description:payload.firstName + " funding his/her wallet to perform transaction",
             status:"successful",
-            time: new Date()
+            time:time
           }
         );
         const wallet = await models.wallet.findOne(

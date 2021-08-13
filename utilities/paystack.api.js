@@ -94,6 +94,8 @@ async function chargeAuthorization(payload,paystack){
       const response = JSON.parse(data)
       console.log(response);
       if(response.status === true && response.message == "Charge attempted"){
+        let time = new Date();
+        time = time.toLocaleString()
         const transaction = await models.transaction.create(
           {
             id:uuid.v4(),
@@ -106,7 +108,7 @@ async function chargeAuthorization(payload,paystack){
             amount:payload.amount,
             isRedemmed:false,
             status:"initiated",
-            time: new Date()
+            time: time
           }
         );
         return "charge initiated"
@@ -166,7 +168,7 @@ async function verifyPayment(payload,paystack,respond){
                   }
                 }
               );
-              await transaction.update(
+              await models.transaction.update(
                 {
                   status:"successful"
                 },

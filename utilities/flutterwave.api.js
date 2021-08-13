@@ -78,7 +78,9 @@ async function verifyPayment(payload,flutterwave,res){
           responseData.data = response;
           return res.json(responseData)
         }
-        await transaction.create(
+        let time = new Date();
+        time = time.toLocaleString()
+        await models.transaction.create(
           {
             id:uuid.v4(),
             userId:payload.userId,
@@ -90,7 +92,7 @@ async function verifyPayment(payload,flutterwave,res){
             amount:response.data.amount,
             description:payload.firstName + " funding his/her wallet to perform transaction",
             status:"successful",
-            time: new Date()
+            time:time
           }
         );
         const wallet = await models.wallet.findOne(
@@ -129,13 +131,15 @@ async function verifyPayment(payload,flutterwave,res){
           }
         );
         if(transaction){
+          let time = new Date();
+          time = time.toLocaleString()
           await transaction.update(
             {
               beneficiary:"self",
               amount:response.data.amount,
               description:payload.firstName + " funding his/her wallet to perform transaction",
               status:"failed",
-              time: new Date()
+              time:time
             },
             {
               where:{
@@ -166,6 +170,8 @@ async function verifyPayment(payload,flutterwave,res){
           responseData.data = response;
           return res.json(responseData)
         }
+        let time = new Date();
+        time = time.toLocaleString()
         await transaction.create(
           {
             id:uuid.v4(),
@@ -177,7 +183,7 @@ async function verifyPayment(payload,flutterwave,res){
             amount:response.data.amount,
             description:payload.firstName + " funding his/her wallet to perform transaction",
             status:"failed",
-            time: new Date()
+            time: time
           }
         );
         responseData.message = "Success";

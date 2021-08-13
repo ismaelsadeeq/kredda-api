@@ -48,6 +48,7 @@ const chargeSavedCreditCard = async (req,res)=>{
     responseData.status = 200;
     responseData.message = "charge initiated";
     responseData.data = creditCard
+    return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
     responseData.status = 200;
@@ -58,6 +59,7 @@ const chargeSavedCreditCard = async (req,res)=>{
   responseData.status = 200;
   responseData.message = "something went wrong";
   responseData.data = undefined
+  return res.json(responseData);
 }
 const initiateCardChargePaystack = async (req,res)=>{
   const reference = req.params.reference;
