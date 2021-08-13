@@ -12,15 +12,15 @@ router.put('/category/edit/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editServiceCategory
 );
-router.get('/category/all/active',
+router.get('/category/active/all',
   passport.authenticate('jwt',{session:false}),
   controller.getAllActiveServiceCategories
 );
-router.get('/category/true/:id',
+router.put('/category/true/:id',
   passport.authenticate('jwt',{session:false}),
   controller.changeServiceCategoryStatusToTrue
 );
-router.get('/category/false/:id',
+router.put('/category/false/:id',
   passport.authenticate('jwt',{session:false}),
   controller.changeServiceCategoryStatusToFalse
 );
@@ -41,7 +41,7 @@ router.post('/create/:categoryId',
   passport.authenticate('jwt',{session:false}),
   controller.createService
 );
-router.put('/edit/:categoryId',
+router.put('/edit/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editService
 );
@@ -55,13 +55,13 @@ router.get('/all/:categoryId',
 );
 router.get('/active',
   passport.authenticate('jwt',{session:false}),
-  controller.getAllCategoryServices
+  controller.getAllActiveService
 );
-router.get('/true/:id',
+router.put('/true/:id',
   passport.authenticate('jwt',{session:false}),
   controller.changeStatusToTrue
 );
-router.get('/false/:id',
+router.put('/false/:id',
   passport.authenticate('jwt',{session:false}),
   controller.changeStatusToFalse
 );

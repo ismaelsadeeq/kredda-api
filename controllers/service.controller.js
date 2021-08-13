@@ -35,11 +35,21 @@ const createServiceCategory = async (req,res)=>{
           id:uuid.v4(),
           name:data.name,
           type:data.type,
-          serviceCharge: data.serviceCharge,
-          logo: req.file.path,
+          serviceCharge:data.serviceCharge,
           status:true
         }
       );
+      req.file ?
+      await models.serviceCategory.update(
+        {
+          logo:req.file.path
+        },
+        {
+          where:{
+            id:createServiceCategory.id
+          }
+        }
+      ):null
       if(!createServiceCategory){
         responseData.status = false;
         responseData.message = "something went wrong";
@@ -66,7 +76,7 @@ const changeServiceCategoryStatusToFalse = async (req,res)=>{
       }
     }
   );
-  if(user){
+  if(!user){
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
@@ -102,7 +112,7 @@ const changeServiceCategoryStatusToTrue = async (req,res)=>{
       }
     }
   );
-  if(user){
+  if(!user){
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
@@ -137,7 +147,7 @@ const editServiceCategory = async (req,res)=>{
       }
     }
   );
-  if(user){
+  if(!user){
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
@@ -147,12 +157,12 @@ const editServiceCategory = async (req,res)=>{
     } else if (err) {
       return res.json(err);
     } else if(req.body){
-      const createServiceCategory = await models.serviceCategory.create(
+      const data = req.body;
+      const createServiceCategory = await models.serviceCategory.update(
         {
           name:data.name,
           type:data.type,
-          serviceCharge: data.serviceCharge,
-          logo: req.file.path
+          serviceCharge: data.serviceCharge
         },
         {
           where:{
@@ -160,6 +170,17 @@ const editServiceCategory = async (req,res)=>{
           }
         }
       );
+      req.file ?
+      await models.serviceCategory.update(
+        {
+          logo:req.file.path
+        },
+        {
+          where:{
+            id:req.params.id
+          }
+        }
+      ):null
       if(!createServiceCategory){
         responseData.status = false;
         responseData.message = "something went wrong";
@@ -244,7 +265,7 @@ const getServiceCategory = async (req,res)=>{
   return res.json(responseData);
 }
 const deleteServiceCategory = async (req,res)=>{
-  const serviceCategory = await models.serviceCategory.delete(
+  const serviceCategory = await models.serviceCategory.destroy(
     {
       where:{
         id:req.params.id
@@ -272,7 +293,7 @@ const createService = async (req,res)=>{
       }
     }
   );
-  if(user){
+  if(!user){
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
@@ -283,7 +304,7 @@ const createService = async (req,res)=>{
       return res.json(err);
     } else if(req.body){
       const data = req.body;
-      const categoryId = req.params.categoryId
+      const categoryId = req.params.categoryId;
       const service = await models.service.create(
         {
           id:uuid.v4(),
@@ -292,9 +313,20 @@ const createService = async (req,res)=>{
           code:data.code,
           discount:data.discount,
           amount:data.amount,
-          logo:req.file.path
+          status:true
         }
       );
+      req.file ? 
+      await models.service.update(
+        {
+          logo:req.file.path
+        },
+        {
+          where:{
+            id:service.id
+          }
+        }
+      ):null
       if(!service){
         responseData.status = false;
         responseData.message = "something went wrong";
@@ -317,7 +349,7 @@ const changeStatusToFalse = async (req,res)=>{
       }
     }
   );
-  if(user){
+  if(!user){
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
@@ -353,7 +385,7 @@ const changeStatusToTrue = async (req,res)=>{
       }
     }
   );
-  if(user){
+  if(!user){
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
@@ -388,7 +420,7 @@ const editService = async (req,res)=>{
       }
     }
   );
-  if(user){
+  if(!user){
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
@@ -400,14 +432,13 @@ const editService = async (req,res)=>{
     } else if(req.body){
       const data = req.body;
       const categoryId = req.params.categoryId
-      const service = await models.service.create(
+      const service = await models.service.update(
         {
           name:data.name,
           code:data.code,
           serviceCategoryId:categoryId,
           discount:data.discount,
-          amount:data.amount,
-          logo:req.file.path
+          amount:data.amount
         },
         {
           where:{
@@ -415,6 +446,17 @@ const editService = async (req,res)=>{
           }
         }
       );
+      req.file ?
+      await models.service.update(
+        {
+          logo:req.file.path
+        },
+        {
+          where:{
+            id:req.params.id
+          }
+        }
+      ):null
       if(!service){
         responseData.status = false;
         responseData.message = "something went wrong";
@@ -520,7 +562,7 @@ const getService = async (req,res)=>{
   return res.json(responseData);
 }
 const deleteService = async (req,res)=>{
-  const service = await models.service.delete(
+  const service = await models.service.destroy(
     {
       where:{
         id:req.params.id
@@ -535,7 +577,7 @@ const deleteService = async (req,res)=>{
   }
   responseData.status = true;
   responseData.message = "completed";
-  responseData.data = loanCategory;
+  responseData.data = service;
   return res.json(responseData);
 }
 module.exports = {
