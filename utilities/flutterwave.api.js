@@ -19,12 +19,14 @@ async function validateBvn(payload,flutterwave){
     'method': 'POST',
     'url': `https://rave-api-v2.herokuapp.com/v3/kyc/bvns/${payload.bvnNumber}`,
     'headers': {
-      'Authorization': `Bearer {{${privateKey}}}`
+      'Authorization': `Bearer ${privateKey}`
     }
   };
   request(options, async function (error, response) { 
     if (error) throw new Error(error);
     let payload = response.body;
+    payload =  JSON.parse(payload)
+    console.log(payload)
     if(payload.status=="status" && payload.message =="BVN details fetched"){
       await models.kyc.update(
         {
