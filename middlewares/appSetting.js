@@ -1,6 +1,6 @@
 const models = require('../models');
 
-const getPayment = async (req,res)=>{
+const getPayment = async ()=>{
   const getway = await models.appSetting.findOne(
     {
       where:{

@@ -126,6 +126,7 @@ async function verifyPayment(payload,paystack,respond){
   }else{
     privateKey = paystack.testPrivateKey
   }
+  console.log(privateKey);
   const https = require('https')
   const params = JSON.stringify({})
   const options = {
@@ -149,7 +150,6 @@ async function verifyPayment(payload,paystack,respond){
       if(response.status === true && response.message =="Verification successful"){
         if(response.data.status == "success"){
             const reference = response.data.reference;
-            const balance = parseFloat(wallet.accountBalance) + (parseFloat(response.data.amount) /100);
             const authorization = response.data.authorization;
             const transaction = await models.transaction.findOne(
               {
@@ -177,6 +177,7 @@ async function verifyPayment(payload,paystack,respond){
                   }
                 }
               );
+              const balance = parseFloat(wallet.accountBalance) + (parseFloat(response.data.amount) /100);
               await models.wallet.update(
                 {
                   accountBalance:balance
@@ -204,8 +205,8 @@ async function verifyPayment(payload,paystack,respond){
                     lastDigits:authorization.last4,
                     accountName:authorization.account_name,
                     bankName:authorization.bank,
-                    expMonth:authorization.exp_month,
-                    expYear:authorization.exp_year
+                    expiryMonth:authorization.exp_month,
+                    expiryYear:authorization.exp_year
                   }
                 );
               }
@@ -250,7 +251,10 @@ async function verifyPayment(payload,paystack,respond){
             return respond.json(responseData);
         }
       }
-      return "something went wrong";
+      responseData.status = 200;
+      responseData.message = "something went wrong";
+      responseData.data = response
+      return respond.json(responseData);
     })
   }).on('error', error => {
     console.error(error)

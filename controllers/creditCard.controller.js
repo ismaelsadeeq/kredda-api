@@ -90,7 +90,7 @@ const initiateCardChargePaystack = async (req,res)=>{
 const chargeDefaultCreditCard = async (req,res)=>{
   const data = req.body;
   const user = req.user;
-  const payment = options.getPayment();
+  const payment = await options.getPayment();
   const creditCard = await models.creditCard.findOne(
     {
       where:{
@@ -280,7 +280,7 @@ const deleteCreditCard = async (req,res)=>{
 const verifyTransaction = async (req,res)=>{
   const reference = req.params.reference;
   const user = req.user;
-  const payment = options.getPayment();
+  const payment =await options.getPayment();
   if(payment.siteName =='paystack'){
     const payload = {
       reference:reference
