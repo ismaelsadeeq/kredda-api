@@ -20,6 +20,26 @@ async function getSecret(){
   }
   return privateKey;
 }
+const getWalletBalance = async(req,res)=>{
+  const user = req.user;
+  const wallet = await models.wallet.findOne(
+    {
+      where:{
+        userId:user.id
+      }
+    }
+  );
+  if(!wallet){
+    responseData.message = "something wrong";
+    responseData.status = true;
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.message = "completed";
+  responseData.status = true;
+  responseData.data = wallet;
+  return res.json(responseData);
+}
 const webhook =async (req,res)=>{
   //validate event
   let secret = await getSecret();
@@ -428,6 +448,7 @@ const monnifyWebhook = async (req,res)=>{
   return res.json(responseData);
 }
 module.exports = {
+  getWalletBalance,
   webhook,
   flutterwaveWebhook,
   monnifyWebhook
