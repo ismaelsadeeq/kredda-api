@@ -240,7 +240,7 @@ const flutterwaveWebhook = async (req,res)=>{
     const otherAccount = await models.otherAccount.findOne(
       {
         where:{
-          userId:transaction.userId,
+          userId:user.id,
           status:true
         }
       }
@@ -426,7 +426,7 @@ const monnifyWebhook = async (req,res)=>{
     const otherAccount = await models.otherAccount.findOne(
       {
         where:{
-          userId:transaction.userId,
+          userId:user.id,
           status:true
         }
       }
