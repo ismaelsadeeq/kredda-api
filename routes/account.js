@@ -23,11 +23,11 @@ router.delete('/type/all',
   passport.authenticate('jwt',{session:false}),
   controller.deleteAccountType
 );
-router.post('/',
+router.post('/:accountType',
   passport.authenticate('jwt',{session:false}),
   controller.createAccount
 );
-router.put('/:id',
+router.put('/fund/:id',
   passport.authenticate('jwt',{session:false}),
   controller.fundAccount
 );

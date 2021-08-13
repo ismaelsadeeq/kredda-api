@@ -246,7 +246,7 @@ const getAllActiveServiceCategories = async (req,res)=>{
   return res.json(responseData);
 }
 const getServiceCategory = async (req,res)=>{
-  const serviceCategory = await models.serviceCategory.findAll(
+  const serviceCategory = await models.serviceCategory.findOne(
     {
       where:{
         id:req.params.id
@@ -265,6 +265,18 @@ const getServiceCategory = async (req,res)=>{
   return res.json(responseData);
 }
 const deleteServiceCategory = async (req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
   const serviceCategory = await models.serviceCategory.destroy(
     {
       where:{
@@ -562,6 +574,18 @@ const getService = async (req,res)=>{
   return res.json(responseData);
 }
 const deleteService = async (req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
   const service = await models.service.destroy(
     {
       where:{
