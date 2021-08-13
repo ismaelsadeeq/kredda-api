@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     currency: DataTypes.STRING,
     serviceFee: DataTypes.STRING,
+    currencyCode:DataTypes.STRING,
     status: DataTypes.BOOLEAN
   }, {
     sequelize,

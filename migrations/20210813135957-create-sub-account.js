@@ -14,6 +14,9 @@ module.exports = {
       currency:{
         type: Sequelize.STRING
       },
+      currencyCode:{
+        type: Sequelize.STRING
+      },
       serviceFee:{
         type: Sequelize.STRING
       },
