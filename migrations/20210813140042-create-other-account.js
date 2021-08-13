@@ -28,6 +28,9 @@ module.exports = {
           as:'accountTypeId'
         }
       },
+      status :{
+        type: Sequelize.BOOLEAN
+      },
       accountBalance: {
         type: Sequelize.STRING
       },
