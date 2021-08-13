@@ -108,24 +108,67 @@ async function validatePayment(payload,monnify,res){
             time:time
           }
         );
-        const wallet = await models.wallet.findOne(
+        const otherAccount = await models.otherAccount.findOne(
           {
             where:{
-              userId:payload.userId,
+              userId:transaction.userId,
+              status:true
             }
           }
         );
-        const balance = parseFloat(wallet.accountBalance) + parseFloat(response.responseBody.amount,);
-        await models.wallet.update(
-          {
-            accountBalance:balance
-          },
-          {
-            where:{
-              id:wallet.id
+        if(otherAccount){
+          const accountType = await models.accountType.findOne(
+            {
+              where:{
+                id:otherAccount.accountTypeId
+              }
             }
-          }
-        );
+          );
+          var options = {
+            'method': 'POST',
+            'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${process.env.FREECONVERTER}`
+          };
+          request(options, async function (error, response) { 
+            if (error) throw new Error(error);
+            let payload = response.body;
+            payload =  JSON.parse(payload);
+            console.log(payload);
+            let amount = parseInt(payload.NGN_USD) * (parseFloat(data.data.amount) /100)
+            if(accountType.serviceFee){
+              let serviceFee  =  parseInt(payload.NGN_USD) * parseFloat(accountType.serviceFee);
+              amount =  amount - serviceFee;
+            }
+            await models.otherAccount.update(
+              {
+                accountBalance:parseFloat(otherAccount.accountBalance) + amount
+              },
+              {
+                where:{
+                  id:otherAccount.id
+                }
+              }
+            )
+          });
+        } else {
+          const wallet = await models.wallet.findOne(
+            {
+              where:{
+                userId:payload.userId,
+              }
+            }
+          );
+          const balance = parseFloat(wallet.accountBalance) + parseFloat(response.responseBody.amount,);
+          await models.wallet.update(
+            {
+              accountBalance:balance
+            },
+            {
+              where:{
+                id:wallet.id
+              }
+            }
+          );
+        }
         res.statusCode = 200;
         responseData.message = "Success";
         responseData.status = true;
