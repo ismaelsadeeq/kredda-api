@@ -34,6 +34,7 @@ async function validateBvn(payload,monnify){
   request(options, async function (error, data) { 
     if (error) throw new Error(error);
     let response = data.body;
+    response = JSON.parse(response)
     if(response.status=="status" && response.message =="BVN details fetched"){
       await models.kyc.update(
         {
@@ -62,7 +63,7 @@ async function validatePayment(payload,monnify,res){
   var request = require('request');
   var options = {
     'method': 'GET',
-    'url': `https://sandbox.monnify.com/api/v1/merchant/transactions/querytransactionReference=${payload.reference}`,
+    'url': `https://sandbox.monnify.com/api/v1/merchant/transactions/query?transactionReference=${payload.reference}`,
     'headers': {
       'Authorization': `Basic ${authKey}`
     }
@@ -70,6 +71,8 @@ async function validatePayment(payload,monnify,res){
   request(options, async function (error, data) { 
     if (error) throw new Error(error);
     let response = data.body;
+    response = JSON.parse(response)
+    console.log(response);
     if(response.requestSuccessful==true && response.responseMessage =="success"){
       if(response.responseBody.paymentStatus ==="PAID"){
         const trxRef = response.responseBody.transactionReference;
@@ -90,7 +93,7 @@ async function validatePayment(payload,monnify,res){
         }
         let time = new Date();
         time = time.toLocaleString()
-        await transaction.create(
+        await models.transaction.create(
           {
             id:uuid.v4(),
             userId:payload.userId,
@@ -112,7 +115,7 @@ async function validatePayment(payload,monnify,res){
             }
           }
         );
-        const balance = parseFloat(wallet.accountBalance) + parseFloat(response.data.amount);
+        const balance = parseFloat(wallet.accountBalance) + parseFloat(response.responseBody.amount,);
         await models.wallet.update(
           {
             accountBalance:balance
@@ -130,6 +133,11 @@ async function validatePayment(payload,monnify,res){
         return res.json(responseData)
       }
     }
+    res.statusCode = 200;
+    responseData.message = "Success";
+    responseData.status = true;
+    responseData.data = response;
+    return res.json(responseData)
   });
 }
 module.exports = {

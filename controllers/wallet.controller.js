@@ -271,6 +271,7 @@ const monnifyWebhook = async (req,res)=>{
   let hash = sha.update(unHashedValue, 'utf-8');
   //Creating the hash in the required format
   let genHash = hash.digest('hex');
+  console.log(genHash)
   if(genHash!==payload.transactionHash){
     res.statusCode = 401;
 	  return res.send('Unauthorize');
@@ -301,7 +302,7 @@ const monnifyWebhook = async (req,res)=>{
     }
     let time = new Date();
     time = time.toLocaleString()
-    await transaction.create(
+    await models.transaction.create(
       {
         id:uuid.v4(),
         userId:user.id,
@@ -323,7 +324,7 @@ const monnifyWebhook = async (req,res)=>{
         }
       }
     );
-    const balance = parseFloat(wallet.accountBalance) + parseFloat(response.data.amount);
+    const balance = parseFloat(wallet.accountBalance) + parseFloat(payload.amountPaid);
     await models.wallet.update(
       {
         accountBalance:balance
@@ -362,10 +363,10 @@ const monnifyWebhook = async (req,res)=>{
     res.statusCode = 200;
     responseData.message = "Success";
     responseData.status = true;
-    responseData.data = response;
+    responseData.data = undefined;
     return res.json(responseData);
     }
-    if(payload.paymentStatus === "PAID" && payload.paymentMethod === "CARD"){
+    if(payload.paymentStatus === "FAILED" && payload.paymentMethod === "CARD"){
       const transaction = await models.transaction.findOne(
         {
           where:{
@@ -381,7 +382,7 @@ const monnifyWebhook = async (req,res)=>{
         }
       );
       if(transaction){
-        await transaction.update(
+        await models.transaction.update(
           {
             status:"failed",
             isRedemmed:false
@@ -400,7 +401,7 @@ const monnifyWebhook = async (req,res)=>{
       }
       let time = new Date();
       time = time.toLocaleString()
-      await transaction.create(
+      await models.transaction.create(
         {
           id:uuid.v4(),
           userId:user.id,
@@ -409,7 +410,7 @@ const monnifyWebhook = async (req,res)=>{
           transactionType:"debit",
           beneficiary:"self",
           isRedemmed:false,
-          amount:response.data.amount,
+          amount:payload.paidOn,
           description:user.firstName + " funding his/her wallet to perform transaction",
           status:"failed",
           time: time

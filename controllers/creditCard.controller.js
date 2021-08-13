@@ -304,8 +304,7 @@ const verifyTransaction = async (req,res)=>{
     const payload = {
       reference:reference,
       userId:user.id,
-      firstName:user.firstName,
-      id:req.body.id
+      firstName:user.firstName
     }
     await monnifyApi.validatePayment(payload,payment,res);
   }

@@ -9,5 +9,8 @@ router.post('/paystack-webhook',
 router.post('/flutterwave-webhook',
   controller.flutterwaveWebhook
 );
+router.post('/monnify-webhook',
+  controller.monnifyWebhook
+);
 
 module.exports = router;
