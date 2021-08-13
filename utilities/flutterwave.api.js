@@ -102,7 +102,7 @@ async function verifyPayment(payload,flutterwave,res){
         const otherAccount = await models.otherAccount.findOne(
           {
             where:{
-              userId:transaction.userId,
+              userId:wallet.userId,
               status:true
             }
           }

@@ -111,7 +111,7 @@ async function validatePayment(payload,monnify,res){
         const otherAccount = await models.otherAccount.findOne(
           {
             where:{
-              userId:transaction.userId,
+              userId:payload.userId,
               status:true
             }
           }
