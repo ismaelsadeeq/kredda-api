@@ -21,7 +21,6 @@ router.put('/profile-picture',
   controller.updateProfilePicture
 );
 router.put('/verify-email',
-  passport.authenticate('jwt',{session:false}),
   controller.verifyEmail
 );
 router.put('/create',

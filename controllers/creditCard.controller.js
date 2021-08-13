@@ -62,7 +62,9 @@ const chargeSavedCreditCard = async (req,res)=>{
 const initiateCardChargePaystack = async (req,res)=>{
   const reference = req.params.reference;
   const user = req.user;
-  const amount = data.amount;
+  const amount = req.body.amount;
+  let time = new Date();
+  time = time.toLocaleString()
   const transaction = await models.transaction.create(
     {
       id:uuid.v4(),
@@ -75,7 +77,7 @@ const initiateCardChargePaystack = async (req,res)=>{
       amount:amount,
       isRedemmed:false,
       status:"initiated",
-      time: new Date()
+      time: time
     }
   );
   responseData.status = true;
@@ -189,8 +191,8 @@ const editCreditCard = async (req,res)=>{
       bank:data.bank,
       bankName:data.bankName,
       bankCode:data.bankCode,
-      expMonth:data.expMonth,
-      expYear:data.expYear
+      expiryMonth:data.expMonth,
+      expiryYear:data.expYear
     },
     {
       where:
@@ -278,6 +280,7 @@ const deleteCreditCard = async (req,res)=>{
 const verifyTransaction = async (req,res)=>{
   const reference = req.params.reference;
   const user = req.user;
+  const payment = options.getPayment();
   if(payment.siteName =='paystack'){
     const payload = {
       reference:reference

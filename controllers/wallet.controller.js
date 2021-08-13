@@ -2,7 +2,6 @@ const models = require('../models');
 const uuid = require('uuid');
 const options = require('../middlewares/appSetting');
 const paystackApi = require('../utilities/paystack.api');
-const options = require('../middlewares/appSetting');
 let crypto = require('crypto');
 require('dotenv').config();
 //response
@@ -14,7 +13,7 @@ const responseData = {
 async function getSecret(){
   const payment = await options.getPayment();
   let privateKey;
-  if(paystack.privateKey){
+  if(payment.privateKey){
     privateKey = payment.privateKey;
   }else{
     privateKey = payment.testPrivateKey
@@ -93,8 +92,8 @@ const webhook =async (req,res)=>{
           lastDigits:authorization.last4,
           accountName:authorization.account_name,
           bankName:authorization.bank,
-          expMonth:authorization.exp_month,
-          expYear:authorization.exp_year
+          expiryMonth:authorization.exp_month,
+          expiryYear:authorization.exp_year
         }
       )
       res.statusCode = 200;

@@ -183,7 +183,6 @@ const updateProfilePicture = async (req,res)=>{
 	})
 }
 const verifyEmail = async (req,res)=>{
-  const user = req.user;
   const data = req.body;
   const codeExist = await models.otpCode.findOne(
     {
@@ -199,7 +198,7 @@ const verifyEmail = async (req,res)=>{
       },
       {
         where:{
-          id:user.id
+          id:codeExist.userId
         }
       }
     );
@@ -207,9 +206,23 @@ const verifyEmail = async (req,res)=>{
       {
         id:uuid.v4(),
         kycLevel:"1",
-        userId:user.id
+        userId:codeExist.userId,
+      }
+    )
+    await models.wallet.create(
+      {
+        id:uuid.v4(),
+        userId:codeExist.userId,
+        accountBalance:"0.0"
       }
     );
+    await models.otpCode.destroy(
+      {
+        where:{
+          code:data.code
+        }
+      }
+    )
     responseData.status = true;
 		responseData.message = "email verified";
 		responseData.data = undefined;

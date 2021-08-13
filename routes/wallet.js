@@ -4,11 +4,9 @@ const passport = require('passport');
 const controller = require('../controllers/wallet.controller');
 
 router.post('/paystack-webhook',
-  passport.authenticate('jwt',{session:false}),
   controller.webhook
 );
 router.post('/flutterwave-webhook',
-  passport.authenticate('jwt',{session:false}),
   controller.flutterwaveWebhook
 );
 

@@ -10,7 +10,7 @@ router.post('/charge/:id',
 );
 router.post('/paystack-initiate/:reference',
   passport.authenticate('jwt',{session:false}),
-  controller.chargeSavedCreditCard
+  controller.initiateCardChargePaystack
 );
 router.post('/charge-default',
   passport.authenticate('jwt',{session:false}),
@@ -32,7 +32,7 @@ router.put('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editCreditCard
 );
-router.put('verify/:reference',
+router.put('/verify/:reference',
   passport.authenticate('jwt',{session:false}),
   controller.verifyTransaction
 );
