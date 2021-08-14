@@ -4,9 +4,9 @@ module.exports = {
     await queryInterface.createTable('otherAccounts', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        unique:true,
+        type: Sequelize.UUID
       },
       userId:{
         type:Sequelize.UUID,
