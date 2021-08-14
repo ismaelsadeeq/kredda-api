@@ -1,6 +1,7 @@
 const models = require('../models');
 require('dotenv').config();
 const uuid = require('uuid');
+const apiKey = process.env.FREECONVERTER
 //New Implementation
 const responseData = {
 	status: true,
@@ -62,7 +63,7 @@ async function verifyPayment(payload,flutterwave,res){
     if (error) throw new Error(error);
     let response = data.body;
     response =  JSON.parse(response)
-    console.log(response)
+    console.log(response);
     if(response.status == "success" && response.message == "Transaction fetched successfully"){
       if(response.data.status=="successful"){
         res.statusCode = 200;
@@ -116,21 +117,22 @@ async function verifyPayment(payload,flutterwave,res){
             }
           );
           var options = {
-            'method': 'POST',
-            'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${process.env.FREECONVERTER}`
+            'method': 'GET',
+            'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${apiKey}`
           };
-          request(options, async function (error, response) { 
+          request(options, async function (error, resp) { 
             if (error) throw new Error(error);
-            let payload = response.body;
+            let payload = resp.body;
             payload =  JSON.parse(payload);
             console.log(payload);
-            let amount = parseInt(payload.NGN_USD) * (parseFloat(data.data.amount) /100)
+            let amount = payload[`NGN_${accountType.currencyCode}`] * parseFloat(response.data.amount)
             if(accountType.serviceFee){
-              let serviceFee  =  parseInt(payload.NGN_USD) * parseFloat(accountType.serviceFee);
-              amount =  amount - serviceFee;
+              let serviceFee  =  payload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee);
+              amount  =  amount - serviceFee;
             }
             await models.otherAccount.update(
               {
+                status:0,
                 accountBalance:parseFloat(otherAccount.accountBalance) + amount
               },
               {
@@ -151,6 +153,7 @@ async function verifyPayment(payload,flutterwave,res){
           const balance = parseFloat(wallet.accountBalance) + parseFloat(response.data.amount);
           await models.wallet.update(
             {
+              status:0,
               accountBalance:balance
             },
             {
