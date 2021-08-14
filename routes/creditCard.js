@@ -3,7 +3,6 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/creditCard.controller');
 
-// Not Tested
 router.post('/charge/:id',
   passport.authenticate('jwt',{session:false}),
   controller.chargeSavedCreditCard

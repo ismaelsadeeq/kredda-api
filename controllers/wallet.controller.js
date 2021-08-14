@@ -11,6 +11,7 @@ const responseData = {
 	message: "Completed",
 	data: null
 }
+const apiKey = process.env.FREECONVERTER
 async function getSecret(){
   const payment = await options.getPayment();
   let privateKey;
@@ -77,21 +78,23 @@ const webhook =async (req,res)=>{
             }
           );
           var options = {
-            'method': 'POST',
-            'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${process.env.FREECONVERTER}`
+            'method': 'GET',
+            'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${apiKey}`
           };
           request(options, async function (error, response) { 
             if (error) throw new Error(error);
             let payload = response.body;
             payload =  JSON.parse(payload);
-            console.log(payload);
-            let amount = parseInt(payload.NGN_USD) * (parseFloat(data.data.amount) /100)
+            // payload =  { NGN_USD: 0.00243 }
+            let amount = payload[`NGN_${accountType.currencyCode}`] * (parseFloat(data.data.amount) /100);
+            console.log(amount);
             if(accountType.serviceFee){
-              let serviceFee  =  parseInt(payload.NGN_USD) * parseFloat(accountType.serviceFee);
+              let serviceFee  =  payload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee);
               amount =  amount - serviceFee;
             }
             await models.otherAccount.update(
               {
+                status:0,
                 accountBalance:parseFloat(otherAccount.accountBalance) + amount
               },
               {
@@ -254,21 +257,23 @@ const flutterwaveWebhook = async (req,res)=>{
         }
       );
       var options = {
-        'method': 'POST',
-        'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${process.env.FREECONVERTER}`
+        'method': 'GET',
+        'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${apiKey}`
       };
       request(options, async function (error, response) { 
         if (error) throw new Error(error);
-        let payload = response.body;
-        payload =  JSON.parse(payload);
-        console.log(payload);
-        let amount = parseInt(payload.NGN_USD) * (parseFloat(data.data.amount) /100)
+        let secondPayload = response.body;
+        secondPayload =  JSON.parse(secondPayload);
+         // secondPayload =  { NGN_USD: 0.00243 }
+        console.log(secondPayload);
+        let amount = secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(payload.data.amount)
         if(accountType.serviceFee){
-          let serviceFee  =  parseInt(payload.NGN_USD) * parseFloat(accountType.serviceFee);
+          let serviceFee  =  secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee);
           amount =  amount - serviceFee;
         }
         await models.otherAccount.update(
           {
+            status:0,
             accountBalance:parseFloat(otherAccount.accountBalance) + amount
           },
           {
@@ -350,7 +355,7 @@ const flutterwaveWebhook = async (req,res)=>{
         transactionType:"debit",
         beneficiary:"self",
         isRedemmed:false,
-        amount:response.data.amount,
+        amount:payload.data.amount,
         description:user.firstName + " funding his/her wallet to perform transaction",
         status:"failed",
         time: time
@@ -417,7 +422,7 @@ const monnifyWebhook = async (req,res)=>{
         transactionType:"debit",
         beneficiary:"self",
         isRedemmed:true,
-        amount:payload.paidOn,
+        amount:payload.amountPaid,
         description:payload.firstName + " funding his/her wallet to perform transaction",
         status:"successful",
         time: time
@@ -440,21 +445,22 @@ const monnifyWebhook = async (req,res)=>{
         }
       );
       var options = {
-        'method': 'POST',
-        'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${process.env.FREECONVERTER}`
+        'method': 'GET',
+        'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${apiKey}`
       };
       request(options, async function (error, response) { 
         if (error) throw new Error(error);
-        let payload = response.body;
-        payload =  JSON.parse(payload);
-        console.log(payload);
-        let amount = parseInt(payload.NGN_USD) * (parseFloat(data.data.amount) /100)
+        let secondPayload = response.body;
+        secondPayload =  JSON.parse(secondPayload);
+        console.log(secondPayload);
+        let amount = secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(payload.amountPaid)
         if(accountType.serviceFee){
-          let serviceFee  =  parseInt(payload.NGN_USD) * parseFloat(accountType.serviceFee);
+          let serviceFee  =  secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee);
           amount =  amount - serviceFee;
         }
         await models.otherAccount.update(
           {
+            status:0,
             accountBalance:parseFloat(otherAccount.accountBalance) + amount
           },
           {
@@ -559,7 +565,7 @@ const monnifyWebhook = async (req,res)=>{
           transactionType:"debit",
           beneficiary:"self",
           isRedemmed:false,
-          amount:payload.paidOn,
+          amount:payload.amountPaid,
           description:user.firstName + " funding his/her wallet to perform transaction",
           status:"failed",
           time: time
