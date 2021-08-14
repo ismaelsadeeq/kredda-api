@@ -1,4 +1,5 @@
 const models = require('../models');
+const converterKey = process.env.FREECONVERTER;
 require('dotenv').config();
 const uuid = require('uuid');
 //New Implementation
@@ -195,21 +196,22 @@ async function verifyPayment(payload,paystack,respond){
                   }
                 );
                 var options = {
-                  'method': 'POST',
-                  'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${process.env.FREECONVERTER}`
+                  'method': 'GET',
+                  'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${converterKey}`
                 };
-                request(options, async function (error, response) { 
+                request(options, async function (error, resp) { 
                   if (error) throw new Error(error);
-                  let payload = response.body;
+                  let payload = resp.body;
                   payload =  JSON.parse(payload);
                   console.log(payload);
-                  let amount = parseInt(payload.NGN_USD) * (parseFloat(data.data.amount) /100)
+                  let amount = payload[`NGN_${accountType.currencyCode}`] * (parseFloat(data.data.amount) /100)
                   if(accountType.serviceFee){
-                    let serviceFee  =  parseInt(payload.NGN_USD) * parseFloat(accountType.serviceFee);
+                    let serviceFee  =  payload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee);
                     amount =  amount - serviceFee;
                   }
                   await models.otherAccount.update(
                     {
+                      status:0,
                       accountBalance:parseFloat(otherAccount.accountBalance) + amount
                     },
                     {
