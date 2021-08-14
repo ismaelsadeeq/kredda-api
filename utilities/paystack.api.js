@@ -1,7 +1,8 @@
 const models = require('../models');
-const converterKey = process.env.FREECONVERTER;
+var request = require('request');
 require('dotenv').config();
 const uuid = require('uuid');
+const converterKey = process.env.FREECONVERTER;
 //New Implementation
 const responseData = {
 	status: true,
