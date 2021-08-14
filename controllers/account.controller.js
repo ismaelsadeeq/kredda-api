@@ -26,6 +26,7 @@ const createAccountType = async (req,res)=>{
       id:uuid.v4(),
       name:data.name,
       currency:data.currency,
+      currencyCode:data.currencyCode,
       serviceFee:data.serviceFee,
       status:true
     }
@@ -58,6 +59,7 @@ const editAccountType = async (req,res)=>{
   const accountType = await models.accountType.update(
     {
       name:data.name,
+      currencyCode:data.currencyCode,
       currency:data.currency,
       serviceFee:data.serviceFee,
       status:true
@@ -151,32 +153,49 @@ const deleteAccountType = async (req,res)=>{
     return res.json(responseData);
   }
   responseData.status = true;
-  responseData.message = "completed";
+  responseData.message = "deleted";
   responseData.data = accountType;
   return res.json(responseData);
   
 }
 const createAccount = async (req,res)=>{
   const user = req.user;
+  console.log(req.params.accountTypeId)
   const accountType = await models.accountType.findOne(
     {
       where:{
-        id:req.params.accountType,
+        id:req.params.accountTypeId,
         status:true,
       }
     }
   );
-  if(accountType){
+  console.log(accountType)
+  if(!accountType){
     responseData.status = false;
     responseData.message = "account type doesnt exist or suspended";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const accountExist = await models.otherAccount.findOne(
+    {
+      where:{
+        accountTypeId:req.params.accountTypeId,
+        userId:user.id
+      }
+    }
+  )
+  if(accountExist){
+    responseData.status = true;
+    responseData.message = "user has an account";
     responseData.data = undefined;
     return res.json(responseData);
   }
   const account = await models.otherAccount.create(
     {
       id:uuid.v4(),
-      accountTypeId:req.params.accountType,
+      accountTypeId:req.params.accountTypeId,
       userId:user.id,
+      status:0,
       accountBalance:"0.0"
     }
   );
@@ -242,7 +261,7 @@ const getAccounts = async (req,res)=>{
   let pageLimit = parseInt(req.query.pageLimit);
   let currentPage = parseInt(req.query.currentPage);
   let	skip = currentPage * pageLimit;
-  const accounts = await models.account.findAll(
+  const accounts = await models.otherAccount.findAll(
     {
       order:[['createdAt','DESC']],
       offset:skip,
@@ -299,7 +318,7 @@ const disableAccount = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData);
   }
-  await models.otherAccount.delete(
+  await models.otherAccount.destroy(
     {
       where:{
         id:req.params.id,

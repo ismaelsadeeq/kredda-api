@@ -7,7 +7,7 @@ router.post('/type',
   passport.authenticate('jwt',{session:false}),
   controller.createAccountType
 );
-router.put('/type',
+router.put('/type/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editAccountType
 );
@@ -19,11 +19,11 @@ router.get('/type/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getAccountType
 );
-router.delete('/type/all',
+router.delete('/type/:id',
   passport.authenticate('jwt',{session:false}),
   controller.deleteAccountType
 );
-router.post('/:accountType',
+router.post('/:accountTypeId',
   passport.authenticate('jwt',{session:false}),
   controller.createAccount
 );

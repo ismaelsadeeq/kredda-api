@@ -174,7 +174,7 @@ const webhook =async (req,res)=>{
     
   }
   res.statusCode = 401;
-	return res.json('unauthorize')
+	return res.send('Unauthorize')
 }
 const flutterwaveWebhook = async (req,res)=>{
 
