@@ -12,6 +12,15 @@ router.get('/admin/active',
   passport.authenticate('jwt',{session:false}),
   controller.getActiveUsers
 );
+//not tested 
+router.put("/bank-detail",
+  passport.authenticate("jwt",{session:false}),
+  controller.updateBankDetails
+);
+router.get("/bank-detail",
+  passport.authenticate("jwt",{session:false}),
+  controller.getBankDetails
+);
 router.post('/kyc',
   passport.authenticate('jwt',{session:false}),
   controller.updateKyc

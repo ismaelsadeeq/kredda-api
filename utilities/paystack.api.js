@@ -772,7 +772,58 @@ async function checkPendingCharge(payload,responsee){
     return responsee.json(error);
   });
 }
-
+async function verifyAccountNumber(payload,userId,responsee){
+  const https = require('https');
+  const params = JSON.stringify({})
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: `/bank/resolve?account_number=${payload.accountNumber}&bank_code=${payload.bankCode}`,
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const req = https.request(options, res => {
+    let data = ''
+    res.on('data', (chunk) => {
+      data += chunk
+    });
+    res.on('end',async () => {
+      const response = JSON.parse(data)
+      console.log(response);
+      if(response.status === true && response.message === "Account number resolved"){
+        const updateBankDetail = await models.bank.update(
+          {
+            isAccountValid:true
+          },
+          {
+            where:{
+              userId:userId
+            }
+          }
+        )
+        return responsee.json(response)
+      }
+      const updateBankDetail = await models.bank.update(
+        {
+          isAccountValid:false
+        },
+        {
+          where:{
+            userId:userId
+          }
+        }
+      )
+      return responsee.json(response)
+    })
+  }).on('error', error => {
+    console.error(error)
+  })
+  req.write(params)
+  req.end()
+}
 
 module.exports = {
   validateBvn,
@@ -785,5 +836,6 @@ module.exports = {
   submitPhone,
   submitBirthday,
   submitAddress,
-  checkPendingCharge
+  checkPendingCharge,
+  verifyAccountNumber
 }
