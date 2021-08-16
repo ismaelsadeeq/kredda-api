@@ -421,79 +421,7 @@ const getActiveUsers = async (req,res)=>{
   res.statusCode = 401;
   return res.send('Unauthorized');
 }
-const updateBankDetail = async (req,res)=>{
-  const user = req.user;
-  const data = req.body;
-  const bankDetail = await models.bankDetail.findOne(
-    {
-      where:{
-        userId:user.id,
-        bankName:data.bankName,
-      }
-    }
-  );
-  
-  if(!bankDetail){
-    await models.bankDetail.create(
-      {
-        id:uuid.v4(),
-        userId:user.id,
-        bankName:data.bankName,
-        bankCode:data.bankCode,
-        accountNumber:data.accountNumber,
-        kudaToken:data.kudaToken
-      }
-    );
-    let payload = {
-      name:user.firstName + ' '+user.lastName,
-      accountNumber:data.accountNumber,
-      bankCode:data.bankCode
-    }
-    return await paystackApi.verifyAccountNumber(payload,req.user.id,res)
-  }
-  if(!bankDetail.isAccountValid){
-    await models.bankDetail.update(
-      {
-        userId:user.id,
-        bankCode:data.bankCode,
-        accountNumber:data.accountNumber,
-        kudaToken:data.kudaToken
-      },
-      {
-        where:{
-          userId:user.id,
-          bankName:data.bankName,
-        }
-      }
-    );
-    let payload = {
-      name:user.firstName + ' '+user.lastName,
-      accountNumber:data.accountNumber,
-      bankCode:data.bankCode
-    }
-    return await paystackApi.verifyAccountNumber(payload,req.user.id,res)
-  } else {
-    responseData.status = true;
-    responseData.message = "account is valid";
-    responseData.data = data;
-    return res.json(responseData);
-  }
-}
-const getBankDetails = async (req,res)=>{
-  const user = req.user;
-  const id = req.params.id;
-  const banksDetail = await models.bank.findOne(
-    {
-      where:{
-        id:req.params.id
-      }
-    }
-  );
-  responseData.data = banksDetail;
-  responseData.message = "successful";
-  responseData.status = true;
-  return res.json(responseData);
-}
+
 const sendEmail= (data)=>{
   const sendMail = mailer.sendMail(data.email, data.variables,data.msg)
  if(sendMail){
@@ -511,5 +439,4 @@ module.exports = {
   updateKyc,
   getAllUsers,
   getActiveUsers,
-  updateBankDetail
 }

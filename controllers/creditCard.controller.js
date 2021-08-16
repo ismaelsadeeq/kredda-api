@@ -56,6 +56,12 @@ const chargeSavedCreditCard = async (req,res)=>{
     responseData.data = creditCard;
     return res.json(responseData);
   }
+  if(payment.siteName =='monnify'){
+    responseData.status = 200;
+    responseData.message = "pay with widget";
+    responseData.data = creditCard;
+    return res.json(responseData);
+  }
   responseData.status = 200;
   responseData.message = "something went wrong";
   responseData.data = undefined

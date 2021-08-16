@@ -40,6 +40,9 @@ module.exports = {
       referralCode: {
         type: Sequelize.STRING
       },
+      birthday :{
+        type: Sequelize.STRING
+      },
       password :{
         type: Sequelize.STRING
       },
