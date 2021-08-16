@@ -314,7 +314,7 @@ async function createCharge(payload,responsee) {
   const https = require('https');
   const params = JSON.stringify({
     "email": payload.email, 
-    "amount": payload.amount,
+    "amount": parseFloat(payload.amount) * 100,
     "metadata": {
       "custom_fields": [
         {
@@ -349,6 +349,23 @@ async function createCharge(payload,responsee) {
       let response = JSON.parse(data)
       if(response.status == true && response.data.status == "success"){
         console.log(response);
+        let time = new Date();
+        time = time.toLocaleString()
+        const transaction = await models.transaction.create(
+          {
+            id:uuid.v4(),
+            transactionType:"debit",
+            message:"funding of wallet",
+            beneficiary:"self",
+            description:payload.displayName + " attempting to fund his/her wallet to perform transaction",
+            userId:userId,
+            reference:response.data.reference,
+            amount:payload.amount,
+            isRedemmed:false,
+            status:"initiated",
+            time: time
+          }
+        );
       }
       console.log(response);
       return responsee.json(response);
@@ -401,6 +418,23 @@ async function createChargeKuda(payload,responsee) {
       let response = JSON.parse(data)
       if(response.status == true && response.data.status == "success"){
         console.log(response);
+        let time = new Date();
+        time = time.toLocaleString()
+        const transaction = await models.transaction.create(
+          {
+            id:uuid.v4(),
+            transactionType:"debit",
+            message:"funding of wallet",
+            beneficiary:"self",
+            description:payload.displayName + " attempting to fund his/her wallet to perform transaction",
+            userId:userId,
+            reference:response.data.reference,
+            amount:payload.amount,
+            isRedemmed:false,
+            status:"initiated",
+            time: time
+          }
+        );
         return responsee.json(response);
       }
       console.log(response);
@@ -439,10 +473,28 @@ async function submitPin(payload,responsee){
       const response = JSON.parse(data);
       console.log(response)
       if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
-        
+        await models.transaction.update(
+          {
+            status:"attempted"
+          },
+          {
+            where:{
+              reference:payload.reference
+            }
+          }
+        );
         return responsee.json(response);
       }
-      
+       await models.transaction.update(
+        {
+          status:"failed"
+        },
+        {
+          where:{
+            reference:payload.reference
+          }
+        }
+      );
       return responsee.json(response);
     });
   }).on('error',async error => {
@@ -479,11 +531,29 @@ async function submitOtp(payload,responsee){
       const response = JSON.parse(data)
       console.log(response)
       if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
-       
-       return responsee.json(response);
-     }
-     
-     return responsee.json(response);
+        await models.transaction.update(
+          {
+            status:"attempted"
+          },
+          {
+            where:{
+              reference:payload.reference
+            }
+          }
+        );
+        return responsee.json(response);
+      }
+       await models.transaction.update(
+        {
+          status:"failed"
+        },
+        {
+          where:{
+            reference:payload.reference
+          }
+        }
+      );
+      return responsee.json(response);
     })
   }).on('error',async error => {
     let err = JSON.parse(error)
@@ -519,9 +589,28 @@ async function submitPhone(data,responsee){
       console.log(response)
       if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
         
+        await models.transaction.update(
+          {
+            status:"attempted"
+          },
+          {
+            where:{
+              reference:payload.reference
+            }
+          }
+        );
         return responsee.json(response);
       }
-       
+       await models.transaction.update(
+        {
+          status:"failed"
+        },
+        {
+          where:{
+            reference:payload.reference
+          }
+        }
+      );
       return responsee.json(response);
     })
   }).on('error',async error => {
@@ -599,11 +688,29 @@ async function submitAddress(payload,responsee){
       const response = JSON.parse(data);
       console.log(response)
       if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
-        
-       return responsee.json(response);
-     }
-     
-     return responsee.json(response);
+        await models.transaction.update(
+          {
+            status:"attempted"
+          },
+          {
+            where:{
+              reference:payload.reference
+            }
+          }
+        );
+        return responsee.json(response);
+      }
+       await models.transaction.update(
+        {
+          status:"failed"
+        },
+        {
+          where:{
+            reference:payload.reference
+          }
+        }
+      );
+      return responsee.json(response);
     })
   }).on('error',async error => {
     let err = JSON.parse(error)
@@ -634,10 +741,28 @@ async function checkPendingCharge(payload,responsee){
       console.log(response)
       if(response){
         if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
-          
+          await models.transaction.update(
+           {
+             status:"attempted"
+           },
+           {
+             where:{
+               reference:payload.reference
+             }
+           }
+         );
          return responsee.json(response);
        }
-       
+        await models.transaction.update(
+         {
+           status:"failed"
+         },
+         {
+           where:{
+             reference:payload.reference
+           }
+         }
+       );
        return responsee.json(response);
       }
       return responsee.json(response);

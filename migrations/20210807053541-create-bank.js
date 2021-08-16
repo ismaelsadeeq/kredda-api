@@ -29,6 +29,9 @@ module.exports = {
       accountNumber: {
         type: Sequelize.STRING
       },
+      kudaToken :{
+        type: Sequelize.STRING
+      },
       isAccountValid: {
         type: Sequelize.BOOLEAN
       },
