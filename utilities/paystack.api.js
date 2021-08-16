@@ -309,8 +309,356 @@ async function verifyPayment(payload,paystack,respond){
   req.write(params)
   req.end()
 }
+async function createCharge(payload,responsee) {
+  const userId = payload.id;
+  const https = require('https');
+  const params = JSON.stringify({
+    "email": payload.email, 
+    "amount": payload.amount,
+    "metadata": {
+      "custom_fields": [
+        {
+          "value": payload.value,
+          "display_name": payload.displayName,
+          "variable_name":payload.variableName,
+        }
+      ]
+    },
+    "bank": {
+        "code": payload.bankCode,
+        "account_number":payload.accountNumber 
+    },
+    "birthday": payload.birthday
+  })
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: '/charge',
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const req =  https.request(options, res => {
+    let data = ''
+    res.on('data', (chunk) => {
+      data += chunk
+    });
+    res.on('end',async () => {
+      let response = JSON.parse(data)
+      if(response.status == true && response.data.status == "success"){
+        console.log(response);
+      }
+      console.log(response);
+      return responsee.json(response);
+    })
+  }).on('error',async error => {
+    let err = JSON.parse(error);
+    console.error(err)
+    return responsee.json(err);
+  })
+  req.write(params)
+  req.end()
+}
+async function createChargeKuda(payload,responsee) {
+  const userId = payload.id;
+  const https = require('https');
+  const params = JSON.stringify({
+    "email": payload.email, 
+    "amount": payload.amount,
+    "metadata": {
+      "custom_fields": [
+        {
+          "value": payload.value,
+          "display_name": payload.displayName,
+          "variable_name":payload.variableName,
+        }
+      ]
+    },
+    "bank": {
+      "code": payload.bankCode, 
+      "phone": payload.phoneNumber,
+      "token": payload.token
+    }
+  })
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: '/charge',
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const req =  https.request(options, res => {
+    let data = ''
+    res.on('data', (chunk) => {
+      data += chunk
+    });
+    res.on('end',async () => {
+      let response = JSON.parse(data)
+      if(response.status == true && response.data.status == "success"){
+        console.log(response);
+        return responsee.json(response);
+      }
+      console.log(response);
+      return responsee.json(response);
+    })
+  }).on('error',async error => {
+    let err = JSON.parse(error);
+    console.error(err)
+    return responsee.json(err);
+  })
+  req.write(params)
+  req.end()
+}
+async function submitPin(payload,responsee){
+  const https = require('https');
+  const params = JSON.stringify({
+    "pin": payload.pin,
+    "reference": payload.reference
+  })
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: '/charge/submit_pin',
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const req = https.request(options, res => {
+    let data = ''
+    res.on('data', (chunk) => {
+      data += chunk
+    });
+    res.on('end',async () => {
+      const response = JSON.parse(data);
+      console.log(response)
+      if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
+        
+        return responsee.json(response);
+      }
+      
+      return responsee.json(response);
+    });
+  }).on('error',async error => {
+    let err = JSON.parse(error)
+    console.error(error)
+    return responsee.json(error);
+  })
+  req.write(params)
+  req.end()
+}
+
+async function submitOtp(payload,responsee){
+  const https = require('https')
+  const params = JSON.stringify({
+    "otp": payload.otp,
+    "reference": payload.reference
+  })
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: '/charge/submit_otp',
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const req = https.request(options, res => {
+    let data = ''
+    res.on('data', (chunk) => {
+      data += chunk
+    });
+    res.on('end',async () => {
+      const response = JSON.parse(data)
+      console.log(response)
+      if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
+       
+       return responsee.json(response);
+     }
+     
+     return responsee.json(response);
+    })
+  }).on('error',async error => {
+    let err = JSON.parse(error)
+    console.error(err)
+    return responsee.json(err);
+  })
+  req.write(params)
+  req.end()
+}
+async function submitPhone(data,responsee){
+  const https = require('https')
+  const params = JSON.stringify({
+    "phone": data.phone,
+    "reference": data.reference
+  })
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: '/charge/submit_phone',
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const req = https.request(options, res => {
+    let data = ''
+    res.on('data', (chunk) => {
+      data += chunk
+    });
+    res.on('end',async  () => {
+      const response = JSON.parse(data);
+      console.log(response)
+      if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
+        
+        return responsee.json(response);
+      }
+       
+      return responsee.json(response);
+    })
+  }).on('error',async error => {
+    let err = JSON.parse(error)
+    console.error(err)
+    return responsee.json(err);
+  })
+  req.write(params)
+  req.end()
+}
+async function submitBirthday(data,responsee){
+  const https = require('https')
+  const params = JSON.stringify({
+    "birthday": data.birthday,
+    "reference":data.reference
+  })
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: '/charge/submit_birthday',
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer sk_live_d25de363927993067e7d7d0b7f206b1fd0d87aaa`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const req = https.request(options, res => {
+    let data = ''
+    res.on('data', (chunk) => {
+      data += chunk
+    });
+    res.on('end',async () => {
+      const response = JSON.parse(data)
+      console.log(response)
+      if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
+         
+        return responsee.json(response);
+      }
+      return responsee.json(response);
+    })
+  }).on('error',async error => {
+    let err = JSON.parse(error)
+    console.error(err)
+    return responsee.json(err);
+  })
+  req.write(params)
+  req.end()
+}
+
+async function submitAddress(payload,responsee){
+  const https = require('https')
+  const params = JSON.stringify({
+    "reference": payload.reference,
+    "address":payload.address ,
+    "city": payload.city,
+    "state": payload.state,
+    "zip_code": payload.zip_code
+  })
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: '/charge/submit_address',
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const req = https.request(options, res => {
+    let data = ''
+    res.on('data', (chunk) => {
+      data += chunk
+    });
+    res.on('end',async () => {
+      const response = JSON.parse(data);
+      console.log(response)
+      if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
+        
+       return responsee.json(response);
+     }
+     
+     return responsee.json(response);
+    })
+  }).on('error',async error => {
+    let err = JSON.parse(error)
+    console.error(err)
+    return responsee.json(err);
+  })
+  req.write(params)
+  req.end()
+} 
+async function checkPendingCharge(payload,responsee){
+  const https = require('https');
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path:  `/charge/:${payload.reference}`,
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+    }
+  }
+  https.request(options, res => {
+    let data = ''
+    res.on('data', (chunk) => {
+      data += chunk
+    });
+    res.on('end',async () => {
+      const response = JSON.parse(data)
+      console.log(response)
+      if(response){
+        if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
+          
+         return responsee.json(response);
+       }
+       
+       return responsee.json(response);
+      }
+      return responsee.json(response);
+    })
+  }).on('error', error => {
+    console.error(error)
+    return responsee.json(error);
+  });
+}
+
+
 module.exports = {
   validateBvn,
   chargeAuthorization,
-  verifyPayment
+  verifyPayment,
+  createCharge,
+  createChargeKuda,
+  submitPin,
+  submitOtp,
+  submitPhone,
+  submitBirthday,
+  submitAddress,
+  checkPendingCharge
 }
