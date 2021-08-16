@@ -310,6 +310,12 @@ async function verifyPayment(payload,paystack,respond){
   req.end()
 }
 async function createCharge(payload,responsee) {
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }else{
+    privateKey = paystack.testPrivateKey
+  }
   const userId = payload.id;
   const https = require('https');
   const params = JSON.stringify({
@@ -336,7 +342,7 @@ async function createCharge(payload,responsee) {
     path: '/charge',
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+       Authorization: `Bearer ${privateKey}`,
       'Content-Type': 'application/json'
     }
   }
@@ -379,6 +385,12 @@ async function createCharge(payload,responsee) {
   req.end()
 }
 async function createChargeKuda(payload,responsee) {
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }else{
+    privateKey = paystack.testPrivateKey
+  }
   const userId = payload.id;
   const https = require('https');
   const params = JSON.stringify({
@@ -449,6 +461,12 @@ async function createChargeKuda(payload,responsee) {
   req.end()
 }
 async function submitPin(payload,responsee){
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }else{
+    privateKey = paystack.testPrivateKey
+  }
   const https = require('https');
   const params = JSON.stringify({
     "pin": payload.pin,
@@ -460,7 +478,7 @@ async function submitPin(payload,responsee){
     path: '/charge/submit_pin',
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      Authorization: `Bearer ${privateKey}`,
       'Content-Type': 'application/json'
     }
   }
@@ -507,6 +525,12 @@ async function submitPin(payload,responsee){
 }
 
 async function submitOtp(payload,responsee){
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }else{
+    privateKey = paystack.testPrivateKey
+  }
   const https = require('https')
   const params = JSON.stringify({
     "otp": payload.otp,
@@ -518,7 +542,7 @@ async function submitOtp(payload,responsee){
     path: '/charge/submit_otp',
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      Authorization: `Bearer ${privateKey}`,
       'Content-Type': 'application/json'
     }
   }
@@ -564,6 +588,12 @@ async function submitOtp(payload,responsee){
   req.end()
 }
 async function submitPhone(data,responsee){
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }else{
+    privateKey = paystack.testPrivateKey
+  }
   const https = require('https')
   const params = JSON.stringify({
     "phone": data.phone,
@@ -575,7 +605,7 @@ async function submitPhone(data,responsee){
     path: '/charge/submit_phone',
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      Authorization: `Bearer ${privateKey}`,
       'Content-Type': 'application/json'
     }
   }
@@ -622,6 +652,12 @@ async function submitPhone(data,responsee){
   req.end()
 }
 async function submitBirthday(data,responsee){
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }else{
+    privateKey = paystack.testPrivateKey
+  }
   const https = require('https')
   const params = JSON.stringify({
     "birthday": data.birthday,
@@ -633,7 +669,7 @@ async function submitBirthday(data,responsee){
     path: '/charge/submit_birthday',
     method: 'POST',
     headers: {
-      Authorization: `Bearer sk_live_d25de363927993067e7d7d0b7f206b1fd0d87aaa`,
+      Authorization: `Bearer ${privateKey}`,
       'Content-Type': 'application/json'
     }
   }
@@ -661,6 +697,12 @@ async function submitBirthday(data,responsee){
 }
 
 async function submitAddress(payload,responsee){
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }else{
+    privateKey = paystack.testPrivateKey
+  }
   const https = require('https')
   const params = JSON.stringify({
     "reference": payload.reference,
@@ -675,7 +717,7 @@ async function submitAddress(payload,responsee){
     path: '/charge/submit_address',
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      Authorization: `Bearer ${privateKey}`,
       'Content-Type': 'application/json'
     }
   }
@@ -721,6 +763,12 @@ async function submitAddress(payload,responsee){
   req.end()
 } 
 async function checkPendingCharge(payload,responsee){
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }else{
+    privateKey = paystack.testPrivateKey
+  }
   const https = require('https');
   const options = {
     hostname: 'api.paystack.co',
@@ -728,7 +776,7 @@ async function checkPendingCharge(payload,responsee){
     path:  `/charge/:${payload.reference}`,
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      Authorization: `Bearer ${privateKey}`,
     }
   }
   https.request(options, res => {
@@ -773,6 +821,12 @@ async function checkPendingCharge(payload,responsee){
   });
 }
 async function verifyAccountNumber(payload,userId,responsee){
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }else{
+    privateKey = paystack.testPrivateKey
+  }
   const https = require('https');
   const params = JSON.stringify({})
   const options = {
@@ -781,7 +835,7 @@ async function verifyAccountNumber(payload,userId,responsee){
     path: `/bank/resolve?account_number=${payload.accountNumber}&bank_code=${payload.bankCode}`,
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      Authorization: `Bearer ${privateKey}`,
       'Content-Type': 'application/json'
     }
   }

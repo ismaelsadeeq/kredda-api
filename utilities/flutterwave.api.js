@@ -248,6 +248,29 @@ async function verifyPayment(payload,flutterwave,res){
     return res.json(responseData)
   });
 }
+async function validateBvn(payload,flutterwave){
+  let privateKey;
+  if(flutterwave.privateKey){
+    privateKey = flutterwave.privateKey;
+  }else{
+    privateKey = flutterwave.testPrivateKey
+  }
+  var request = require('request');
+  var options = {
+    'method': 'POST',
+    'url': `https://rave-api-v2.herokuapp.com/v3/kyc/bvns/${payload.bvnNumber}`,
+    'headers': {
+      'Authorization': `Bearer ${privateKey}`
+    }
+  };
+  request(options, async function (error, response) { 
+    if (error) throw new Error(error);
+    let payload = response.body;
+    payload =  JSON.parse(payload)
+    console.log(payload)
+    
+  });
+}
 module.exports = {
   validateBvn,
   verifyPayment
