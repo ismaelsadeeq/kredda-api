@@ -200,7 +200,7 @@ const flutterwaveWebhook = async (req,res)=>{
   const payload = req.body;
   if(payload.event=="charge.completed" && payload.data.status=="successful"){
     res.statusCode = 200;
-    const trxRef = payload.data.tx_ref;
+    const trxRef = payload.data.flw_ref;
     const transaction = await models.transaction.findOne(
       {
         where:{
@@ -230,7 +230,7 @@ const flutterwaveWebhook = async (req,res)=>{
         }
       }
     );
-    if(!transactionExist){
+    if(transactionExist){
       const otherAccount = await models.otherAccount.findOne(
         {
           where:{
@@ -306,15 +306,17 @@ const flutterwaveWebhook = async (req,res)=>{
         }
       );
     } else {
-      await models.transaction.update(
+      let time = new Date();
+      time = time.toLocaleString();
+      await models.transaction.create(
         {
           id:uuid.v4(),
           userId:user.id,
           message:"funding of wallet",
-          reference:trxRef,
           transactionType:"debit",
           beneficiary:"self",
           isRedemmed:true,
+          reference:trxRef,
           amount:payload.data.amount,
           description:user.firstName + " funding his/her wallet to perform transaction",
           status:"successful",
