@@ -36,9 +36,13 @@ router.post('/paystack/enter-address',
   passport.authenticate('jwt',{session:false}),
   controller.verifyPaymentWithAddress
 );
-router.post('/paystack/check-status',
+router.put('/paystack/check-status',
   passport.authenticate('jwt',{session:false}),
   controller.checkChargeStatus
+);
+router.put('/flutterwave/check-status/:reference',
+  passport.authenticate('jwt',{session:false}),
+  controller.checkChargeStatusFlutterwave
 );
 router.post("/",
   passport.authenticate("jwt",{session:false}),

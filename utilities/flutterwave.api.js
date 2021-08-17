@@ -343,11 +343,11 @@ async function validateCharge(data,flutterwave,responsee){
   });
 }
 async function validateAccount(data,flutterwave,responsee){
-  let privateKey;
   const accountData ={
     "account_number":data.accountNumber,
     "account_bank":data.bankCode
   }
+  let privateKey;
   if(flutterwave.privateKey){
     privateKey = flutterwave.privateKey;
   }else{

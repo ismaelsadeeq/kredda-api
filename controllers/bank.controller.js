@@ -363,6 +363,18 @@ const checkChargeStatus = async (req,res)=>{
   }
   return await paystackApi.checkPendingCharge(payment,payload,res);
 }
+const checkChargeStatusFlutterwave = async (req,res)=>{
+  const reference = req.params.reference;
+  const user = req.user;
+  const payment = await getPayment()
+  const payload = {
+    reference:reference,
+    userId:user.id,
+    firstName:user.firstName,
+    id:req.body.id
+  }
+  await flutterwaveApi.verifyPayment(payload,payment,res);
+}
 
 module.exports = {
   verifyPaymentWithPin,
@@ -377,5 +389,6 @@ module.exports = {
   getBankDetail,
   deleteBankDetail,
   fundAccount,
+  checkChargeStatusFlutterwave,
   validateChargeFlutterwave
 }
