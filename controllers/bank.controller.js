@@ -276,6 +276,13 @@ const validateChargeFlutterwave = async (req,res)=>{
   const user = req.user;
   const data = req.body;
   const payment = await getPayment();
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   if(!data.card){
     const payload = {
       "otp":data.otp,
@@ -296,6 +303,13 @@ const verifyPaymentWithPin = async (req,res)=>{
   const user = req.user;
   const data = req.body;
   const payment = await getPayment()
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   const payload = {
     "pin":data.pin,
     "reference":data.reference
@@ -306,6 +320,13 @@ const verifyPaymentWithOtp = async (req,res)=>{
   const user = req.user;
   const data = req.body;
   const payment = await getPayment()
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   const payload = {
     "otp":data.otp,
     "reference":data.reference,
@@ -318,6 +339,13 @@ const verifyPaymentWithBirthday = async (req,res)=>{
   const user = req.user;
   const data = req.body;
   const payment = await getPayment()
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   const payload = {
     "birthday":data.birthday,
     "reference":data.reference,
@@ -330,6 +358,13 @@ const verifyPaymentWithPhoneNumber = async (req,res)=>{
   const user = req.user;
   const data = req.body;
   const payment = await getPayment()
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   const payload = {
     "phone":data.phone,
     "reference":data.reference,
@@ -342,6 +377,13 @@ const verifyPaymentWithAddress = async (req,res)=>{
   const user = req.user;
   const data = req.body;
   const payment = await getPayment()
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   const payload = {
     "address":data.address,
     "city":data.city,
@@ -357,6 +399,13 @@ const checkChargeStatus = async (req,res)=>{
   const user = req.user;
   const data = req.body;
   const payment = await getPayment()
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   const payload = {
     "reference":data.reference,
     "user":user
@@ -367,6 +416,13 @@ const checkChargeStatusFlutterwave = async (req,res)=>{
   const reference = req.params.reference;
   const user = req.user;
   const payment = await getPayment()
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   const payload = {
     reference:reference,
     userId:user.id,

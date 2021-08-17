@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   transaction.init({
     transactionType: DataTypes.STRING,
+    trxId:DataTypes.STRING,
     message: DataTypes.STRING,
     reference: DataTypes.STRING,
     status:DataTypes.STRING,
