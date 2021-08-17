@@ -223,85 +223,167 @@ const flutterwaveWebhook = async (req,res)=>{
       responseData.data = undefined;
       return res.json(responseData)
     }
-    let time = new Date();
-    time = time.toLocaleString()
-    await models.transaction.create(
-      {
-        id:uuid.v4(),
-        userId:user.id,
-        message:"funding of wallet",
-        reference:trxRef,
-        transactionType:"debit",
-        beneficiary:"self",
-        isRedemmed:true,
-        amount:payload.data.amount,
-        description:user.firstName + " funding his/her wallet to perform transaction",
-        status:"successful",
-        time: time
-      }
-    );
-    const otherAccount = await models.otherAccount.findOne(
+    const transactionExist = await models.transaction.findOne(
       {
         where:{
-          userId:user.id,
-          status:true
+          reference:trxRef
         }
       }
     );
-    if(otherAccount){
-      const accountType = await models.accountType.findOne(
+    if(!transactionExist){
+      const otherAccount = await models.otherAccount.findOne(
         {
           where:{
-            id:otherAccount.accountTypeId
+            userId:transactionExist.userId,
+            status:true
           }
         }
       );
-      var options = {
-        'method': 'GET',
-        'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${apiKey}`
-      };
-      request(options, async function (error, response) { 
-        if (error) throw new Error(error);
-        let secondPayload = response.body;
-        secondPayload =  JSON.parse(secondPayload);
-         // secondPayload =  { NGN_USD: 0.00243 }
-        console.log(secondPayload);
-        let amount = secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(payload.data.amount)
-        if(accountType.serviceFee){
-          let serviceFee  =  secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee);
-          amount =  amount - serviceFee;
-        }
-        await models.otherAccount.update(
+      if(otherAccount){
+        const accountType = await models.accountType.findOne(
           {
-            status:0,
-            accountBalance:parseFloat(otherAccount.accountBalance) + amount
+            where:{
+              id:otherAccount.accountTypeId
+            }
+          }
+        );
+        var options = {
+          'method': 'GET',
+          'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${apiKey}`
+        };
+        request(options, async function (error, response) { 
+          if (error) throw new Error(error);
+          let secondPayload = response.body;
+          secondPayload =  JSON.parse(secondPayload);
+           // secondPayload =  { NGN_USD: 0.00243 }
+          console.log(secondPayload);
+          let amount = secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(payload.data.amount)
+          if(accountType.serviceFee){
+            let serviceFee  =  secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee);
+            amount =  amount - serviceFee;
+          }
+          await models.otherAccount.update(
+            {
+              status:0,
+              accountBalance:parseFloat(otherAccount.accountBalance) + amount
+            },
+            {
+              where:{
+                id:otherAccount.id
+              }
+            }
+          )
+        });
+      } else {
+        const wallet = await models.wallet.findOne(
+          {
+            where:{
+              userId:transactionExist.userId,
+            }
+          }
+        );
+        const balance = parseFloat(wallet.accountBalance) + parseFloat(payload.data.amount);
+        await models.wallet.update(
+          {
+            accountBalance:balance
           },
           {
             where:{
-              id:otherAccount.id
+              id:wallet.id
             }
           }
-        )
-      });
-    } else {
-      const wallet = await models.wallet.findOne(
+        );
+      }
+      await models.transaction.update(
         {
-          where:{
-            userId:user.id,
-          }
-        }
-      );
-      const balance = parseFloat(wallet.accountBalance) + parseFloat(payload.data.amount);
-      await models.wallet.update(
-        {
-          accountBalance:balance
+          isRedemmed:true,
+          status:"successful",
         },
         {
           where:{
-            id:wallet.id
+            reference:trxRef
           }
         }
       );
+    } else {
+      await models.transaction.update(
+        {
+          id:uuid.v4(),
+          userId:user.id,
+          message:"funding of wallet",
+          reference:trxRef,
+          transactionType:"debit",
+          beneficiary:"self",
+          isRedemmed:true,
+          amount:payload.data.amount,
+          description:user.firstName + " funding his/her wallet to perform transaction",
+          status:"successful",
+          time: time
+        }
+      );
+      const otherAccount = await models.otherAccount.findOne(
+        {
+          where:{
+            userId:user.id,
+            status:true
+          }
+        }
+      );
+      if(otherAccount){
+        const accountType = await models.accountType.findOne(
+          {
+            where:{
+              id:otherAccount.accountTypeId
+            }
+          }
+        );
+        var options = {
+          'method': 'GET',
+          'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${apiKey}`
+        };
+        request(options, async function (error, response) { 
+          if (error) throw new Error(error);
+          let secondPayload = response.body;
+          secondPayload =  JSON.parse(secondPayload);
+          // secondPayload =  { NGN_USD: 0.00243 }
+          console.log(secondPayload);
+          let amount = secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(payload.data.amount)
+          if(accountType.serviceFee){
+            let serviceFee  =  secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee);
+            amount =  amount - serviceFee;
+          }
+          await models.otherAccount.update(
+            {
+              status:0,
+              accountBalance:parseFloat(otherAccount.accountBalance) + amount
+            },
+            {
+              where:{
+                id:otherAccount.id
+              }
+            }
+          )
+        });
+      } else {
+        const wallet = await models.wallet.findOne(
+          {
+            where:{
+              userId:user.id,
+            }
+          }
+        );
+        const balance = parseFloat(wallet.accountBalance) + parseFloat(payload.data.amount);
+        await models.wallet.update(
+          {
+            accountBalance:balance
+          },
+          {
+            where:{
+              id:wallet.id
+            }
+          }
+        );
+      }
     }
     res.statusCode = 200;
     responseData.message = "Success";
