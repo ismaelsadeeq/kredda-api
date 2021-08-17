@@ -248,7 +248,7 @@ async function verifyPayment(payload,flutterwave,res){
     return res.json(responseData)
   });
 }
-async function validateBvn(payload,flutterwave){
+async function initiatePayment(data,flutterwave,responsee){
   let privateKey;
   if(flutterwave.privateKey){
     privateKey = flutterwave.privateKey;
@@ -258,7 +258,8 @@ async function validateBvn(payload,flutterwave){
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://rave-api-v2.herokuapp.com/v3/kyc/bvns/${payload.bvnNumber}`,
+    'body':data,
+    'url': `https://api.flutterwave.com/v3/charges?type=debit_ng_account`,
     'headers': {
       'Authorization': `Bearer ${privateKey}`
     }
@@ -268,10 +269,76 @@ async function validateBvn(payload,flutterwave){
     let payload = response.body;
     payload =  JSON.parse(payload)
     console.log(payload)
-    
+    if(payload.status ===true &&payload.message=="charge initiated"){
+      let time = new Date();
+        time = time.toLocaleString()
+        const transaction = await models.transaction.create(
+          {
+            id:uuid.v4(),
+            transactionType:"debit",
+            message:"funding of wallet",
+            beneficiary:"self",
+            description:payload.fullname + " attempting to fund his/her wallet to perform transaction",
+            userId:userId,
+            reference:response.data.flw_ref,
+            amount:payload.amount,
+            isRedemmed:false,
+            status:"initiated",
+            time: time
+          }
+        );
+        return responsee.json(payload);
+    }
+    return responsee.json(payload);
+  });
+}
+async function validateCharge(userId,data,flutterwave,responsee){
+  let privateKey;
+  if(flutterwave.privateKey){
+    privateKey = flutterwave.privateKey;
+  }else{
+    privateKey = flutterwave.testPrivateKey
+  }
+  var request = require('request');
+  var options = {
+    'method': 'POST',
+    'body':data,
+    'url': `https://api.flutterwave.com/v3/validate-charge`,
+    'headers': {
+      'Authorization': `Bearer ${privateKey}`
+    }
+  };
+  request(options, async function (error, response) { 
+    if (error) throw new Error(error);
+    let payload = response.body;
+    payload =  JSON.parse(payload)
+    console.log(payload)
+    if(payload.status==="success"&& payload.message==="Charge initiated"){
+      let time = new Date();
+      time = time.toLocaleString()
+      const transaction = await models.transaction.create(
+        {
+          id:uuid.v4(),
+          transactionType:"debit",
+          message:"funding of wallet",
+          beneficiary:"self",
+          description:data.fullname + " attempting to fund his/her wallet to perform transaction",
+          userId:userId,
+          reference:payload.data.flw_ref,
+          amount:payload.data.amount,
+          isRedemmed:false,
+          status:"initiated",
+          time: time
+        }
+      );
+      return responsee.json(payload);
+    }
+    return responsee.json(payload);
   });
 }
 module.exports = {
   validateBvn,
-  verifyPayment
+  verifyPayment,
+  initiatePayment,
+  validateCharge
 }

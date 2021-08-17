@@ -1,5 +1,6 @@
 const models = require('../models');
 const uuid = require('uuid');
+const helpers = require('../utilities/helpers')
 const { getPayment } = require('../middlewares/appSetting');
 const paystackApi = require('../utilities/paystack.api');
 const flutterwaveApi = require('../utilities/flutterwave.api');
@@ -145,6 +146,7 @@ const fundAccount = async (req,res)=>{
   const user = req.user;
   const data = req.body;
   const id = req.params.id;
+  const payment = await getPayment();
   const bankDetail = await models.bank.findOne(
     {
       id:id
@@ -189,8 +191,41 @@ const fundAccount = async (req,res)=>{
     return await paystackApi.createCharge(payload,res)
   }
   if(payment.siteName =='flutterwave'){
-    
+    let digits = helpers.generateFourDigitOTP();
+    let name = user.firstName;
+    let firstDigit = name.substring(0,1);
+    let trxRef = `MC-${digits}${firstDigit}`
+    const payload = {
+      "tx_ref":trxRef,
+      "amount":data.amount,
+      "account_bank":bankDetail.bankCode,
+      "account_number":bankDetail.accountNumber,
+      "currency":"NGN",
+      "email":user.email,
+      "phone_number":user.phoneNumber,
+      "fullname":user.firstName + " "+ user.lastName
+    }
   }
+  return await flutterwaveApi.initiatePayment(user.id,payload,payment,res)
+}
+const validateChargeFlutterwave = async (req,res)=>{
+  const user = req.user;
+  const data = req.body;
+  if(!data.card){
+    const payload = {
+      "otp":data.otp,
+      "flw_ref":data.reference,
+      "type": "account"
+    }
+    return await flutterwaveApi.validateCharge(payload,res)
+  }
+  const payload = {
+    "otp":data.otp,
+    "flw_ref":flw_ref,
+    "type": "card"
+  }
+  return await flutterwaveApi.validateCharge(payload,res)
+  
 }
 const verifyPaymentWithPin = async (req,res)=>{
   const user = req.user;
@@ -270,5 +305,6 @@ module.exports = {
   updateBankDetail,
   getBankDetail,
   deleteBankDetail,
-  fundAccount
+  fundAccount,
+  validateChargeFlutterwave
 }
