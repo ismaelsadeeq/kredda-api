@@ -153,7 +153,7 @@ const webhook =async (req,res)=>{
       const createCard = await models.creditCard.create(
         {
           id:uuid.v4(),
-          userId:wallet.userId,
+          userId:transaction.userId,
           authCode:authorization.authorization_code,
           cardType:authorization.card_type,
           lastDigits:authorization.last4,

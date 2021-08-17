@@ -28,7 +28,8 @@ const updateAccount = async (req,res)=>{
       gender:data.gender,
       email:data.email,
       city:data.city,
-      refferalCode:referralCode
+      referralCode:referralCode,
+      birthday:data.dob
     },
     {
       where:{
@@ -36,6 +37,7 @@ const updateAccount = async (req,res)=>{
       }
     }
   );
+  console.log(data.dob)
   const kyc = await models.kyc.findOne(
     {
       where:{
@@ -52,8 +54,7 @@ const updateAccount = async (req,res)=>{
           dob:data.dob
         }
       )
-    }
-    if(!kyc.dob){
+    }else if(!kyc.dob){
       await models.kyc.update(
         {
           dob:data.dob
@@ -151,7 +152,7 @@ const updateProfilePicture = async (req,res)=>{
             }
 					}
 				);
-        await models.kyc.findOne(
+        const kyc = await models.kyc.findOne(
           {
             where:{
               userId:user.id

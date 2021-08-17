@@ -336,9 +336,63 @@ async function validateCharge(userId,data,flutterwave,responsee){
     return responsee.json(payload);
   });
 }
+async function validateAccount(data,flutterwave,responsee){
+  let privateKey;
+  const accountData ={
+    "account_number":data.accountNumber,
+    "account_bank":data.bankCode
+  }
+  if(flutterwave.privateKey){
+    privateKey = flutterwave.privateKey;
+  }else{
+    privateKey = flutterwave.testPrivateKey
+  }
+  var request = require('request');
+  var options = {
+    'method': 'POST',
+    'url': `https://api.flutterwave.com/v3/accounts/resolve`,
+    'headers': {
+      'Authorization': `Bearer ${privateKey}`
+    },
+    'body':accountData,
+    'json': true
+  };
+  request(options, async function (error, response) { 
+    if (error) throw new Error(error);
+    let payload = response.body;
+    console.log(payload)
+    if(payload.status==="success"&& payload.message==="Account details fetched"){
+      const updateBankDetail = await models.bank.update(
+        {
+          isAccountValid:true
+        },
+        {
+          where:{
+            bankCode:data.bankCode,
+            accountNumber:data.bankCode
+          }
+        }
+      )
+      return responsee.json(payload);
+    }
+    const updateBankDetail = await models.bank.update(
+      {
+        isAccountValid:false
+      },
+      {
+        where:{
+          bankCode:data.bankCode,
+          accountNumber:data.bankCode
+        }
+      }
+    )
+    return responsee.json(payload);
+  });
+}
 module.exports = {
   validateBvn,
   verifyPayment,
   initiatePayment,
-  validateCharge
+  validateCharge,
+  validateAccount
 }

@@ -13,7 +13,15 @@ const responseData = {
 const createBankDetail = async (req,res)=>{
   const user = req.user;
   const data = req.body;
-  const bankDetail = await models.bankDetail.findOne(
+  const payment = await getPayment()
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const bankDetail = await models.bank.findOne(
     {
       where:{
         userId:user.id,
@@ -28,7 +36,7 @@ const createBankDetail = async (req,res)=>{
     return res.json(responseData);
   }
   if(!bankDetail){
-    await models.bankDetail.create(
+    await models.bank.create(
       {
         id:uuid.v4(),
         userId:user.id,
@@ -38,18 +46,46 @@ const createBankDetail = async (req,res)=>{
         kudaToken:data.kudaToken
       }
     );
-    let payload = {
-      name:user.firstName + ' '+user.lastName,
-      accountNumber:data.accountNumber,
-      bankCode:data.bankCode
+    if(payment.siteName =='paystack'){
+      let payload = {
+        name:user.firstName + ' '+user.lastName,
+        accountNumber:data.accountNumber,
+        bankCode:data.bankCode
+      } 
+      return await paystackApi.verifyAccountNumber(payment,payload,req.user.id,res)
     }
-    return await paystackApi.verifyAccountNumber(payload,req.user.id,res)
+    if(payment.siteName =='flutterwave'){
+      let payload = {
+        name:user.firstName + ' '+user.lastName,
+        accountNumber:data.accountNumber,
+        bankCode:data.bankCode
+      }
+      return await flutterwaveApi.validateAccount(payload,payment,res)
+    }
+    if(payment.siteName =='monnify'){
+      responseData.status = true;
+      responseData.message = "account payment not supported on this gateway";
+      responseData.data = data;
+      return res.json(responseData);
+    }
   }
+  responseData.status = true;
+  responseData.message = "something went wrong";
+  responseData.data = data;
+  return res.json(responseData);
 }
 const updateBankDetail = async (req,res)=>{
   const user = req.user;
   const data = req.body;
-  const bankDetail = await models.bankDetail.findOne(
+  const payment = getPayment()
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const bankDetail = await models.bank.findOne(
     {
       where:{
         id:req.params.id,
@@ -64,7 +100,7 @@ const updateBankDetail = async (req,res)=>{
     return res.json(responseData);
   }
   if(!bankDetail.isAccountValid){
-    await models.bankDetail.update(
+    await models.bank.update(
       {
         userId:user.id,
         bankCode:data.bankCode,
@@ -78,13 +114,28 @@ const updateBankDetail = async (req,res)=>{
         }
       }
     );
-    let name  = data.firstName + " "+ data.lastName;
-    let payload = {
-      name: name || user.firstName + ' '+user.lastName,
-      accountNumber:data.accountNumber,
-      bankCode:data.bankCode
+    if(payment.siteName =='paystack'){
+      let name  = data.firstName + " "+ data.lastName;
+      let payload = {
+        name: name || user.firstName + ' '+user.lastName,
+        accountNumber:data.accountNumber,
+        bankCode:data.bankCode
+      }
+      return await paystackApi.verifyAccountNumber(payment,payload,req.user.id,res);
     }
-    return await paystackApi.verifyAccountNumber(payload,req.user.id,res)
+    if(payment.siteName =='flutterwave'){
+      let payload = {
+        accountNumber:data.accountNumber,
+        bankCode:data.bankCode
+      }
+      return await flutterwaveApi.validateAccount(payload,payment,res)
+    }
+    if(payment.siteName =='monnify'){
+      responseData.status = true;
+      responseData.message = "account payment not supported on this gateway";
+      responseData.data = data;
+      return res.json(responseData);
+    }
   } else {
     responseData.status = true;
     responseData.message = "account is valid";

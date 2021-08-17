@@ -34,6 +34,7 @@ var serviceRouter = require('./routes/service');
 var creditCardRouter = require('./routes/creditCard');
 var walletRouter = require('./routes/wallet');
 var accountRouter = require('./routes/account');
+var bankRouter = require('./routes/bank');
 
 app.use('/api/v1', indexRouter);
 app.use('/api/v1',authRouter);
@@ -42,12 +43,14 @@ app.use('/api/v1/admin',adminRouter);
 app.use('/api/v1/auth',authRouter);
 app.use('/api/v1/setting',settingRouter);
 app.use('/api/v1/kyc',kycRouter);
-app.use('/api/v1/investment',investmentRouter);
-app.use('/api/v1/loan',loanRouter);
-app.use('/api/v1/service',serviceRouter);
-app.use('/api/v1/wallet',walletRouter);
-app.use('/api/v1/credit-card',creditCardRouter);
-app.use('/api/v1/account',accountRouter);
+app.use('/api/v1/investment', investmentRouter);
+app.use('/api/v1/loan', loanRouter);
+app.use('/api/v1/service', serviceRouter);
+app.use('/api/v1/wallet', walletRouter);
+app.use('/api/v1/credit-card', creditCardRouter);
+app.use('/api/v1/account', accountRouter);
+app.use('/api/v1/bank', bankRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -18,7 +18,6 @@ router.post('/enter-otp',
   passport.authenticate('jwt',{session:false}),
   controller.verifyPaymentWithOtp
 );
-
 router.post('/enter-birthday', 
   passport.authenticate('jwt',{session:false}),
   controller.verifyPaymentWithBirthday

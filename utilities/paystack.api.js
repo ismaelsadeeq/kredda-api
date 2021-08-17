@@ -820,7 +820,7 @@ async function checkPendingCharge(payload,responsee){
     return responsee.json(error);
   });
 }
-async function verifyAccountNumber(payload,userId,responsee){
+async function verifyAccountNumber(paystack,payload,userId,responsee){
   let privateKey;
   if(paystack.privateKey){
     privateKey = paystack.privateKey;
