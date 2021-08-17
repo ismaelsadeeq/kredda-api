@@ -10,25 +10,29 @@ router.post('/fund/:id',
   passport.authenticate('jwt',{session:false}),
   controller.fundAccount
 );
-router.post('/enter-pin', 
+router.post('/flutterwave/validate-charge', 
+  passport.authenticate('jwt',{session:false}),
+  controller.validateChargeFlutterwave
+);
+router.post('/paystack/enter-pin', 
   passport.authenticate('jwt',{session:false}),
   controller.verifyPaymentWithPin
 );
-router.post('/enter-otp', 
+router.post('/paystack/enter-otp', 
   passport.authenticate('jwt',{session:false}),
   controller.verifyPaymentWithOtp
 );
-router.post('/enter-birthday', 
+router.post('/paystack/enter-birthday', 
   passport.authenticate('jwt',{session:false}),
   controller.verifyPaymentWithBirthday
 );
 
-router.post('/enter-phone', 
+router.post('/paystack/enter-phone', 
   passport.authenticate('jwt',{session:false}),
   controller.verifyPaymentWithPhoneNumber
 );
 
-router.post('/enter-address', 
+router.post('/paystack/enter-address', 
   passport.authenticate('jwt',{session:false}),
   controller.verifyPaymentWithAddress
 );

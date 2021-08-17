@@ -246,10 +246,10 @@ const fundAccount = async (req,res)=>{
       "accountNumber":bankDetail.accountNumber,
       "birthday":user.birthday
     }
-    return await paystackApi.createCharge(payload,res)
+    return await paystackApi.createCharge(payment,payload,res)
   }
   if(payment.siteName =='flutterwave'){
-    let digits = helpers.generateFourDigitOTP();
+    let digits = helpers.generateOTP()
     let name = user.firstName;
     let firstDigit = name.substring(0,1);
     let trxRef = `MC-${digits}${firstDigit}`
@@ -275,67 +275,73 @@ const fundAccount = async (req,res)=>{
 const validateChargeFlutterwave = async (req,res)=>{
   const user = req.user;
   const data = req.body;
+  const payment = await getPayment();
   if(!data.card){
     const payload = {
       "otp":data.otp,
       "flw_ref":data.reference,
       "type": "account"
     }
-    return await flutterwaveApi.validateCharge(payload,res)
+    return await flutterwaveApi.validateCharge(payload,payment,res)
   }
   const payload = {
     "otp":data.otp,
     "flw_ref":flw_ref,
     "type": "card"
   }
-  return await flutterwaveApi.validateCharge(payload,res)
+  return await flutterwaveApi.validateCharge(payload,payment,res)
   
 }
 const verifyPaymentWithPin = async (req,res)=>{
   const user = req.user;
   const data = req.body;
+  const payment = await getPayment()
   const payload = {
     "pin":data.pin,
     "reference":data.reference
   }
-  return await paystackApi.submitPin(payload,res)
+  return await paystackApi.submitPin(payment,payload,res)
 }
 const verifyPaymentWithOtp = async (req,res)=>{
   const user = req.user;
   const data = req.body;
+  const payment = await getPayment()
   const payload = {
     "otp":data.otp,
     "reference":data.reference,
     "user":user
   }
-  return await paystackApi.submitOtp(payload,res)
+  return await paystackApi.submitOtp(payment,payload,res)
   
 }
 const verifyPaymentWithBirthday = async (req,res)=>{
   const user = req.user;
   const data = req.body;
+  const payment = await getPayment()
   const payload = {
     "birthday":data.birthday,
     "reference":data.reference,
     "user":user
   }
-  return await paystackApi.submitAddress(payload,res)
+  return await paystackApi.submitAddress(payment,payload,res)
   
 }
 const verifyPaymentWithPhoneNumber = async (req,res)=>{
   const user = req.user;
   const data = req.body;
+  const payment = await getPayment()
   const payload = {
     "phone":data.phone,
     "reference":data.reference,
     "user":user
   }
-  return await paystackApi.submitPhone(payload,res)
+  return await paystackApi.submitPhone(payment,payload,res)
   
 }
 const verifyPaymentWithAddress = async (req,res)=>{
   const user = req.user;
   const data = req.body;
+  const payment = await getPayment()
   const payload = {
     "address":data.address,
     "city":data.city,
@@ -344,17 +350,18 @@ const verifyPaymentWithAddress = async (req,res)=>{
     "reference":data.reference,
     "user":user
   }
-  return await paystackApi.submitAddress(payload,res)
+  return await paystackApi.submitAddress(payment,payload,res)
 }
 
 const checkChargeStatus = async (req,res)=>{
   const user = req.user;
   const data = req.body;
+  const payment = await getPayment()
   const payload = {
     "reference":data.reference,
     "user":user
   }
-  return await paystackApi.checkPendingCharge(payload,res);
+  return await paystackApi.checkPendingCharge(payment,payload,res);
 }
 
 module.exports = {

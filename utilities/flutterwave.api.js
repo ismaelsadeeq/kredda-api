@@ -248,7 +248,7 @@ async function verifyPayment(payload,flutterwave,res){
     return res.json(responseData)
   });
 }
-async function initiatePayment(data,flutterwave,responsee){
+async function initiatePayment(userId,data,flutterwave,responsee){
   let privateKey;
   if(flutterwave.privateKey){
     privateKey = flutterwave.privateKey;
@@ -258,18 +258,18 @@ async function initiatePayment(data,flutterwave,responsee){
   var request = require('request');
   var options = {
     'method': 'POST',
-    'body':data,
     'url': `https://api.flutterwave.com/v3/charges?type=debit_ng_account`,
     'headers': {
       'Authorization': `Bearer ${privateKey}`
-    }
+    },
+    'body':data,
+    'json':true
   };
   request(options, async function (error, response) { 
     if (error) throw new Error(error);
-    let payload = response.body;
-    payload =  JSON.parse(payload)
+    let payload =await response.body;
     console.log(payload)
-    if(payload.status ===true &&payload.message=="charge initiated"){
+    if(payload.status ==="success" && payload.message=="Charge initiated"){
       let time = new Date();
         time = time.toLocaleString()
         const transaction = await models.transaction.create(
@@ -280,8 +280,8 @@ async function initiatePayment(data,flutterwave,responsee){
             beneficiary:"self",
             description:payload.fullname + " attempting to fund his/her wallet to perform transaction",
             userId:userId,
-            reference:response.data.flw_ref,
-            amount:payload.amount,
+            reference:payload.data.flw_ref,
+            amount:payload.data.amount,
             isRedemmed:false,
             status:"initiated",
             time: time
@@ -292,7 +292,7 @@ async function initiatePayment(data,flutterwave,responsee){
     return responsee.json(payload);
   });
 }
-async function validateCharge(userId,data,flutterwave,responsee){
+async function validateCharge(data,flutterwave,responsee){
   let privateKey;
   if(flutterwave.privateKey){
     privateKey = flutterwave.privateKey;
@@ -302,33 +302,39 @@ async function validateCharge(userId,data,flutterwave,responsee){
   var request = require('request');
   var options = {
     'method': 'POST',
-    'body':data,
     'url': `https://api.flutterwave.com/v3/validate-charge`,
     'headers': {
       'Authorization': `Bearer ${privateKey}`
-    }
+    },
+    'body':data,
+    'json':true
   };
   request(options, async function (error, response) { 
     if (error) throw new Error(error);
-    let payload = response.body;
-    payload =  JSON.parse(payload)
+    let payload = await response.body;
     console.log(payload)
-    if(payload.status==="success"&& payload.message==="Charge initiated"){
-      let time = new Date();
-      time = time.toLocaleString()
-      const transaction = await models.transaction.create(
+    if(payload.status=="success" && payload.message=="Charge initiated"){
+      if( payload.data.status=="successful"){
+        const transaction = await models.transaction.update(
+          {
+            status:"initiated",
+          },
+          {
+            where:{
+              reference:payload.data.flw_ref
+            }
+          }
+        );
+        return responsee.json(payload);
+      }
+      const transaction = await models.transaction.update(
         {
-          id:uuid.v4(),
-          transactionType:"debit",
-          message:"funding of wallet",
-          beneficiary:"self",
-          description:data.fullname + " attempting to fund his/her wallet to perform transaction",
-          userId:userId,
-          reference:payload.data.flw_ref,
-          amount:payload.data.amount,
-          isRedemmed:false,
-          status:"initiated",
-          time: time
+          status:"failed",
+        },
+        {
+          where:{
+            reference:payload.data.flw_ref
+          }
         }
       );
       return responsee.json(payload);

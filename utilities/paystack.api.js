@@ -309,7 +309,7 @@ async function verifyPayment(payload,paystack,respond){
   req.write(params)
   req.end()
 }
-async function createCharge(payload,responsee) {
+async function createCharge(paystack,payload,responsee) {
   let privateKey;
   if(paystack.privateKey){
     privateKey = paystack.privateKey;
@@ -460,7 +460,7 @@ async function createChargeKuda(payload,responsee) {
   req.write(params)
   req.end()
 }
-async function submitPin(payload,responsee){
+async function submitPin(paystack,payload,responsee){
   let privateKey;
   if(paystack.privateKey){
     privateKey = paystack.privateKey;
@@ -524,7 +524,7 @@ async function submitPin(payload,responsee){
   req.end()
 }
 
-async function submitOtp(payload,responsee){
+async function submitOtp(paystack,payload,responsee){
   let privateKey;
   if(paystack.privateKey){
     privateKey = paystack.privateKey;
@@ -696,7 +696,7 @@ async function submitBirthday(data,responsee){
   req.end()
 }
 
-async function submitAddress(payload,responsee){
+async function submitAddress(paystack,payload,responsee){
   let privateKey;
   if(paystack.privateKey){
     privateKey = paystack.privateKey;
@@ -762,7 +762,7 @@ async function submitAddress(payload,responsee){
   req.write(params)
   req.end()
 } 
-async function checkPendingCharge(payload,responsee){
+async function checkPendingCharge(paystack,payload,responsee){
   let privateKey;
   if(paystack.privateKey){
     privateKey = paystack.privateKey;
