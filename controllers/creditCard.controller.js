@@ -112,6 +112,13 @@ const chargeDefaultCreditCard = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData)
   }
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   if(payment.siteName =='paystack'){
     if(!creditCard.authCode){
       responseData.status = true;
@@ -140,7 +147,7 @@ const chargeDefaultCreditCard = async (req,res)=>{
   }
   if(payment.siteName =='monnify'){
     responseData.status = 200;
-    responseData.message = "pay with widget";
+    responseData.message = "bank transfer not supported";
     responseData.data = creditCard;
     return res.json(responseData);
   }

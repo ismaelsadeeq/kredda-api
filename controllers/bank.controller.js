@@ -163,6 +163,13 @@ const fundAccount = async (req,res)=>{
     responseData.message = "bank is not validated";
     responseData.status = false;
   }
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   if(payment.siteName =='paystack'){
     if(bankDetail.bankName=="kuda Bank"){
       const payload = {
@@ -205,8 +212,14 @@ const fundAccount = async (req,res)=>{
       "phone_number":user.phoneNumber,
       "fullname":user.firstName + " "+ user.lastName
     }
+    return await flutterwaveApi.initiatePayment(user.id,payload,payment,res);
   }
-  return await flutterwaveApi.initiatePayment(user.id,payload,payment,res)
+  if(payment.siteName =='monnify'){
+    responseData.status = 200;
+    responseData.message = "pay with widget";
+    responseData.data = creditCard;
+    return res.json(responseData);
+  }
 }
 const validateChargeFlutterwave = async (req,res)=>{
   const user = req.user;
