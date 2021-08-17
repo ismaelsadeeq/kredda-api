@@ -323,7 +323,7 @@ const verifyPaymentWithBirthday = async (req,res)=>{
     "reference":data.reference,
     "user":user
   }
-  return await paystackApi.submitAddress(payment,payload,res)
+  return await paystackApi.submitBirthday(payment,payload,res)
   
 }
 const verifyPaymentWithPhoneNumber = async (req,res)=>{

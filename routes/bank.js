@@ -36,7 +36,7 @@ router.post('/paystack/enter-address',
   passport.authenticate('jwt',{session:false}),
   controller.verifyPaymentWithAddress
 );
-router.post('/check-status',
+router.post('/paystack/check-status',
   passport.authenticate('jwt',{session:false}),
   controller.checkChargeStatus
 );

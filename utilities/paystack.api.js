@@ -417,7 +417,7 @@ async function createChargeKuda(payload,responsee) {
     path: '/charge',
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      Authorization: `Bearer ${privateKey}`,
       'Content-Type': 'application/json'
     }
   }
@@ -490,6 +490,9 @@ async function submitPin(paystack,payload,responsee){
     res.on('end',async () => {
       const response = JSON.parse(data);
       console.log(response)
+      if(response.status==false){
+        return responsee.json(response);
+      }
       if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
         await models.transaction.update(
           {
@@ -536,6 +539,7 @@ async function submitOtp(paystack,payload,responsee){
     "otp": payload.otp,
     "reference": payload.reference
   })
+  console.log(privateKey);
   const options = {
     hostname: 'api.paystack.co',
     port: 443,
@@ -554,6 +558,9 @@ async function submitOtp(paystack,payload,responsee){
     res.on('end',async () => {
       const response = JSON.parse(data)
       console.log(response)
+      if(response.status==false){
+        return responsee.json(response);
+      }
       if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
         await models.transaction.update(
           {
@@ -587,7 +594,7 @@ async function submitOtp(paystack,payload,responsee){
   req.write(params)
   req.end()
 }
-async function submitPhone(data,responsee){
+async function submitPhone(paystack,data,responsee){
   let privateKey;
   if(paystack.privateKey){
     privateKey = paystack.privateKey;
@@ -617,8 +624,10 @@ async function submitPhone(data,responsee){
     res.on('end',async  () => {
       const response = JSON.parse(data);
       console.log(response)
+      if(response.status==false){
+        return responsee.json(response);
+      }
       if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
-        
         await models.transaction.update(
           {
             status:"attempted"
@@ -637,7 +646,7 @@ async function submitPhone(data,responsee){
         },
         {
           where:{
-            reference:payload.reference
+            reference:data.reference
           }
         }
       );
@@ -651,7 +660,7 @@ async function submitPhone(data,responsee){
   req.write(params)
   req.end()
 }
-async function submitBirthday(data,responsee){
+async function submitBirthday(paystack,data,responsee){
   let privateKey;
   if(paystack.privateKey){
     privateKey = paystack.privateKey;
@@ -681,10 +690,32 @@ async function submitBirthday(data,responsee){
     res.on('end',async () => {
       const response = JSON.parse(data)
       console.log(response)
-      if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
-         
+      if(response.status==false){
         return responsee.json(response);
       }
+      if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
+        await models.transaction.update(
+          {
+            status:"attempted"
+          },
+          {
+            where:{
+              reference:payload.reference
+            }
+          }
+        );
+        return responsee.json(response);
+      }
+       await models.transaction.update(
+        {
+          status:"failed"
+        },
+        {
+          where:{
+            reference:data.reference
+          }
+        }
+      );
       return responsee.json(response);
     })
   }).on('error',async error => {
@@ -729,6 +760,9 @@ async function submitAddress(paystack,payload,responsee){
     res.on('end',async () => {
       const response = JSON.parse(data);
       console.log(response)
+      if(response.status==false){
+        return responsee.json(response);
+      }
       if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
         await models.transaction.update(
           {
@@ -748,7 +782,7 @@ async function submitAddress(paystack,payload,responsee){
         },
         {
           where:{
-            reference:payload.reference
+            reference:data.reference
           }
         }
       );
@@ -769,17 +803,20 @@ async function checkPendingCharge(paystack,payload,responsee){
   }else{
     privateKey = paystack.testPrivateKey
   }
-  const https = require('https');
+  const https = require('https')
+  const params = JSON.stringify({ })
+  console.log(privateKey);
   const options = {
     hostname: 'api.paystack.co',
     port: 443,
-    path:  `/charge/:${payload.reference}`,
+    path: `/charge/:${payload.reference}`,
     method: 'GET',
     headers: {
       Authorization: `Bearer ${privateKey}`,
+      'Content-Type': 'application/json'
     }
   }
-  https.request(options, res => {
+  const req = https.request(options, res => {
     let data = ''
     res.on('data', (chunk) => {
       data += chunk
@@ -815,10 +852,13 @@ async function checkPendingCharge(paystack,payload,responsee){
       }
       return responsee.json(response);
     })
-  }).on('error', error => {
-    console.error(error)
-    return responsee.json(error);
-  });
+  }).on('error',async error => {
+    let err = JSON.parse(error)
+    console.error(err)
+    return responsee.json(err);
+  })
+  req.write(params)
+  req.end()
 }
 async function verifyAccountNumber(paystack,payload,userId,responsee){
   let privateKey;
