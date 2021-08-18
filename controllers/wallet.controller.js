@@ -52,8 +52,8 @@ const updateLoan = async (transaction)=>{
   );
   await models.loan.update(
     {
-      amoundPaid:parseInt(loan.amoundPaid) + amount,
-      remainingBalance:parseInt(loan.remainingBalance) - amount,
+      amoundPaid:parseInt(loan.amoundPaid) + parseFloat(transaction.amount),
+      remainingBalance:parseInt(loan.remainingBalance) - parseFloat(transaction.amount),
     },
     {
       where:{
@@ -70,14 +70,14 @@ const updateLoan = async (transaction)=>{
   );
   const amoundPaid = parseFloat(updatedLoan.amoundPaid);
   const amountToBePaid = parseFloat(updatedLoan.amountToBePaid);
-  if(amoundPaid==amountToBePaid){
+  if( amoundPaid == amountToBePaid ){
     await models.loan.update(
       {
         isPaid:true
       },
       {
         where:{
-          id:loanId
+          id:loan.id
         }
       }
     );

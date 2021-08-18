@@ -12,7 +12,7 @@ function getDifferenceInDays(date1, date2) {
 }
 const checkLoans = async()=>{
   let currentDate = new Date();
-  const loans = await models.loans.findAll(
+  const loans = await models.loan.findAll(
     {
       where:{
         hasPenalty:true,
@@ -25,7 +25,10 @@ const checkLoans = async()=>{
     let additionalFee;
     for (let i = 0; i < loans.length; i++) {
       let maximumDate = loans[i].dueDate;
-      if(currentDate>maximumDate){
+      console.log(currentDate)
+      console.log(currentDate>maximumDate);
+      console.log(maximumDate)
+      if(currentDate>=maximumDate){
         loanCategory = await models.loanCategory.findOne(
           {
             where:{
@@ -40,12 +43,12 @@ const checkLoans = async()=>{
         }
         await models.loan.update(
           {
-            amountToBePaid:parseFloat(loans[i].amountToBePaid) + additionalFee,
-            remainingBalance:parseFloat(loans[i].remainingBalance) + additionalFee
+            amountToBePaid:parseFloat(loans[i].amountToBePaid) + parseFloat(additionalFee),
+            remainingBalance:parseFloat(loans[i].remainingBalance) +  parseFloat(additionalFee)
           },
           {
             where:{
-              id:loans[i].isPaid
+              id:loans[i].id
             }
           }
         );
