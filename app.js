@@ -55,7 +55,7 @@ app.use('/api/v1/account', accountRouter);
 app.use('/api/v1/bank', bankRouter);
 
 cron.schedule('* */24 * * *', () => { //jobs will run after 24 hours server is running
-  await helpers.checkLoans()
+  helpers.checkLoans()
 });
 
 // catch 404 and forward to error handler

@@ -480,9 +480,15 @@ const approveALoan = async(req,res)=>{
       }
     }
   );
-  let interestRate = parseFloat(loanCategory.interestRate) / 100;
-  let interestAmount = interestRate * parseFloat(loan.amount);
-  let amountToBePaid = interestAmount + parseFloat(loan.amount);
+  let amountToBePaid 
+  if(loanCategory.interestRate){
+    let interestRate = parseFloat(loanCategory.interestRate) / 100;
+    let interestAmount = interestRate * parseFloat(loan.amount);
+    amountToBePaid = interestAmount + parseFloat(loan.amount);
+  }else{
+    amountToBePaid = parseFloat(loanCategory.interestAmount) + parseFloat(loan.amount);
+  }
+  
   await models.loan.update(
     {
       isApproved:true,

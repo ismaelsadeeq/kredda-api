@@ -1,6 +1,5 @@
 require("dotenv").config();
-const model
-s = require('../models');
+const models = require('../models');
 const generateOTP =()=>{
   let value,val;
   value = Math.floor(100000 + Math.random() * 9000000);
