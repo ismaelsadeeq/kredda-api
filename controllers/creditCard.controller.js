@@ -42,7 +42,8 @@ const chargeSavedCreditCard = async (req,res)=>{
       email : user.email,
       authorizationCode : creditCard.authCode,
       userId:user.id,
-      firstName:user.firstName
+      firstName:user.firstName,
+      message:null
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -131,7 +132,8 @@ const chargeDefaultCreditCard = async (req,res)=>{
       email : user.email,
       authorizationCode : creditCard.authCode,
       userId:user.id,
-      firstName:user.firstName
+      firstName:user.firstName,
+      message:null
     }
     await paystackApi.chargeAuthorization(payload,payment);
     responseData.status = 200;

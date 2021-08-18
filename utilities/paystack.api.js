@@ -77,6 +77,7 @@ async function chargeAuthorization(payload,paystack){
     "amount": amount,
     "authorization_code": payload.authorizationCode
   })
+  let message = payload.message
   const options = {
     hostname: 'api.paystack.co',
     port: 443,

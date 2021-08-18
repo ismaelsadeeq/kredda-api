@@ -1,6 +1,8 @@
 const models = require('../models');
 const uuid = require('uuid');
-const helpers = require('../utilities/helpers')
+const helpers = require('../utilities/helpers');
+const options = require('../middlewares/appSetting');
+const paystackApi = require('../utilities/paystack.api');
 require('dotenv').config();
 //response
 const responseData = {
@@ -273,6 +275,19 @@ const applyForAloan = async(req,res)=>{
   const data = req.body;
   const categoryId = req.params.categoryId;
   const amount = parseFloat(data.amount);
+  const creditCard = await models.creditCard.findOne(
+    {
+      where:{
+        userId:user.id
+      }
+    }
+  );
+  if(!creditCard){
+    responseData.status = false;
+    responseData.message = "user must add credit card before applying for a loan";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   const loanCategory = await models.loanCategory.findOne(
     {
       where:{
@@ -312,12 +327,21 @@ const applyForAloan = async(req,res)=>{
     responseData.data = undefined;
     return res.json(responseData);
   }
+  Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+  };
+  let date = new Date();
+  date = date.addDays(parseFloat(loanCategory.maximumDuration));
   const createLoan = await models.loan.create(
     {
       id:uuid,
       userId:user.id,
       loanCategoryId:categoryId,
-      amount:amount
+      amount:amount,
+      dueDate:date,
+      hasPenalty:loanCategory.hasExpiryFee
     }
   );
   if(!createLoan){
@@ -556,6 +580,8 @@ const userPayLoan = async(req,res)=>{
   const user = req.user;
   const loanId = req.params.id;
   const data = req.body;
+  const useDefault = data.useDefault;
+  const creditCardId = data.creditCardId
   const amount = parseFloat(data.amount);
   let digits = helpers.generateOTP()
   let name = user.firstName;
@@ -563,6 +589,7 @@ const userPayLoan = async(req,res)=>{
   let trxRef = `LOAN-${digits}${firstDigit}`
   let time = new Date();
   time = time.toLocaleString()
+  const payment = await options.getPayment();
   const loan = await models.loan.findOne(
     {
       where:{
@@ -577,6 +604,63 @@ const userPayLoan = async(req,res)=>{
     responseData.data = undefined;
     return res.json(responseData);
   }
+  let creditCard;
+  if(!useDefault){
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          isDefault:true
+        }
+      }
+    );
+  }else{
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          id:creditCardId
+        }
+      }
+    )
+  }
+  if(payment.siteName =='paystack'){
+    
+    const payload = {
+      amount : amount,
+      email : user.email,
+      authorizationCode : creditCard.authCode,
+      userId:user.id,
+      firstName:user.firstName,
+      message:"payment of loan"
+    }
+    await paystackApi.chargeAuthorization(payload,payment)
+    responseData.status = 200;
+    responseData.message = "payment initiated";
+    responseData.data = undefined
+    return res.json(responseData);
+  }
+  if(payment.siteName =='flutterwave'){
+    
+  }
+  if(payment.siteName =='monnify'){
+    
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const walletpayment = async ()=>{
   const wallet = await models.wallet.findOne(
     {
       where:{
@@ -585,7 +669,7 @@ const userPayLoan = async(req,res)=>{
     }
   );
   let walletBalance = parseFloat(wallet.accountBalance);
-  if(walletBalance>amount){
+  if(walletBalance<amount){
     const transaction = await models.transaction.create(
       {
         id:uuid.v4(),
@@ -661,11 +745,7 @@ const userPayLoan = async(req,res)=>{
       }
     );
   }
-  responseData.status = true;
-  responseData.message = "loan payment successful";
-  responseData.data = undefined;
-  return res.json(responseData);
-}
+} 
 module.exports = {
   createLoanCategory,
   changeStatusToFalse,
