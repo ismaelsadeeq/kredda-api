@@ -30,8 +30,11 @@ module.exports = {
           as:'loanCategoryId'
         }
       },
-      isApproved: {
+      amount :{
         type: Sequelize.STRING
+      },
+      isApproved: {
+        type: Sequelize.BOOLEAN
       },
       amoundPaid: {
         type: Sequelize.STRING
