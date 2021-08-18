@@ -36,6 +36,9 @@ module.exports = {
       isApproved: {
         type: Sequelize.BOOLEAN
       },
+      amountToBePaid :{
+        type: Sequelize.BOOLEAN
+      },
       amoundPaid: {
         type: Sequelize.STRING
       },
