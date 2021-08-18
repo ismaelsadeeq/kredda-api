@@ -37,7 +37,7 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       amountToBePaid :{
-        type: Sequelize.BOOLEAN
+        type: Sequelize.STRING
       },
       amoundPaid: {
         type: Sequelize.STRING

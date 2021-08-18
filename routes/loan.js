@@ -7,7 +7,7 @@ router.post('/apply/:categoryId',
   passport.authenticate('jwt',{session:false}),
   controller.applyForAloan
 );
-router.put('/user',
+router.get('/user',
   passport.authenticate('jwt',{session:false}),
   controller.userGetLoans
 );

@@ -336,7 +336,7 @@ const applyForAloan = async(req,res)=>{
   date = date.addDays(parseFloat(loanCategory.maximumDuration));
   const createLoan = await models.loan.create(
     {
-      id:uuid,
+      id:uuid.v4(),
       userId:user.id,
       loanCategoryId:categoryId,
       amount:amount,
@@ -405,7 +405,7 @@ const getAppliedLoans = async(req,res)=>{
       offset:skip,
       limit:pageLimit,
       where:{
-        isApproved:false
+        isApproved:null
       }
     }
   );
@@ -443,7 +443,7 @@ const getAppliedLoan = async(req,res)=>{
 const approveALoan = async(req,res)=>{
   const admin = req.user;
   let digits = helpers.generateOTP()
-  let name = user.firstName;
+  let name = admin.firstName;
   let firstDigit = name.substring(0,1);
   let trxRef = `LOAN-${digits}${firstDigit}`
   let time = new Date();
@@ -470,6 +470,12 @@ const approveALoan = async(req,res)=>{
   if(!loan){
     responseData.status = false;
     responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(loan.isApproved){
+    responseData.status = false;
+    responseData.message = "loan already aproved";
     responseData.data = undefined;
     return res.json(responseData);
   }
@@ -509,8 +515,8 @@ const approveALoan = async(req,res)=>{
       transactionType:"credit",
       message:"loan redeeming",
       beneficiary:"self",
-      description:user.firstName + "account funded after loan is approved",
-      userId:user.id,
+      description:user.firstName + " account funded after loan is approved",
+      userId:loan.userId,
       reference:trxRef,
       amount:loan.amount,
       status:"successful",
@@ -599,8 +605,7 @@ const userPayLoan = async(req,res)=>{
   const loan = await models.loan.findOne(
     {
       where:{
-        id:loanId,
-        isPaid:false
+        id:loanId
       }
     }
   );
@@ -610,11 +615,17 @@ const userPayLoan = async(req,res)=>{
     responseData.data = undefined;
     return res.json(responseData);
   }
+  if(loan.isPaid == true){
+    responseData.status = false;
+    responseData.message = "loan is paid";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   if(data.useWallet){
-    await walletpayment(user,amount,trxRef,time,loan,loanId,res)
+    return await walletpayment(user,amount,trxRef,time,loan,loanId,res)
   }
   let creditCard;
-  if(!useDefault){
+  if(useDefault){
     creditCard = await models.creditCard.findOne(
       {
         where:{
@@ -622,7 +633,7 @@ const userPayLoan = async(req,res)=>{
         }
       }
     );
-  }else{
+  } else {
     creditCard = await models.creditCard.findOne(
       {
         where:{
