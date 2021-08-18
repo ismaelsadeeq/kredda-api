@@ -3,6 +3,34 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/loan.controller');
 
+router.post('/apply/:categoryId',
+  passport.authenticate('jwt',{session:false}),
+  controller.applyForAloan
+);
+router.put('/user',
+  passport.authenticate('jwt',{session:false}),
+  controller.userGetLoans
+);
+router.get('/applied',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAppliedLoans
+);
+router.get('/applied/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAppliedLoan
+);
+router.put('/approve/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.approveALoan
+);
+router.put('/disapprove/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.disapproveALoan
+);
+router.put('/pay/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.userPayLoan
+);
 router.post('/create',
   passport.authenticate('jwt',{session:false}),
   controller.createLoanCategory

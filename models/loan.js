@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   loan.init({
     amount: DataTypes.STRING,
+    amountToBePaid:DataTypes.STRING,
     isApproved: DataTypes.BOOLEAN,
     amoundPaid: DataTypes.STRING,
     remainingBalance: DataTypes.STRING,
