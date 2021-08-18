@@ -18,7 +18,10 @@ module.exports = (sequelize, DataTypes) => {
     interestAmount: DataTypes.STRING,
     maximumAmount: DataTypes.STRING,
     maximumDuration: DataTypes.STRING,
-    status: DataTypes.BOOLEAN
+    status: DataTypes.BOOLEAN,
+    hasExpiryFee: DataTypes.BOOLEAN,
+    expiryFeeAmount: DataTypes.STRING,
+    expiryPercentage: DataTypes.STRING,
   }, {
     sequelize,
     paranoid:true,
