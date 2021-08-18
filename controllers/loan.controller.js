@@ -604,6 +604,9 @@ const userPayLoan = async(req,res)=>{
     responseData.data = undefined;
     return res.json(responseData);
   }
+  if(data.useWallet){
+    await walletpayment(user,amount,trxRef,time,loan,loanId,res)
+  }
   let creditCard;
   if(!useDefault){
     creditCard = await models.creditCard.findOne(
@@ -629,7 +632,8 @@ const userPayLoan = async(req,res)=>{
       authorizationCode : creditCard.authCode,
       userId:user.id,
       firstName:user.firstName,
-      message:"payment of loan"
+      message:"payment of loan",
+      beneficiary:loanId
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -638,28 +642,13 @@ const userPayLoan = async(req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    await walletpayment(user,amount,trxRef,time,loan,loanId)
+    await walletpayment(user,amount,trxRef,time,loan,loanId,res)
   }
   if(payment.siteName =='monnify'){
-    await walletpayment(user,amount,trxRef,time,loan,loanId)
+    await walletpayment(user,amount,trxRef,time,loan,loanId,res)
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const walletpayment = async (user,amount,trxRef,time,loan,loanId)=>{
+const walletpayment = async (user,amount,trxRef,time,loan,loanId,res)=>{
   const wallet = await models.wallet.findOne(
     {
       where:{
@@ -673,7 +662,7 @@ const walletpayment = async (user,amount,trxRef,time,loan,loanId)=>{
       {
         id:uuid.v4(),
         transactionType:"debit",
-        message:"payment of loan",
+        message:"payment of loan by wallet",
         beneficiary:"self",
         description:user.firstName + "paying for loan",
         userId:user.id,
@@ -748,93 +737,7 @@ const walletpayment = async (user,amount,trxRef,time,loan,loanId)=>{
   responseData.message = "payment successful";
   responseData.data = undefined
   return res.json(responseData);
-} 
-const walletpayment2 = async (userId)=>{
-  const wallet = await models.wallet.findOne(
-    {
-      where:{
-        userId:user.id
-      }
-    }
-  );
-  let walletBalance = parseFloat(wallet.accountBalance);
-  if(walletBalance<amount){
-    const transaction = await models.transaction.create(
-      {
-        id:uuid.v4(),
-        transactionType:"debit",
-        message:"payment of loan",
-        beneficiary:"self",
-        description:user.firstName + "paying for loan",
-        userId:user.id,
-        reference:trxRef,
-        amount:amount,
-        status:"failed",
-        time: time
-      }
-    );
-    responseData.status = false;
-    responseData.message = "insufficient funds";
-    responseData.data = undefined;
-    return res.json(responseData);
-  }
-  await models.wallet.update(
-    {
-      accountBalance:walletBalance - amount
-    },
-    {
-      where:{
-        id:wallet.id
-      }
-    }
-  );
-  const transaction = await models.transaction.create(
-    {
-      id:uuid.v4(),
-      transactionType:"debit",
-      message:"payment of loan",
-      beneficiary:"self",
-      description:user.firstName + "paying for loan",
-      userId:user.id,
-      reference:trxRef,
-      amount:amount,
-      status:"successful",
-      time: time
-    }
-  );
-  await models.loan.update(
-    {
-      amoundPaid:parseInt(loan.amoundPaid) + amount,
-      remainingBalance:parseInt(loan.remainingBalance) - amount,
-    },
-    {
-      where:{
-        id:loanId
-      }
-    }
-  );
-  const updatedLoan = await models.loan.findOne(
-    {
-      where:{
-        id:loanId
-      }
-    }
-  );
-  const amoundPaid = parseFloat(updatedLoan.amoundPaid);
-  const amountToBePaid = parseFloat(updatedLoan.amountToBePaid);
-  if(amoundPaid==amountToBePaid){
-    await models.loan.update(
-      {
-        isPaid:true
-      },
-      {
-        where:{
-          id:loanId
-        }
-      }
-    );
-  }
-} 
+}
 module.exports = {
   createLoanCategory,
   changeStatusToFalse,

@@ -42,6 +42,47 @@ const getWalletBalance = async(req,res)=>{
   responseData.data = wallet;
   return res.json(responseData);
 }
+const updateLoan = async (transaction)=>{
+  const loan = await models.loan.findOne(
+    {
+      where:{
+        id:transaction.beneficiary
+      }
+    }
+  );
+  await models.loan.update(
+    {
+      amoundPaid:parseInt(loan.amoundPaid) + amount,
+      remainingBalance:parseInt(loan.remainingBalance) - amount,
+    },
+    {
+      where:{
+        id:loan.id
+      }
+    }
+  );
+  const updatedLoan = await models.loan.findOne(
+    {
+      where:{
+        id:loan.id
+      }
+    }
+  );
+  const amoundPaid = parseFloat(updatedLoan.amoundPaid);
+  const amountToBePaid = parseFloat(updatedLoan.amountToBePaid);
+  if(amoundPaid==amountToBePaid){
+    await models.loan.update(
+      {
+        isPaid:true
+      },
+      {
+        where:{
+          id:loanId
+        }
+      }
+    );
+  }
+}
 const webhook =async (req,res)=>{
   //validate event
   let secret = await getSecret();
@@ -60,7 +101,26 @@ const webhook =async (req,res)=>{
           }
         }
       );
-      if(transaction.isRedemmed==false){
+      if(transaction.isRedemmed == false){
+        if(transaction.message == "payment of loan"){
+          await updateLoan(transaction);
+          await transaction.update(
+            {
+              status:"successful",
+              isRedemmed:true,
+            },
+            {
+              where:{
+                reference:reference
+              }
+            }
+          );
+          res.statusCode = 200;
+          responseData.message = "Success";
+          responseData.status = true;
+          responseData.data = undefined;
+          return res.json(responseData)
+        }
         const otherAccount = await models.otherAccount.findOne(
           {
             where:{

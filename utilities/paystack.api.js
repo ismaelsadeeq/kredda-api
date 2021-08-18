@@ -78,6 +78,7 @@ async function chargeAuthorization(payload,paystack){
     "authorization_code": payload.authorizationCode
   })
   let message = payload.message;
+  let beneficiary = payload.beneficiary
   const options = {
     hostname: 'api.paystack.co',
     port: 443,
@@ -103,8 +104,8 @@ async function chargeAuthorization(payload,paystack){
           {
             id:uuid.v4(),
             transactionType:"debit",
-            message: message||"funding of wallet",
-            beneficiary:"self",
+            message: message ||"funding of wallet",
+            beneficiary:beneficiary || "self",
             description:payload.firstName + "funding his/her wallet to perform transaction",
             userId:payload.userId,
             reference:response.data.reference,
