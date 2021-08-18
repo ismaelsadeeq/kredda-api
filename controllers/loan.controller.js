@@ -22,6 +22,14 @@ const createLoanCategory = async (req,res)=>{
     return res.send('Unauthorized');
   }
   const data = req.body;
+  if(data.hasExpiryFee){
+    if(data.expiryFeeAmount && data.expiryPercentage){
+      responseData.status = false;
+      responseData.message = "you cannot specify expiry fee and expiry percentage at the same time";
+      responseData.data = undefined;
+      return res.json(responseData);
+    }
+  }
   const createLoan = await models.loanCategory.create(
     {
       id:uuid.v4(),
@@ -32,7 +40,10 @@ const createLoanCategory = async (req,res)=>{
       interestAmount:data.interestAmount,
       maximumAmount:data.maximumAmount,
       maximumDuration:data.maximumDuration,
-      status:true
+      status:true,
+      hasExpiryFee:data.hasExpiryFee,
+      expiryFeeAmount:data.expiryFeeAmount,
+      expiryPercentage:data.expiryPercentage
     }
   );
   if(!createLoan){
@@ -136,6 +147,9 @@ const editLoanCategory = async (req,res)=>{
         interestAmount:data.interestAmount,
         maximumAmount:data.maximumAmount,
         maximumDuration:data.maximumDuration,
+        hasExpiryFee:data.hasExpiryFee,
+        expiryFeeAmount:data.expiryFeeAmount,
+        expiryPercentage:data.expiryPercentage
       },
       {
         where:{

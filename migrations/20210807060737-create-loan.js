@@ -48,6 +48,12 @@ module.exports = {
       isPaid: {
         type: Sequelize.BOOLEAN
       },
+      dueDate :{
+        type: Sequelize.DATE
+      },
+      hasPenalty :{
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
