@@ -36,6 +36,9 @@ var walletRouter = require('./routes/wallet');
 var accountRouter = require('./routes/account');
 var bankRouter = require('./routes/bank');
 
+const cron = require('node-cron');
+const helpers = require('./utilities/helpers');
+
 app.use('/api/v1', indexRouter);
 app.use('/api/v1',authRouter);
 app.use('/api/v1/account', usersRouter);
@@ -51,6 +54,9 @@ app.use('/api/v1/credit-card', creditCardRouter);
 app.use('/api/v1/account', accountRouter);
 app.use('/api/v1/bank', bankRouter);
 
+cron.schedule('* */24 * * *', () => { //jobs will run after 24 hours server is running
+  await helpers.checkLoans()
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
