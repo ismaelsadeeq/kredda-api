@@ -31,6 +31,15 @@ module.exports = {
       maximumDuration: {
         type: Sequelize.STRING
       },
+      hasExpiryFee :{
+        type: Sequelize.BOOLEAN
+      },
+      expiryFeeAmount :{
+        type: Sequelize.STRING
+      },
+      expiryPercentage :{
+        type: Sequelize.STRING
+      },
       status: {
         type: Sequelize.BOOLEAN
       },
