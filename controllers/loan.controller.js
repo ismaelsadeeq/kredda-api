@@ -1,5 +1,6 @@
 const models = require('../models');
 const uuid = require('uuid');
+const helpers = require('../utilities/helpers')
 require('dotenv').config();
 //response
 const responseData = {
@@ -403,6 +404,12 @@ const getAppliedLoan = async(req,res)=>{
 }
 const approveALoan = async(req,res)=>{
   const admin = req.user;
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `LOAN-${digits}${firstDigit}`
+  let time = new Date();
+  time = time.toLocaleString()
   const user = await models.admin.findOne(
     {
       where:{
@@ -450,6 +457,20 @@ const approveALoan = async(req,res)=>{
       where:{
         id:loanId
       }
+    }
+  );
+  const transaction = await models.transaction.create(
+    {
+      id:uuid.v4(),
+      transactionType:"credit",
+      message:"loan redeeming",
+      beneficiary:"self",
+      description:user.firstName + "account funded after loan is approved",
+      userId:user.id,
+      reference:trxRef,
+      amount:loan.amount,
+      status:"successful",
+      time: time
     }
   );
   const wallet = await models.wallet.findOne(
@@ -522,6 +543,12 @@ const userPayLoan = async(req,res)=>{
   const loanId = req.params.id;
   const data = req.body;
   const amount = parseFloat(data.amount);
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `LOAN-${digits}${firstDigit}`
+  let time = new Date();
+  time = time.toLocaleString()
   const loan = await models.loan.findOne(
     {
       where:{
@@ -545,11 +572,49 @@ const userPayLoan = async(req,res)=>{
   );
   let walletBalance = parseFloat(wallet.accountBalance);
   if(walletBalance>amount){
+    const transaction = await models.transaction.create(
+      {
+        id:uuid.v4(),
+        transactionType:"debit",
+        message:"payment of loan",
+        beneficiary:"self",
+        description:user.firstName + "paying for loan",
+        userId:user.id,
+        reference:trxRef,
+        amount:amount,
+        status:"failed",
+        time: time
+      }
+    );
     responseData.status = false;
     responseData.message = "insufficient funds";
     responseData.data = undefined;
     return res.json(responseData);
   }
+  await models.wallet.update(
+    {
+      accountBalance:walletBalance - amount
+    },
+    {
+      where:{
+        id:wallet.id
+      }
+    }
+  );
+  const transaction = await models.transaction.create(
+    {
+      id:uuid.v4(),
+      transactionType:"debit",
+      message:"payment of loan",
+      beneficiary:"self",
+      description:user.firstName + "paying for loan",
+      userId:user.id,
+      reference:trxRef,
+      amount:amount,
+      status:"successful",
+      time: time
+    }
+  );
   await models.loan.update(
     {
       amoundPaid:parseInt(loan.amoundPaid) + amount,
