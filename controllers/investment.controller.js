@@ -228,7 +228,7 @@ const invest = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await walletpayment(user,data,amount,trxRef,time,investmentPlan,res);
+    return await walletpayment(user,amount,trxRef,time,investmentPlan,res);
   }
   let creditCard;
   if(useDefault){
@@ -265,7 +265,6 @@ const invest = async (req,res)=>{
         unit:unit,
         investmentCategoryId:investmentPlan.id,
         userId:user.id,
-        autoRenewal:data.isAutoRenewal,
         dueDate:date,
         isRedemmed:false,
         status:false
@@ -287,14 +286,14 @@ const invest = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await walletpayment(user,data,amount,trxRef,time,investmentPlan,res);
+    return await walletpayment(user,amount,trxRef,time,investmentPlan,res);
   }
   if(payment.siteName =='monnify'){
-    return await walletpayment(user,data,amount,trxRef,time,investmentPlan,res);
+    return await walletpayment(user,amount,trxRef,time,investmentPlan,res);
   }
 
 }
-const walletpayment = async (user,data,amount,trxRef,time,investmentPlan,res)=>{
+const walletpayment = async (user,amount,trxRef,time,investmentPlan,res)=>{
   const wallet = await models.wallet.findOne(
     {
       where:{
@@ -349,7 +348,6 @@ const walletpayment = async (user,data,amount,trxRef,time,investmentPlan,res)=>{
       unit:unit,
       investmentCategoryId:investmentPlan.id,
       userId:user.id,
-      autoRenewal:data.isAutoRenewal,
       dueDate:date,
       isRedemmed:false,
       status:true

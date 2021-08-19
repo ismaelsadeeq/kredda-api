@@ -64,7 +64,7 @@ const checkInvestment = async (req,res)=>{
     }
   );
   if(investments){
-    let investmentPlan,wallet,user,dueDate;
+    let wallet,user,dueDate;
     for (let i = 0; i < investments.length; i++) {
       dueDate = investments[i].dueDate
       if(currentDate>dueDate){
@@ -102,62 +102,6 @@ const checkInvestment = async (req,res)=>{
             }
           }
         );
-        if(investments[i].autoRenewal){
-          let creditCard = null;
-            creditCard = await models.creditCard.findOne(
-              {
-                where:{
-                  isDefault:true
-                }
-              }
-            );
-          if(!creditCard) {
-            creditCard = await models.creditCard.findOne(
-              {
-                where:{
-                  userId:user.id
-                }
-              }
-            )
-          }
-          if(creditCard){
-            let digits = helpers.generateOTP()
-            let name = user.firstName;
-            let firstDigit = name.substring(0,1);
-            let trxRef = `INVESTMENT-${digits}${firstDigit}`
-            let time = new Date();
-            time = time.toLocaleString();
-            investmentPlan = await models.investmentCategoryId.findOne(
-              {
-                where:{
-                  id:investments[i].investmentCategoryId
-                }
-              }
-            );
-            let unit = amount / parseFloat(investmentPlan.pricePerUnit);
-            let interestAmount = parseFloat(investmentPlan.interestRate) * amount;
-            let payout = amount + interestAmount;
-            Date.prototype.addDays = function(days) {
-              var date = new Date(this.valueOf());
-              date.setDate(date.getDate() + days);
-              return date;
-            };
-            let date = new Date();
-            date = date.addDays(parseFloat(investmentPlan.period));
-            const createInvestment = await models.investment.create(
-              {
-                payout:payout,
-                unit:unit,
-                investmentCategoryId:investmentPlan.id,
-                userId:user.id,
-                autoRenewal:data.isAutoRenewal,
-                dueDate:date,
-                isRedemmed:false,
-                status:false
-              }
-            );
-          }
-        }
       } 
     }
   }
