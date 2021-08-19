@@ -327,20 +327,12 @@ const applyForAloan = async(req,res)=>{
     responseData.data = undefined;
     return res.json(responseData);
   }
-  Date.prototype.addDays = function(days) {
-    var date = new Date(this.valueOf());
-    date.setDate(date.getDate() + days);
-    return date;
-  };
-  let date = new Date();
-  date = date.addDays(parseFloat(loanCategory.maximumDuration));
   const createLoan = await models.loan.create(
     {
       id:uuid.v4(),
       userId:user.id,
       loanCategoryId:categoryId,
       amount:amount,
-      dueDate:date,
       hasPenalty:loanCategory.hasExpiryFee
     }
   );
@@ -494,14 +486,21 @@ const approveALoan = async(req,res)=>{
   }else{
     amountToBePaid = parseFloat(loanCategory.interestAmount) + parseFloat(loan.amount);
   }
-  
+  Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+  };
+  let date = new Date();
+  date = date.addDays(parseFloat(loanCategory.maximumDuration));
   await models.loan.update(
     {
       isApproved:true,
       amountToBePaid:amountToBePaid,
       amoundPaid:"0.0",
       remainingBalance:amountToBePaid,
-      isPaid:false
+      isPaid:false,
+      dueDate:date
     },
     {
       where:{

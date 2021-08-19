@@ -30,8 +30,23 @@ module.exports = {
           as:'investmentCategoryId'
         }
       },
+      dueDate :{
+        type: Sequelize.DATE
+      },
+      payout :{
+        type: Sequelize.STRING
+      },
+      unit :{
+        type: Sequelize.STRING
+      },
       isRedemmed: {
         type: Sequelize.STRING
+      },
+      status:{
+        type: Sequelize.BOOLEAN
+      },
+      autoRenewal :{
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,

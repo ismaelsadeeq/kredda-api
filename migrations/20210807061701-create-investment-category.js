@@ -19,6 +19,9 @@ module.exports = {
       organization: {
         type: Sequelize.STRING
       },
+      pricePerUnit :{
+        type: Sequelize.STRING
+      },
       interestRate: {
         type: Sequelize.STRING
       },

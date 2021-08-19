@@ -23,6 +23,9 @@ router.delete('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.deleteInvestmentPlan
 );
-
+router.post('/:planId',
+  passport.authenticate('jwt',{session:false}),
+  controller.invest
+)
 
 module.exports = router;

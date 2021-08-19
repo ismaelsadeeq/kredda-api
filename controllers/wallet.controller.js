@@ -83,6 +83,36 @@ const updateLoan = async (transaction)=>{
     );
   }
 }
+const updateInvestment = async (transaction)=>{
+  const investmentPlan = await models.investmentCategory.findOne(
+    {
+      where:{
+        id:transaction.beneficiary
+      }
+    }
+  );
+  let unit = parseFloat(transaction.amount) / parseFloat(investmentPlan.pricePerUnit);
+  let interestAmount = parseFloat(investmentPlan.interestRate) *  parseFloat(transaction.amount);
+  let payout =  parseFloat(transaction.amount) + interestAmount;
+  Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+  };
+  let date = new Date();
+  date = date.addDays(parseFloat(investmentPlan.period));
+  const createInvestment = await models.loan.update(
+    {
+      payout:payout,
+      unit:unit,
+      investmentCategoryId:investmentPlan.id,
+      userId:transaction.userId,
+      autoRenewal:data.isAutoRenewal,
+      dueDate:date,
+      isRedemmed:false
+    }
+  );
+}
 const webhook =async (req,res)=>{
   //validate event
   let secret = await getSecret();

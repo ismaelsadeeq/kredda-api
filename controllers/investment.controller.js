@@ -35,6 +35,7 @@ const createInvestmentPlan = async (req,res)=>{
           name:data.name,
           type:data.type,
           organization:data.organization,
+          pricePerUnit:data.pricePerUnit,
           interestRate:data.interestRate,
           period:data.period,
           picture:req.file.path
@@ -82,6 +83,7 @@ const editInvestmentPlan = async (req,res)=>{
           name:data.name,
           type:data.type,
           organization:data.organization,
+          pricePerUnit:data.pricePerUnit,
           interestRate:data.interestRate,
           period:data.period,
           picture:req.file.path
@@ -169,10 +171,212 @@ const deleteInvestmentPlan = async (req,res)=>{
   responseData.data = investmentPlan;
   return res.json(responseData);
 }
+const invest = async (req,res)=>{
+  const data = req.body;
+  const user = req.user;
+  const planId = req.params.planId;
+  const amount = parseFloat(data.amount);
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `INVESTMENT-${digits}${firstDigit}`
+  let time = new Date();
+  time = time.toLocaleString()
+  const card = await models.creditCard.findOne(
+    {
+      where:{
+        userId:user.id
+      }
+    }
+  );
+  if(!card){
+    responseData.status = false;
+    responseData.message = "user must add credit card before investing";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const investmentPlan = await models.investmentCategory.findAll(
+    {
+      where:{
+        id:planId
+      }
+    }
+  );
+  if(!investmentPlan){
+    responseData.status = false;
+    responseData.message = "investment plan does not exist";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const wallet = await models.wallet.findOne(
+    {
+      where:{
+        userId:user.id
+      }
+    }
+  );
+  if(!wallet){
+    responseData.status = false;
+    responseData.message = "user account not verified";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(!amount){
+    responseData.status = false;
+    responseData.message = "loan amount not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(data.useWallet){
+    return await walletpayment(user,data,amount,trxRef,time,investmentPlan,res);
+  }
+  let creditCard;
+  if(useDefault){
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          isDefault:true
+        }
+      }
+    );
+  } else {
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          id:creditCardId
+        }
+      }
+    )
+  }
+  if(payment.siteName =='paystack'){
+    let unit = amount / parseFloat(investmentPlan.pricePerUnit);
+    let interestAmount = parseFloat(investmentPlan.interestRate) * amount;
+    let payout = amount + interestAmount;
+    Date.prototype.addDays = function(days) {
+      var date = new Date(this.valueOf());
+      date.setDate(date.getDate() + days);
+      return date;
+    };
+    let date = new Date();
+    date = date.addDays(parseFloat(investmentPlan.period));
+    const createInvestment = await models.loan.update(
+      {
+        payout:payout,
+        unit:unit,
+        investmentCategoryId:investmentPlan.id,
+        userId:user.id,
+        autoRenewal:data.isAutoRenewal,
+        dueDate:date,
+        isRedemmed:false
+      }
+    );
+    const payload = {
+      amount : amount,
+      email : user.email,
+      authorizationCode : creditCard.authCode,
+      userId:user.id,
+      firstName:user.firstName,
+      message:investmentPlan.id,
+      beneficiary:loanId
+    }
+    await paystackApi.chargeAuthorization(payload,payment)
+    responseData.status = 200;
+    responseData.message = "payment initiated";
+    responseData.data = undefined
+    return res.json(responseData);
+  }
+  if(payment.siteName =='flutterwave'){
+    return await walletpayment(user,data,amount,trxRef,time,investmentPlan,res);
+  }
+  if(payment.siteName =='monnify'){
+    return await walletpayment(user,data,amount,trxRef,time,investmentPlan,res);
+  }
+
+}
+const walletpayment = async (user,data,amount,trxRef,time,investmentPlan,res)=>{
+  const wallet = await models.wallet.findOne(
+    {
+      where:{
+        userId:user.id
+      }
+    }
+  );
+  let walletBalance = parseFloat(wallet.accountBalance);
+  if(walletBalance<amount){
+    const transaction = await models.transaction.create(
+      {
+        id:uuid.v4(),
+        transactionType:"debit",
+        message:"investment",
+        beneficiary:investmentPlan.id,
+        description:user.firstName + " investing for loan",
+        userId:user.id,
+        reference:trxRef,
+        amount:amount,
+        status:"failed",
+        time: time
+      }
+    );
+    responseData.status = false;
+    responseData.message = "insufficient funds";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  await models.wallet.update(
+    {
+      accountBalance:walletBalance - amount
+    },
+    {
+      where:{
+        id:wallet.id
+      }
+    }
+  );
+  let unit = amount / parseFloat(investmentPlan.pricePerUnit);
+  let interestAmount = parseFloat(investmentPlan.interestRate) * amount;
+  let payout = amount + interestAmount;
+  Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+  };
+  let date = new Date();
+  date = date.addDays(parseFloat(investmentPlan.period));
+  const createInvestment = await models.loan.update(
+    {
+      payout:payout,
+      unit:unit,
+      investmentCategoryId:investmentPlan.id,
+      userId:user.id,
+      autoRenewal:data.isAutoRenewal,
+      dueDate:date,
+      isRedemmed:false
+    }
+  );
+  const transaction = await models.transaction.create(
+    {
+      id:uuid.v4(),
+      transactionType:"debit",
+      message:"investment",
+      beneficiary:investmentPlan.id,
+      description:user.firstName + " investing on a plan",
+      userId:user.id,
+      reference:trxRef,
+      amount:amount,
+      status:"successful",
+      time: time
+    }
+  );
+  responseData.status = 200;
+  responseData.message = "investment successful";
+  responseData.data = undefined
+  return res.json(responseData);
+}
 module.exports = {
   createInvestmentPlan,
   editInvestmentPlan,
   getAllInvestmentPlan,
   getInvestmentPlan,
-  deleteInvestmentPlan
+  deleteInvestmentPlan,
+  invest
 }

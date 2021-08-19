@@ -10,8 +10,10 @@ module.exports = (sequelize, DataTypes) => {
     type: DataTypes.STRING,
     organization: DataTypes.STRING,
     interestRate: DataTypes.STRING,
+    pricePerUnit:DataTypes.STRING,
     period: DataTypes.STRING,
-    picture: DataTypes.STRING
+    picture: DataTypes.STRING,
+    status: DataTypes.BOOLEAN
   }, {
     sequelize,
     paranoid:true,

@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
     });
   }
   investment.init({
+    payout:DataTypes.BOOLEAN,
+    autoRenewal:DataTypes.BOOLEAN,
+    dueDate :DataTypes.DATE,
     isRedemmed: DataTypes.BOOLEAN
   }, {
     sequelize,
