@@ -259,7 +259,7 @@ const invest = async (req,res)=>{
     };
     let date = new Date();
     date = date.addDays(parseFloat(investmentPlan.period));
-    const createInvestment = await models.loan.update(
+    const createInvestment = await models.investment.create(
       {
         payout:payout,
         unit:unit,
@@ -267,7 +267,8 @@ const invest = async (req,res)=>{
         userId:user.id,
         autoRenewal:data.isAutoRenewal,
         dueDate:date,
-        isRedemmed:false
+        isRedemmed:false,
+        status:false
       }
     );
     const payload = {
@@ -276,8 +277,8 @@ const invest = async (req,res)=>{
       authorizationCode : creditCard.authCode,
       userId:user.id,
       firstName:user.firstName,
-      message:investmentPlan.id,
-      beneficiary:loanId
+      message:"investment",
+      beneficiary:createInvestment.id,
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -350,7 +351,8 @@ const walletpayment = async (user,data,amount,trxRef,time,investmentPlan,res)=>{
       userId:user.id,
       autoRenewal:data.isAutoRenewal,
       dueDate:date,
-      isRedemmed:false
+      isRedemmed:false,
+      status:true
     }
   );
   const transaction = await models.transaction.create(
@@ -358,7 +360,7 @@ const walletpayment = async (user,data,amount,trxRef,time,investmentPlan,res)=>{
       id:uuid.v4(),
       transactionType:"debit",
       message:"investment",
-      beneficiary:investmentPlan.id,
+      beneficiary:createInvestment.id,
       description:user.firstName + " investing on a plan",
       userId:user.id,
       reference:trxRef,
