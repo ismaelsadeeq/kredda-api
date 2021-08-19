@@ -9,12 +9,17 @@ module.exports = (sequelize, DataTypes) => {
     investment.belongsTo(models.user,{
       foreignKey:'userId'
     });
+    investment.belongsTo(models.investmentCategory,{
+      foreignKey:'investmentCategoryId'
+    })
   }
   investment.init({
     payout:DataTypes.BOOLEAN,
     autoRenewal:DataTypes.BOOLEAN,
     dueDate :DataTypes.DATE,
-    isRedemmed: DataTypes.BOOLEAN
+    unit:DataTypes.STRING,
+    isRedemmed: DataTypes.BOOLEAN,
+    status: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'investment',

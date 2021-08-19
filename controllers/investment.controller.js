@@ -1,7 +1,10 @@
 const models = require('../models');
 const multer = require('multer');
 const uuid = require('uuid');
+const options = require('../middlewares/appSetting');
+const paystackApi = require('../utilities/paystack.api');
 const multerConfig = require('../config/multer');
+const helpers = require('../utilities/helpers')
 require('dotenv').config();
 //response
 const responseData = {
@@ -176,12 +179,14 @@ const invest = async (req,res)=>{
   const user = req.user;
   const planId = req.params.planId;
   const amount = parseFloat(data.amount);
+  const creditCardId = data.creditCardId
   let digits = helpers.generateOTP()
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
   let trxRef = `INVESTMENT-${digits}${firstDigit}`
   let time = new Date();
-  time = time.toLocaleString()
+  time = time.toLocaleString();
+  const payment = await options.getPayment();
   const card = await models.creditCard.findOne(
     {
       where:{
@@ -195,7 +200,7 @@ const invest = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData);
   }
-  const investmentPlan = await models.investmentCategory.findAll(
+  const investmentPlan = await models.investmentCategory.findOne(
     {
       where:{
         id:planId
@@ -223,7 +228,7 @@ const invest = async (req,res)=>{
   }
   if(!amount){
     responseData.status = false;
-    responseData.message = "loan amount not set";
+    responseData.message = "investment amount not set";
     responseData.data = undefined;
     return res.json(responseData);
   }
@@ -231,7 +236,7 @@ const invest = async (req,res)=>{
     return await walletpayment(user,amount,trxRef,time,investmentPlan,res);
   }
   let creditCard;
-  if(useDefault){
+  if(data.useDefault){
     creditCard = await models.creditCard.findOne(
       {
         where:{
@@ -250,8 +255,10 @@ const invest = async (req,res)=>{
   }
   if(payment.siteName =='paystack'){
     let unit = amount / parseFloat(investmentPlan.pricePerUnit);
-    let interestAmount = parseFloat(investmentPlan.interestRate) * amount;
+    let interestAmount = (parseFloat(investmentPlan.interestRate)/100) * amount;
+    console.log(interestAmount);
     let payout = amount + interestAmount;
+    console.log(payout);
     Date.prototype.addDays = function(days) {
       var date = new Date(this.valueOf());
       date.setDate(date.getDate() + days);
@@ -261,9 +268,10 @@ const invest = async (req,res)=>{
     date = date.addDays(parseFloat(investmentPlan.period));
     const createInvestment = await models.investment.create(
       {
+        id:uuid.v4(),
         payout:payout,
         unit:unit,
-        investmentCategoryId:investmentPlan.id,
+        investmentCategoryId:planId,
         userId:user.id,
         dueDate:date,
         isRedemmed:false,
@@ -328,12 +336,12 @@ const walletpayment = async (user,amount,trxRef,time,investmentPlan,res)=>{
     },
     {
       where:{
-        id:wallet.id
+        userId:user.id
       }
     }
   );
   let unit = amount / parseFloat(investmentPlan.pricePerUnit);
-  let interestAmount = parseFloat(investmentPlan.interestRate) * amount;
+  let interestAmount = (parseFloat(investmentPlan.interestRate)/100) * amount;
   let payout = amount + interestAmount;
   Date.prototype.addDays = function(days) {
     var date = new Date(this.valueOf());
@@ -342,7 +350,7 @@ const walletpayment = async (user,amount,trxRef,time,investmentPlan,res)=>{
   };
   let date = new Date();
   date = date.addDays(parseFloat(investmentPlan.period));
-  const createInvestment = await models.loan.update(
+  const createInvestment = await models.investment.create(
     {
       payout:payout,
       unit:unit,

@@ -82,9 +82,13 @@ const checkInvestment = async (req,res)=>{
             }
           }
         );
+        console.log(parseFloat(wallet.accountBalance),"wallet");
+        console.log(parseFloat(investments[i].payout));
+        let newBalance = parseFloat(wallet.accountBalance) + parseFloat(investments[i].payout)
+        console.log(newBalance);
         await models.wallet.update(
           {
-            accountBalance:parseFloat(wallet.accountBalance) + parseFloat(investments[i].payout)
+            accountBalance:newBalance
           },
           {
             where:{
@@ -109,5 +113,6 @@ const checkInvestment = async (req,res)=>{
 module.exports ={
   generateOTP,
   getDifferenceInDays,
-  checkLoans
+  checkLoans,
+  checkInvestment
 }

@@ -54,8 +54,10 @@ app.use('/api/v1/credit-card', creditCardRouter);
 app.use('/api/v1/account', accountRouter);
 app.use('/api/v1/bank', bankRouter);
 
-cron.schedule('0 1 * * *', () => { //jobs will run after 24 hours server is running
+// cron.schedule('0 1 * * *', () => { //jobs will run after 24 hours server is running
+cron.schedule('*/1 * * * *', () => {
   helpers.checkLoans()
+  helpers.checkInvestment()
 });
 
 // catch 404 and forward to error handler
