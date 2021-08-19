@@ -27,5 +27,12 @@ router.post('/:planId',
   passport.authenticate('jwt',{session:false}),
   controller.invest
 )
-
+router.get('/user',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllUserInvestments
+);
+router.get('/user/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.getInvestment
+);
 module.exports = router;

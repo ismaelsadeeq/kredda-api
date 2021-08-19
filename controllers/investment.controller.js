@@ -380,6 +380,10 @@ const walletpayment = async (user,amount,trxRef,time,investmentPlan,res)=>{
   responseData.data = undefined
   return res.json(responseData);
 }
+const getAllInvestmentPlan = async (req,res)=>{
+  const user = req.user;
+  
+}
 module.exports = {
   createInvestmentPlan,
   editInvestmentPlan,
