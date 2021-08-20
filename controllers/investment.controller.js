@@ -380,9 +380,50 @@ const walletpayment = async (user,amount,trxRef,time,investmentPlan,res)=>{
   responseData.data = undefined
   return res.json(responseData);
 }
-const getAllInvestmentPlan = async (req,res)=>{
+const getAllUserInvestments = async (req,res)=>{
   const user = req.user;
-  
+  let pageLimit = parseInt(req.query.pageLimit);
+  let currentPage = parseInt(req.query.currentPage);
+  let	skip = currentPage * pageLimit;
+  const investments = await models.investment.findAll(
+    {
+      order:[['createdAt','DESC']],
+      offset:skip,
+      limit:pageLimit,
+      where:{
+        userId:user.id
+      }
+    }
+  );
+  if(!investments){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = investments;
+  return res.json(responseData);
+}
+const getInvestment = async (req,res)=>{
+  const investments = await models.investment.findOne(
+    {
+      where:{
+        id:req.params.id
+      }
+    }
+  );
+  if(!investments){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = investments;
+  return res.json(responseData);
 }
 module.exports = {
   createInvestmentPlan,
@@ -390,5 +431,7 @@ module.exports = {
   getAllInvestmentPlan,
   getInvestmentPlan,
   deleteInvestmentPlan,
-  invest
+  invest,
+  getInvestment,
+  getAllUserInvestments
 }
