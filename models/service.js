@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
     service.belongsTo(models.serviceCategory,{
       foreignKey:'serviceCategoryId'
     });
+    service.hasMany(models.serviceTransaction,{
+      foreignKey:'serviceId'
+    });
   }
   service.init({
     name: DataTypes.STRING,

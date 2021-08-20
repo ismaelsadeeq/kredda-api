@@ -36,6 +36,9 @@ module.exports = (sequelize, DataTypes) => {
     user.hasMany(models.otpCode,{
       foreignKey:'userId'
     });
+    user.hasMany(models.serviceTransaction,{
+      foreignKey:'userid'
+    });
   }
   user.init({
     firstName: DataTypes.STRING,
