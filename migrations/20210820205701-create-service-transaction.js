@@ -4,9 +4,29 @@ module.exports = {
     await queryInterface.createTable('serviceTransactions', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        unique:true,
+        type: Sequelize.UUID
+      },
+      userId:{
+        type:Sequelize.UUID,
+        allowNull:true,
+        onDelete:'CASCADE',
+        references:{
+          model:'users',
+          key:'id',
+          as:'userId'
+        }
+      },
+      serviceId:{
+        type:Sequelize.UUID,
+        allowNull:true,
+        onDelete:'CASCADE',
+        references:{
+          model:'services',
+          key:'id',
+          as:'serviceId'
+        }
       },
       reference: {
         type: Sequelize.STRING
@@ -35,6 +55,10 @@ module.exports = {
       },
       updatedAt: {
         allowNull: false,
+        type: Sequelize.DATE
+      },
+      deletedAt: {
+        allowNull: true,
         type: Sequelize.DATE
       }
     });
