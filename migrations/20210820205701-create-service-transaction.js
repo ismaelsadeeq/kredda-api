@@ -37,8 +37,8 @@ module.exports = {
       beneficiary: {
         type: Sequelize.STRING
       },
-      timr: {
-        type: Sequelize.STRING
+      time: {
+        type: Sequelize.DATE
       },
       status: {
         type: Sequelize.BOOLEAN
