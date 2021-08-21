@@ -41,7 +41,7 @@ module.exports = {
         type: Sequelize.DATE
       },
       status: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.STRING
       },
       totalServiceFee: {
         type: Sequelize.STRING

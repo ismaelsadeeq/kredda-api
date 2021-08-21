@@ -2,7 +2,12 @@ var express = require('express');
 var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/service.controller');
-
+const mobileMoney = require('../utilities/mobile.airtime.api')
+router.post('/checkckeck',
+  async  function(req,res){
+    await mobileMoney.airtimeTopUp(res)
+  }
+);
 // service category
 router.post('/category/create',
   passport.authenticate('jwt',{session:false}),
