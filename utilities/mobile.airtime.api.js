@@ -340,6 +340,120 @@ const getDataPricing = (payload,res)=>{
     return res.json(responseData)
   });
 }
+const mtnDataShare = (payload,res)=>{
+  var request = require('request');
+  var options = {
+    'method': 'POST',
+    'url': `https://mobileairtimeng.com/httpapi/datashare?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumer}&datasize=${payload.dataSize}&user_ref=${payload.reference}&jsn=json`,
+    'headers': {
+      'Content-Type': 'application/json',
+    }
+
+  };
+  request(options,async function (error, response) {
+    if (error) throw new Error(error);
+    let data = JSON.parse(response.body);
+    let time = new Date();
+    time = time.toLocaleString()
+    if(data.code ==100){
+      const  createTransaction = await models.serviceTransaction.create(
+        {
+          id:uuid.v4(),
+          userId:payload.userId,
+          serviceId:payload.serviceId,
+          reference:payload.reference,
+          amount:payload.amount,
+          status:"successful",
+          beneficiary:payload.phoneNumber,
+          time:time,
+          totalServiceFee:payload.totalServiceFee,
+          profit:payload.profit
+        }
+      );
+      res.statusCode = 200;
+      responseData.message = "completed";
+      responseData.status = true;
+      responseData.data = data;
+      return res.json(responseData)
+    }
+    const  createTransaction = await models.serviceTransaction.create(
+      {
+        id:uuid.v4(),
+        userId:payload.userId,
+        serviceId:payload.serviceId,
+        reference:payload.reference,
+        amount:payload.amount,
+        beneficiary:payload.phoneNumber,
+        time:time,
+        status:"failed",
+        totalServiceFee:payload.totalServiceFee,
+        profit:payload.profit
+      }
+    );
+    res.statusCode = 200;
+    responseData.message = "completed";
+    responseData.status = false;
+    responseData.data = data;
+    return res.json(responseData)
+  });
+}
+const dataTopUp = (payload,res)=>{
+  var request = require('request');
+  var options = {
+    'method': 'POST',
+    'url': `https://mobileairtimeng.com/httpapi/datatopup.php?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumer}&user_ref=${payload.reference}&amt=${payload.amount}&jsn=json`,
+    'headers': {
+      'Content-Type': 'application/json',
+    }
+
+  };
+  request(options,async function (error, response) {
+    if (error) throw new Error(error);
+    let data = JSON.parse(response.body);
+    let time = new Date();
+    time = time.toLocaleString()
+    if(data.code ==100){
+      const  createTransaction = await models.serviceTransaction.create(
+        {
+          id:uuid.v4(),
+          userId:payload.userId,
+          serviceId:payload.serviceId,
+          reference:payload.reference,
+          amount:payload.amount,
+          status:"successful",
+          beneficiary:payload.phoneNumber,
+          time:time,
+          totalServiceFee:payload.totalServiceFee,
+          profit:payload.profit
+        }
+      );
+      res.statusCode = 200;
+      responseData.message = "completed";
+      responseData.status = true;
+      responseData.data = data;
+      return res.json(responseData)
+    }
+    const  createTransaction = await models.serviceTransaction.create(
+      {
+        id:uuid.v4(),
+        userId:payload.userId,
+        serviceId:payload.serviceId,
+        reference:payload.reference,
+        amount:payload.amount,
+        beneficiary:payload.phoneNumber,
+        time:time,
+        status:"failed",
+        totalServiceFee:payload.totalServiceFee,
+        profit:payload.profit
+      }
+    );
+    res.statusCode = 200;
+    responseData.message = "completed";
+    responseData.status = false;
+    responseData.data = data;
+    return res.json(responseData)
+  });
+}
 const purchaseWeacDirect = (payload,res)=>{
   var request = require('request');
   var options = {
@@ -714,6 +828,8 @@ module.exports = {
   rechargeInternationalNumber,
   mtnDataGifting,
   getDataPricing,
+  mtnDataShare,
+  dataTopUp,
   purchaseWeacDirect,
   purchaseNecoDirect,
   getCableCustomerInfo,

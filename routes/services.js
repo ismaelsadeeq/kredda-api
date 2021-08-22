@@ -77,27 +77,89 @@ router.post('/shago/purchase-go-tv',
   passport.authenticate('jwt',{session:false}),
   controller.shagoPurchaseGoTv
 );
+//transaction 
+router.post('/shago/verify/:reference',
+  passport.authenticate('jwt',{session:false}),
+  controller.shagoVerifyTransaction
+);
 // Mobile airtime
 
 // airtime
-// router.post('/',
-//   passport.authenticate()
-//   controller.
-// );
+router.post('/mobile-airtime/mtn-vtu',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeMtnVtuTopUp
+);
+router.post('/mobile-airtime/top-up',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeAirtimeTopUp
+);
+router.get('/mobile-airtime/verify-international',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeVerifyInternationalNumber
+);
+router.post('/mobile-airtime/recharge-international',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeRechargeInternational
+);
 // data
-
+router.post('/mobile-airtime/data/mtn/gifting',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeMtnDataGifting
+);
+router.get('/mobile-airtime/data/mtn/share',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeMtnDataShare
+);
+router.get('/mobile-airtime/data/mtn/pricing',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeGetDataPricing 
+);
+router.post('/mobile-airtime/data/top-op',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeDataTopUp
+);
 // electricity
-
+router.get('/mobile-airtime/disco/lookup',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeGetDiscos
+)
+router.post('/mobile-airtime/meter/verification',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeMeterVerification
+);
+router.post('/mobile-airtime/electricity-purchase',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeElectricityPurchase
+);
 // pin
-
+router.get('/mobile-airtime/waec-purchase',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeWaecPurchase
+);
+router.post('/mobile-airtime/neco-purchase',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeNecoPurchase
+);
 // cable
-
+router.get('/mobile-airtime/cable/info',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeGetCableInfo
+);
+router.post('/mobile-airtime/recharge/go-tv',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeRechargeGoTv
+);
+router.post('/mobile-airtime/recharge/dstv',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeRechargeDstv
+);
+router.post('/mobile-airtime/recharge/startimes',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeRechargeStartimes
+);
 // Baxi
 // airtime
-// router.post('/',
-//   passport.authenticate()
-//   controller.
-// );
+
 // data
 
 // electricity
@@ -105,4 +167,5 @@ router.post('/shago/purchase-go-tv',
 // pin
 
 // cable
+
 module.exports = router;
