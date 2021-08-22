@@ -42,6 +42,9 @@ module.exports = (sequelize, DataTypes) => {
     user.hasMany(models.ticket,{
       foreignKey:'userId'
     });
+    user.hasMany(models.ticketReply,{
+      foreignKey:'userId'
+    });
   }
   user.init({
     firstName: DataTypes.STRING,

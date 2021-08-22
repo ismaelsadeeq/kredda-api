@@ -3,25 +3,27 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class ticket extends Model {
+  class ticketReply extends Model {
   };
-  ticket.associate = function(models){
-    ticket.belongsTo(models.user,{
+  ticketReply.associate = function(models){
+    ticketReply.belongsTo(models.user,{
       foreignKey:'userId'
     });
-    ticket.hasMany(models.ticketReply,{
+    ticketReply.belongsTo(models.admin,{
+      foreignKey:'adminId'
+    });
+    ticketReply.belongsTo(models.ticket,{
       foreignKey:'ticketId'
     });
   }
-  ticket.init({
-    title: DataTypes.STRING,
+  ticketReply.init({
     body: DataTypes.STRING,
     attatchment: DataTypes.STRING,
     status: DataTypes.STRING
   }, {
     sequelize,
     paranoid:true,
-    modelName: 'ticket',
+    modelName: 'ticketReply',
   });
-  return ticket;
+  return ticketReply;
 };
