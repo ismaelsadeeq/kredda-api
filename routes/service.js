@@ -2,15 +2,7 @@ var express = require('express');
 var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/service.controller');
-const mobileMoney = require('../utilities/baxi.api')
-router.post('/checkckeck',
-  async  function(req,res){
-    let payload = {
-      reference:"456782"
-    }
-    await mobileMoney.queryTransaction(payload)
-  }
-);
+
 // service category
 router.post('/category/create',
   passport.authenticate('jwt',{session:false}),
