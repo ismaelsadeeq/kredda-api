@@ -35,6 +35,7 @@ var creditCardRouter = require('./routes/creditCard');
 var walletRouter = require('./routes/wallet');
 var accountRouter = require('./routes/account');
 var bankRouter = require('./routes/bank');
+var servicesRouter = require('./routes/services');
 
 const cron = require('node-cron');
 const helpers = require('./utilities/helpers');
@@ -49,6 +50,7 @@ app.use('/api/v1/kyc',kycRouter);
 app.use('/api/v1/investment', investmentRouter);
 app.use('/api/v1/loan', loanRouter);
 app.use('/api/v1/service', serviceRouter);
+app.use('/api/v1/services', servicesRouter)
 app.use('/api/v1/wallet', walletRouter);
 app.use('/api/v1/credit-card', creditCardRouter);
 app.use('/api/v1/account', accountRouter);
