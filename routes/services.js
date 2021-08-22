@@ -173,7 +173,7 @@ router.post('/baxi/purchase/airtime',
 // data
 router.get('/baxi/get/data-bundle',
   passport.authenticate('jwt',{session:false}),
-  controller.baxigetDataBundle
+  controller.baxiGetDataBundle
 );
 router.post('/baxi/purchase/data',
   passport.authenticate('jwt',{session:false}),

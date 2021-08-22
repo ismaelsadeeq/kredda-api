@@ -65,9 +65,91 @@ const shagoVerifyTransaction = async (req,res)=>{
   
 }
 //Baxi
-
+const baxiPurchaseAirtime = async (req,res)=>{
+  
+}
+const baxiGetDataBundle = async (req,res)=>{
+  
+}
+const baxiPurchaseData = async (req,res)=>{
+  
+}
+const baxiGetDisco = async (req,res)=>{
+  
+}
+const baxiPurchaseElectricity = async (req,res)=>{
+  
+}
+const baxiGetPinBundle = async (req,res)=>{
+  
+}
+const baxiPurchasePin = async (req,res)=>{
+  
+}
+const baxiCableLookUp = async (req,res)=>{
+  
+}
+const baxiCableAddOnLookUp = async (req,res)=>{
+  
+}
+const baxiVerifyTransaction = async (req,res)=>{
+  
+}
 //mobile Airtime
-
+const mAirtimeMtnVtuTopUp = async (req,res)=>{
+  
+}
+const mAirtimeAirtimeTopUp = async (req,res)=>{
+  
+}
+const mAirtimeVerifyInternationalNumber = async (req,res)=>{
+  
+}
+const mAirtimeRechargeInternational = async (req,res)=>{
+  
+}
+const mAirtimeMtnDataGifting = async (req,res)=>{
+  
+}
+const mAirtimeMtnDataShare = async (req,res)=>{
+  
+}
+const mAirtimeGetDataPricing = async (req,res)=>{
+  
+}
+const mAirtimeDataTopUp = async (req,res)=>{
+  
+}
+const mAirtimeGetDiscos = async (req,res)=>{
+  
+}
+const mAirtimeMeterVerification = async (req,res)=>{
+  
+}
+const mAirtimeElectricityPurchase = async (req,res)=>{
+  
+}
+const mAirtimeWaecPurchase = async (req,res)=>{
+  
+}
+const mAirtimeNecoPurchase = async (req,res)=>{
+  
+}
+const mAirtimeGetCableInfo = async (req,res)=>{
+  
+}
+const mAirtimeRechargeGoTv = async (req,res)=>{
+  
+}
+const mAirtimeRechargeDstv = async (req,res)=>{
+  
+}
+const mAirtimeRechargeStartimes = async (req,res)=>{
+  
+}
+const mAirtimeVerifyTransaction = async (req,res)=>{
+  
+}
 
 module.exports = {
   shagoBuyAirtime,
@@ -87,5 +169,35 @@ module.exports = {
   shagoPurchaseElectricity,
   shagoMeterVerification,
   shagoDataPurchase,
-  shagoDataLookup
+  shagoDataLookup,
+  //mobile airtime
+  mAirtimeMtnVtuTopUp,
+  mAirtimeAirtimeTopUp,
+  mAirtimeVerifyInternationalNumber,
+  mAirtimeRechargeInternational,
+  mAirtimeMtnDataGifting,
+  mAirtimeMtnDataShare,
+  mAirtimeGetDataPricing,
+  mAirtimeDataTopUp,
+  mAirtimeGetDiscos,
+  mAirtimeMeterVerification,
+  mAirtimeElectricityPurchase,
+  mAirtimeWaecPurchase,
+  mAirtimeNecoPurchase,
+  mAirtimeGetCableInfo,
+  mAirtimeRechargeGoTv,
+  mAirtimeRechargeDstv,
+  mAirtimeRechargeStartimes,
+  mAirtimeVerifyTransaction,
+  //Baxi
+  baxiPurchaseAirtime,
+  baxiGetDataBundle,
+  baxiPurchaseData,
+  baxiGetDisco,
+  baxiPurchaseElectricity,
+  baxiGetPinBundle,
+  baxiPurchasePin,
+  baxiCableLookUp,
+  baxiCableAddOnLookUp,
+  baxiVerifyTransaction
 }
