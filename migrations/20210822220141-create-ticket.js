@@ -4,9 +4,19 @@ module.exports = {
     await queryInterface.createTable('tickets', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        unique:true,
+        type: Sequelize.UUID
+      },
+      userId:{
+        type:Sequelize.UUID,
+        allowNull:true,
+        onDelete:'CASCADE',
+        references:{
+          model:'users',
+          key:'id',
+          as:'userId'
+        }
       },
       title: {
         type: Sequelize.STRING
@@ -26,6 +36,10 @@ module.exports = {
       },
       updatedAt: {
         allowNull: false,
+        type: Sequelize.DATE
+      },
+      deletedAt: {
+        allowNull: true,
         type: Sequelize.DATE
       }
     });
