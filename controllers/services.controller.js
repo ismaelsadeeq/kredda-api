@@ -9,136 +9,83 @@ const responseData = {
 	message: "Completed",
 	data: null
 }
-//service Category
-const createServiceCategory = async (req,res)=>{
-  const admin = req.user;
-  const user = await models.admin.findOne(
-    {
-      where:{
-        id:admin.id
-      }
-    }
-  );
-  if(!user){
-    res.statusCode = 401;
-    return res.send('Unauthorized');
-  }
-  multerConfig.singleUpload(req, res, async function(err) {
-    if (err instanceof multer.MulterError) {
-      return res.json(err.message);
-    } else if (err) {
-      return res.json(err);
-    } else if(req.body){
-      const data = req.body;
-      const createServiceCategory = await models.serviceCategory.create(
-        {
-          id:uuid.v4(),
-          name:data.name,
-          type:data.type,
-          serviceCharge:data.serviceCharge,
-          status:true
-        }
-      );
-      req.file ?
-      await models.serviceCategory.update(
-        {
-          logo:req.file.path
-        },
-        {
-          where:{
-            id:createServiceCategory.id
-          }
-        }
-      ):null
-      if(!createServiceCategory){
-        responseData.status = false;
-        responseData.message = "something went wrong";
-        responseData.data = undefined;
-        return res.json(responseData);
-      }
-      responseData.status = true;
-      responseData.message = "completed";
-      responseData.data = createServiceCategory;
-      return res.json(responseData);
-    }
-    responseData.status = false;
-    responseData.message = "empty post";
-    responseData.data = undefined;
-    return res.json(responseData);
-  })
-}
-const changeServiceCategoryStatusToFalse = async (req,res)=>{
-  const admin = req.user;
-  const user = await models.admin.findOne(
-    {
-      where:{
-        id:admin.id
-      }
-    }
-  );
-  if(!user){
-    res.statusCode = 401;
-    return res.send('Unauthorized');
-  }
-  const data = req.body;
-  const serviceCategory = await models.serviceCategory.update(
-    {
-      status:false
-    },
-    {
-      where:{
-        id:req.params.id
-      }
-    }
-  );
-  if(!serviceCategory){
-    responseData.status = false;
-    responseData.message = "something went wrong";
-    responseData.data = undefined;
-    return res.json(responseData);
-  }
-  responseData.status = true;
-  responseData.message = "status changed to false";
-  responseData.data = undefined;
-  return res.json(responseData);
+//Shago
+const shagoBuyAirtime = async (req,res)=>{
   
 }
-const changeServiceCategoryStatusToTrue = async (req,res)=>{
-  const admin = req.user;
-  const user = await models.admin.findOne(
-    {
-      where:{
-        id:admin.id
-      }
-    }
-  );
-  if(!user){
-    res.statusCode = 401;
-    return res.send('Unauthorized');
-  }
-  const data = req.body;
-  const serviceCategory = await models.serviceCategory.update(
-    {
-      status:true
-    },
-    {
-      where:{
-        id:req.params.id
-    }
-    }
-  );
-  if(!serviceCategory){
-    responseData.status = false;
-    responseData.message = "something went wrong";
-    responseData.data = undefined;
-    return res.json(responseData);
-  }
-  responseData.status = true;
-  responseData.message = "status changed to true";
-  responseData.data = undefined;
-  return res.json(responseData);
+const shagoDataLookup = async (req,res)=>{
+  
 }
+const shagoDataPurchase = async (req,res)=>{
+
+}
+const shagoMeterVerification = async (req,res)=>{
+  
+}
+const shagoPurchaseElectricity = async (req,res)=>{
+  
+}
+const shagoWaecPinLookup = async (req,res)=>{
+  
+}
+const shagoWaecPinPurchase = async (req,res)=>{
+  
+}
+const shagoJambLookUp = async (req,res)=>{
+  
+}
+const shagoJambVerification = async (req,res)=>{
+  
+}
+const shagoJambPurchase = async (req,res)=>{
+  
+}
+const shagoCableLookup = async (req,res)=>{
+  
+}
+const shagoCableBouquoteLookup = async (req,res)=>{
+  
+}
+const shagoGetDstvAddOn = async (req,res)=>{
+  
+}
+const shagoPurchaseDstv = async (req,res)=>{
+  
+}
+const shagoPurchaseDstvWithAddOn = async (req,res)=>{
+  
+}
+const shagoPurchaseStartimes = async (req,res)=>{
+  
+}
+const shagoPurchaseGoTv = async (req,res)=>{
+  
+}
+const shagoVerifyTransaction = async (req,res)=>{
+  
+}
+//Baxi
+
+//mobile Airtime
+
 
 module.exports = {
-
+  shagoBuyAirtime,
+  shagoVerifyTransaction,
+  shagoPurchaseGoTv,
+  shagoPurchaseStartimes,
+  shagoPurchaseDstvWithAddOn,
+  shagoPurchaseDstv,
+  shagoGetDstvAddOn,
+  shagoCableBouquoteLookup,
+  shagoCableLookup,
+  shagoJambPurchase,
+  shagoJambVerification,
+  shagoJambLookUp,
+  shagoWaecPinPurchase,
+  shagoWaecPinLookup,
+  shagoPurchaseElectricity,
+  shagoMeterVerification,
+  shagoDataPurchase,
+  shagoDataLookup
 }

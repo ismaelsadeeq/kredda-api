@@ -12,11 +12,11 @@ router.post('/shago/airtime',
 // data
 router.get('/shago/data-lookup',
   passport.authenticate('jwt',{session:false}),
-  controller.shagoDataLookuo
+  controller.shagoDataLookup
 );
 router.post('/shago/data-purchase',
   passport.authenticate('jwt',{session:false}),
-  controller.shagoDataLookup
+  controller.shagoDataPurchase
 );
 // electricity
 router.post('/shago/meter-verification',
@@ -157,15 +157,58 @@ router.post('/mobile-airtime/recharge/startimes',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeRechargeStartimes
 );
+//transaction
+router.post('/mobile-airtime/transaction/verify/:reference',
+  passport.authenticate('jwt',{session:false}),
+  controller.mAirtimeVerifyTransaction
+);
+
 // Baxi
+
 // airtime
-
+router.post('/baxi/purchase/airtime',
+  passport.authenticate('jwt',{session:false}),
+  controller.baxiPurchaseAirtime
+);
 // data
-
+router.get('/baxi/get/data-bundle',
+  passport.authenticate('jwt',{session:false}),
+  controller.baxigetDataBundle
+);
+router.post('/baxi/purchase/data',
+  passport.authenticate('jwt',{session:false}),
+  controller.baxiPurchaseData
+);
 // electricity
-
+router.get('/baxi/get/discos',
+  passport.authenticate('jwt',{session:false}),
+  controller.baxiGetDisco
+);
+router.get('/baxi/get/purchase/electricty',
+  passport.authenticate('jwt',{session:false}),
+  controller.baxiPurchaseElectricity
+);
 // pin
-
+router.get('/baxi/pin/get-bundles',
+  passport.authenticate('jwt',{session:false}),
+  controller.baxiGetPinBundle
+);
+router.get('/baxi/pin/purchase-pin',
+  passport.authenticate('jwt',{session:false}),
+  controller.baxiPurchasePin
+);
 // cable
-
+router.get('/baxi/cable/lookup',
+  passport.authenticate('jwt',{session:false}),
+  controller.baxiCableLookUp
+);
+router.get('/baxi/cable-addOn/look-up',
+  passport.authenticate('jwt',{session:false}),
+  controller.baxiCableAddOnLookUp
+);
+// transaction
+router.get('/baxi/transaction/:reference',
+  passport.authenticate('jwt',{session:false}),
+  controller.baxiVerifyTransaction
+);
 module.exports = router;
