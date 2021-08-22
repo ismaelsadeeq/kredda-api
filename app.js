@@ -36,7 +36,8 @@ var walletRouter = require('./routes/wallet');
 var accountRouter = require('./routes/account');
 var bankRouter = require('./routes/bank');
 var servicesRouter = require('./routes/services');
-var transactionRouter = require('./routes/transaction')
+var transactionRouter = require('./routes/transaction');
+var supportRouter = require('./routes/support');
 
 const cron = require('node-cron');
 const helpers = require('./utilities/helpers');
@@ -57,6 +58,7 @@ app.use('/api/v1/credit-card', creditCardRouter);
 app.use('/api/v1/account', accountRouter);
 app.use('/api/v1/bank', bankRouter);
 app.use('/api/v1/transaction', transactionRouter);
+app.use('./api/v1/support',supportRouter);
 
 
 cron.schedule('0 1 * * *', () => { //jobs will run after 1 am every day server is running
