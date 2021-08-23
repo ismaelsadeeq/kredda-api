@@ -43,9 +43,89 @@ const walletpayment = async (user,trxRef,time,service,phoneNumber,res)=>{
       {
         id:uuid.v4(),
         transactionType:"debit",
+        message:"airtime purchase",
+        beneficiary:"self",
+        description:user.firstName + "purchasing airtime for a beneficiary",
+        userId:user.id,
+        reference:trxRef,
+        amount:amount,
+        status:"failed",
+        time: time
+      }
+    );
+    responseData.status = false;
+    responseData.message = "insufficient funds";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  await models.wallet.update(
+    {
+      accountBalance:walletBalance - totalAmount
+    },
+    {
+      where:{
+        id:wallet.id
+      }
+    }
+  );
+  const transaction = await models.transaction.create(
+    {
+      id:uuid.v4(),
+      transactionType:"debit",
+      message:"airtime purchase",
+      beneficiary:phoneNumber,
+      description:user.firstName + "purchasing airtime for a beneficiary",
+      userId:user.id,
+      reference:trxRef,
+      amount:totalAmount,
+      status:"successful",
+      time: time
+    }
+  );
+  let payload = {
+    userId:user.id,
+    phoneNumber:phoneNumber,
+    amount:amount,
+    network:service.name,
+    reference:trxRef,
+    serviceId:service.id,
+    totalServiceFee:totalAmount,
+    profit:profit
+  }
+  await shagoApi.airtimePushase(payload,res);
+}
+const walletDatapayment = async (user,trxRef,time,service,phoneNumber,package,bundle,res)=>{
+  const wallet = await models.wallet.findOne(
+    {
+      where:{
+        userId:user.id
+      }
+    }
+  );
+  const serviceCategory = await models.serviceCategory.findOne(
+    {
+      where:{
+        id:service.serviceCategoryId
+      }
+    }
+  );
+  let serviceCharge = serviceCategory.serviceCharge;
+  let discount = service.discount;
+  let amount = service.amount;
+  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+  if(discount){
+    totalAmount = totalAmount  - discount;
+  }
+  let profit = totalAmount - amount;
+  let walletBalance = parseFloat(wallet.accountBalance);
+  if(walletBalance < totalAmount){
+    const transaction = await models.transaction.create(
+      {
+        id:uuid.v4(),
+        transactionType:"debit",
         message:"data purchase",
         beneficiary:"self",
-        description:user.firstName + "paying for loan",
+        description:user.firstName +" purchasing data for a beneficiary",
         userId:user.id,
         reference:trxRef,
         amount:amount,
@@ -74,7 +154,7 @@ const walletpayment = async (user,trxRef,time,service,phoneNumber,res)=>{
       transactionType:"debit",
       message:"aitime purchase",
       beneficiary:phoneNumber,
-      description:user.firstName + "purchasing airtime for a beneficiary",
+      description:user.firstName + " purchasing airtime for a beneficiary",
       userId:user.id,
       reference:trxRef,
       amount:totalAmount,
@@ -86,13 +166,15 @@ const walletpayment = async (user,trxRef,time,service,phoneNumber,res)=>{
     userId:user.id,
     phoneNumber:phoneNumber,
     amount:amount,
+    bundle:bundle,
+    package:package,
     network:service.name,
     reference:trxRef,
     serviceId:service.id,
     totalServiceFee:totalAmount,
     profit:profit
   }
-  await shagoApi.airtimePushase(payload,res);
+  await shagoApi.dataPurchase(payload,res)
 }
 const shagoBuyAirtime = async (req,res)=>{
   const data = req.body;
@@ -195,10 +277,67 @@ const shagoBuyAirtime = async (req,res)=>{
 
 }
 const shagoDataLookup = async (req,res)=>{
-  
+  const data = req.body;
+  const serviceId = req.params.serviceId;
+  const service = await models.service.findOne(
+    {
+      where:{
+        id:serviceId
+      }
+    }
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(data.phoneNumber){
+    let payload = {
+      phoneNumber:data.phoneNumber,
+      network:service.name
+    }
+    return await shagoApi.dataLookup(payload,res)
+  }
+  responseData.status = false;
+  responseData.message = "phoneNumber is required";
+  responseData.data = undefined;
+  return res.json(responseData);
 }
 const shagoDataPurchase = async (req,res)=>{
+  const user = req.user;
+  const data = req.body;
+  const serviceId = req.params.serviceId;
+  const service = await models.service.findOne(
+    {
+      where:{
+        id:serviceId
+      }
+    }
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `SHAGO-${digits}${firstDigit}`
 
+  let time = new Date();
+  time = time.toLocaleString();
+  console.log(data)
+  if(!data.phoneNumber || !data.amount || !data.allowance || !data.code){
+    responseData.status = false;
+    responseData.message = "data not complete";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(data.useWallet){ 
+    return walletDatapayment(user,trxRef,time,service,data.phoneNumber,data.code,data.allowance,res)
+  }
 }
 const shagoMeterVerification = async (req,res)=>{
   

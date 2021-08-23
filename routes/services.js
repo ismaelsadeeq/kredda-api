@@ -4,13 +4,14 @@ const passport = require('passport');
 const controller = require('../controllers/services.controller');
 
 //Shago
+
 // airtime
 router.post('/:serviceId/shago/airtime',
   passport.authenticate('jwt',{session:false}),
   controller.shagoBuyAirtime
 );
 // data
-router.get('/shago/data-lookup',
+router.get('/:serviceId/shago/data-lookup',
   passport.authenticate('jwt',{session:false}),
   controller.shagoDataLookup
 );

@@ -188,10 +188,10 @@ const dataLookup = async (payload,res)=>{
   };
   request(options,async function (error, response) {
     if (error) throw new Error(error);
-    console.log(response.body);
-    const data = response.data;
+    const data = JSON.parse(response.body);
+    console.log(data);
     if(data.status == 200){
-      return res.json(response);
+      return res.json(data);
     }
     res.statusCode = 200;
     responseData.message = "something went wrong";
@@ -332,7 +332,7 @@ const electricityMeterVerication = async (payload,res)=>{
     console.log(response.body);
     const data = JSON.parse(response.body);
     if(data.status == 200){
-      return res.json(response);
+      return res.json(data);
     }
     res.statusCode = 200;
     responseData.message = "something went wrong";
@@ -474,7 +474,7 @@ const cableLookup = async (payload,res)=>{
     console.log(response.body);
     const data = JSON.parse(response.body);
     if(data.status == 200){
-      return res.json(response);
+      return res.json(data);
     }
     res.statusCode = 200;
     responseData.message = "something went wrong";
@@ -1138,7 +1138,7 @@ const jambLookup = async (res)=>{
     console.log(response.body);
     const data = JSON.parse(response.body);
     if(data.status == 200){
-      return res.json(response);
+      return res.json(data);
     }
     res.statusCode = 200;
     responseData.message = "something went wrong";
