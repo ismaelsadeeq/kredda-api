@@ -81,8 +81,8 @@ const airtimePushase =async (payload,res)=>{
   };
   request(options, async function (error, response) {
     if (error) throw new Error(error);
-    console.log(response.body);
     const data = JSON.parse(response.body);
+    console.log(data);
     let time = new Date();
     time = time.toLocaleString()
     if(data.status == 200){
@@ -1184,8 +1184,7 @@ const jambPinPurchase = async (payload)=>{
     'url': 'http://34.68.51.255/shago/public/api/test/b2b',
     'headers': {
       'Content-Type': 'application/json',
-      'email': 'test@shagopayments.com',
-      'password': 'test123'
+      'hashKey': `${process.env.SHAGO_KEY}`
     },
     body: JSON.stringify({
       "serviceCode": "JMB",

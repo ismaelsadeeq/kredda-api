@@ -5,7 +5,7 @@ const controller = require('../controllers/services.controller');
 
 //Shago
 // airtime
-router.post('/shago/airtime',
+router.post('/:serviceId/shago/airtime',
   passport.authenticate('jwt',{session:false}),
   controller.shagoBuyAirtime
 );
@@ -14,7 +14,7 @@ router.get('/shago/data-lookup',
   passport.authenticate('jwt',{session:false}),
   controller.shagoDataLookup
 );
-router.post('/shago/data-purchase',
+router.post('/:serviceId/shago/data-purchase',
   passport.authenticate('jwt',{session:false}),
   controller.shagoDataPurchase
 );
@@ -23,7 +23,7 @@ router.post('/shago/meter-verification',
   passport.authenticate('jwt',{session:false}),
   controller.shagoMeterVerification
 );
-router.post('/shago/electricity-purchase',
+router.post('/:serviceId/shago/electricity-purchase',
   passport.authenticate('jwt',{session:false}),
   controller.shagoPurchaseElectricity
 );
@@ -32,7 +32,7 @@ router.get('/shago/waec/look-up',
   passport.authenticate('jwt',{session:false}),
   controller.shagoWaecPinLookup
 );
-router.post('/shago/waec/purchase',
+router.post('/:serviceId/shago/waec/purchase',
   passport.authenticate('jwt',{session:false}),
   controller.shagoWaecPinPurchase
 );
@@ -44,7 +44,7 @@ router.get('/shago/jamb/verification',
   passport.authenticate('jwt',{session:false}),
   controller.shagoJambVerification
 );
-router.get('/shago/jamb/purchase',
+router.get('/:serviceId/shago/jamb/purchase',
   passport.authenticate('jwt',{session:false}),
   controller.shagoJambPurchase
 );
@@ -61,7 +61,7 @@ router.get('/shago/dstv-addOn',
   passport.authenticate('jwt',{session:false}),
   controller.shagoGetDstvAddOn
 );
-router.post('/shago/purchase-dstv',
+router.post('/:serviceId/shago/purchase-dstv',
   passport.authenticate('jwt',{session:false}),
   controller.shagoPurchaseDstv
 );
@@ -69,11 +69,11 @@ router.post('/shago/purchase-dstv-addOn',
   passport.authenticate('jwt',{session:false}),
   controller.shagoPurchaseDstvWithAddOn
 );
-router.post('/shago/purchase-startimes',
+router.post('/:serviceId/shago/purchase-startimes',
   passport.authenticate('jwt',{session:false}),
   controller.shagoPurchaseStartimes
 );
-router.post('/shago/purchase-go-tv',
+router.post('/:serviceId/shago/purchase-go-tv',
   passport.authenticate('jwt',{session:false}),
   controller.shagoPurchaseGoTv
 );
@@ -85,11 +85,11 @@ router.post('/shago/verify/:reference',
 // Mobile airtime
 
 // airtime
-router.post('/mobile-airtime/mtn-vtu',
+router.post('/:serviceId/mobile-airtime/mtn-vtu',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeMtnVtuTopUp
 );
-router.post('/mobile-airtime/top-up',
+router.post('/:serviceId/mobile-airtime/top-up',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeAirtimeTopUp
 );
@@ -97,12 +97,12 @@ router.get('/mobile-airtime/verify-international',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeVerifyInternationalNumber
 );
-router.post('/mobile-airtime/recharge-international',
+router.post('/:serviceId/mobile-airtime/recharge-international',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeRechargeInternational
 );
 // data
-router.post('/mobile-airtime/data/mtn/gifting',
+router.post('/:serviceId/mobile-airtime/data/mtn/gifting',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeMtnDataGifting
 );
@@ -114,7 +114,7 @@ router.get('/mobile-airtime/data/mtn/pricing',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeGetDataPricing 
 );
-router.post('/mobile-airtime/data/top-op',
+router.post('/:serviceId/mobile-airtime/data/top-op',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeDataTopUp
 );
@@ -123,11 +123,11 @@ router.get('/mobile-airtime/disco/lookup',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeGetDiscos
 )
-router.post('/mobile-airtime/meter/verification',
+router.post('/:serviceId/mobile-airtime/meter/verification',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeMeterVerification
 );
-router.post('/mobile-airtime/electricity-purchase',
+router.post('/:serviceId/mobile-airtime/electricity-purchase',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeElectricityPurchase
 );
@@ -136,7 +136,7 @@ router.get('/mobile-airtime/waec-purchase',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeWaecPurchase
 );
-router.post('/mobile-airtime/neco-purchase',
+router.post('/:serviceId/mobile-airtime/neco-purchase',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeNecoPurchase
 );
@@ -145,15 +145,15 @@ router.get('/mobile-airtime/cable/info',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeGetCableInfo
 );
-router.post('/mobile-airtime/recharge/go-tv',
+router.post('/:serviceId/mobile-airtime/recharge/go-tv',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeRechargeGoTv
 );
-router.post('/mobile-airtime/recharge/dstv',
+router.post('/:serviceId/mobile-airtime/recharge/dstv',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeRechargeDstv
 );
-router.post('/mobile-airtime/recharge/startimes',
+router.post('/:serviceId/mobile-airtime/recharge/startimes',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeRechargeStartimes
 );
@@ -166,7 +166,7 @@ router.post('/mobile-airtime/transaction/verify/:reference',
 // Baxi
 
 // airtime
-router.post('/baxi/purchase/airtime',
+router.post('/:serviceId/baxi/purchase/airtime',
   passport.authenticate('jwt',{session:false}),
   controller.baxiPurchaseAirtime
 );
@@ -184,7 +184,7 @@ router.get('/baxi/get/discos',
   passport.authenticate('jwt',{session:false}),
   controller.baxiGetDisco
 );
-router.get('/baxi/get/purchase/electricty',
+router.post('/:serviceId/baxi/get/purchase/electricty',
   passport.authenticate('jwt',{session:false}),
   controller.baxiPurchaseElectricity
 );
@@ -193,7 +193,7 @@ router.get('/baxi/pin/get-bundles',
   passport.authenticate('jwt',{session:false}),
   controller.baxiGetPinBundle
 );
-router.get('/baxi/pin/purchase-pin',
+router.post('/:serviceId/baxi/pin/purchase-pin',
   passport.authenticate('jwt',{session:false}),
   controller.baxiPurchasePin
 );
@@ -205,6 +205,10 @@ router.get('/baxi/cable/lookup',
 router.get('/baxi/cable-addOn/look-up',
   passport.authenticate('jwt',{session:false}),
   controller.baxiCableAddOnLookUp
+);
+router.post('/:serviceId/baxi/cable/purchase',
+  passport.authenticate('jwt',{session:false}),
+  controller.baxiPurchaseCable
 );
 // transaction
 router.get('/baxi/transaction/:reference',

@@ -19,3 +19,4 @@ router.get('/:reference',
   passport.authenticate('jwt',{session:false}),
   controller.getATransactionInfo
 );
+module.exports = router;

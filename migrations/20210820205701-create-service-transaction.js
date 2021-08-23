@@ -38,7 +38,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       time: {
-        type: Sequelize.DATE
+        type: Sequelize.STRING
       },
       status: {
         type: Sequelize.STRING

@@ -52,13 +52,13 @@ app.use('/api/v1/kyc',kycRouter);
 app.use('/api/v1/investment', investmentRouter);
 app.use('/api/v1/loan', loanRouter);
 app.use('/api/v1/service', serviceRouter);
-app.use('/api/v1/services', servicesRouter)
+app.use('/api/v1/bills', servicesRouter)
 app.use('/api/v1/wallet', walletRouter);
 app.use('/api/v1/credit-card', creditCardRouter);
 app.use('/api/v1/account', accountRouter);
 app.use('/api/v1/bank', bankRouter);
 app.use('/api/v1/transaction', transactionRouter);
-app.use('./api/v1/support',supportRouter);
+app.use('/api/v1/support',supportRouter);
 
 
 cron.schedule('0 1 * * *', () => { //jobs will run after 1 am every day server is running

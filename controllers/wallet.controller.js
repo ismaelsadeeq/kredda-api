@@ -1,7 +1,9 @@
 const models = require('../models');
 const uuid = require('uuid');
 const options = require('../middlewares/appSetting');
+const helpers = require('../utilities/helpers');
 const paystackApi = require('../utilities/paystack.api');
+const shagoApi = require('../utilities/shago.api');
 let crypto = require('crypto');
 var request = require('request');
 require('dotenv').config();
@@ -22,6 +24,7 @@ async function getSecret(){
   }
   return privateKey;
 }
+
 const getWalletBalance = async(req,res)=>{
   const user = req.user;
   const wallet = await models.wallet.findOne(
@@ -102,6 +105,44 @@ const updateInvestment = async (transaction)=>{
     }
   );
 }
+const airtimePurchase = async (transaction,res)=>{
+  await transaction.update(
+    {
+      status:"successful",
+      isRedemmed:true,
+    },
+    {
+      where:{
+        reference:transaction.reference
+      }
+    }
+  );
+  let digits = helpers.generateOTP()
+  let beneficiary = JSON.parse(transaction.beneficiary);
+  if(beneficiary.gateway=="shago"){
+    let trxRef = `SHAGO-CREDIT-CARD${digits}`
+    let phoneNumber = beneficiary.phoneNumber;
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    let profit = parseFloat(transaction.amount) - parseFloat(service.amount);
+    let payload = {
+      userId:transaction.userId,
+      phoneNumber:phoneNumber,
+      amount:service.amount,
+      network:service.name,
+      reference:trxRef,
+      serviceId:service.id,
+      totalServiceFee:transaction.amount,
+      profit:profit
+    }
+    await shagoApi.airtimePushase(payload,res) 
+  }
+}
 const webhook =async (req,res)=>{
   //validate event
   let secret = await getSecret();
@@ -121,6 +162,7 @@ const webhook =async (req,res)=>{
         }
       );
       if(transaction.isRedemmed == false){
+        console.log(transaction.message);
         if(transaction.message == "payment of loan"){
           await updateLoan(transaction);
           await transaction.update(
@@ -158,6 +200,10 @@ const webhook =async (req,res)=>{
           responseData.status = true;
           responseData.data = undefined;
           return res.json(responseData)
+        }
+        if(transaction.message =="airtime purchase"){
+          res.statusCode = 200;
+          return await airtimePurchase(transaction,res);
         }
         const otherAccount = await models.otherAccount.findOne(
           {
