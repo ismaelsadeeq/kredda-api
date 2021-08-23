@@ -658,10 +658,10 @@ const userPayLoan = async(req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    await walletpayment(user,amount,trxRef,time,loan,loanId,res)
+    return await walletpayment(user,amount,trxRef,time,loan,loanId,res)
   }
   if(payment.siteName =='monnify'){
-    await walletpayment(user,amount,trxRef,time,loan,loanId,res)
+    return await walletpayment(user,amount,trxRef,time,loan,loanId,res)
   }
 }
 const walletpayment = async (user,amount,trxRef,time,loan,loanId,res)=>{

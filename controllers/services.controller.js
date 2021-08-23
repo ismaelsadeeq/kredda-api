@@ -269,10 +269,10 @@ const shagoBuyAirtime = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    await walletpayment(user,trxRef,time,service,data.phoneNumber,res)
+    return await walletpayment(user,trxRef,time,service,data.phoneNumber,res)
   }
   if(payment.siteName =='monnify'){
-    await walletpayment(user,trxRef,time,service,data.phoneNumber,res)
+    return await walletpayment(user,trxRef,time,service,data.phoneNumber,res)
   }
 
 }
