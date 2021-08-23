@@ -338,6 +338,69 @@ const shagoDataPurchase = async (req,res)=>{
   if(data.useWallet){ 
     return walletDatapayment(user,trxRef,time,service,data.phoneNumber,data.code,data.allowance,res)
   }
+  let creditCard;
+  let useDefault = data.useDefault;
+  let creditCardId = data.creditCardId;
+  const payment = await options.getPayment();
+  if(useDefault){
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          isDefault:true
+        }
+      }
+    );
+  } else {
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          id:creditCardId
+        }
+      }
+    )
+  }
+  if(payment.siteName =='paystack'){
+    const serviceCategory = await models.serviceCategory.findOne(
+      {
+        where:{
+          id:service.serviceCategoryId
+        }
+      }
+    );
+    let serviceCharge = serviceCategory.serviceCharge;
+    let discount = service.discount;
+    let amount = service.amount;
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    if(discount){
+      totalAmount = totalAmount  - discount;
+    }
+    let beneficiary = {
+      gateway:"shago",
+      service:serviceId,
+      phoneNumber:data.phoneNumber
+    }
+    beneficiary = JSON.stringify(beneficiary);
+    const payload = {
+      amount:totalAmount,
+      email:user.email,
+      authorizationCode:creditCard.authCode,
+      userId:user.id,
+      firstName:user.firstName,
+      message:"data purchase",
+      beneficiary:beneficiary
+    }
+    await paystackApi.chargeAuthorization(payload,payment)
+    responseData.status = 200;
+    responseData.message = "payment initiated";
+    responseData.data = undefined
+    return res.json(responseData);
+  }
+  if(payment.siteName =='flutterwave'){
+    return walletDatapayment(user,trxRef,time,service,data.phoneNumber,data.code,data.allowance,res)
+  }
+  if(payment.siteName =='monnify'){
+    return walletDatapayment(user,trxRef,time,service,data.phoneNumber,data.code,data.allowance,res)
+  }
 }
 const shagoMeterVerification = async (req,res)=>{
   
