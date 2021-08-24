@@ -14,7 +14,7 @@ const responseData = {
 	data: null
 }
 //Shago
-const walletpayment = async (user,trxRef,time,service,phoneNumber,res)=>{
+const walletpayment = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
   const wallet = await models.wallet.findOne(
     {
       where:{
@@ -31,7 +31,6 @@ const walletpayment = async (user,trxRef,time,service,phoneNumber,res)=>{
   );
   let serviceCharge = serviceCategory.serviceCharge;
   let discount = service.discount;
-  let amount = service.amount;
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
@@ -94,7 +93,7 @@ const walletpayment = async (user,trxRef,time,service,phoneNumber,res)=>{
   }
   await shagoApi.airtimePushase(payload,res);
 }
-const walletDatapayment = async (user,trxRef,time,service,phoneNumber,package,bundle,res)=>{
+const walletDatapayment = async (user,trxRef,time,service,phoneNumber,package,bundle,amount,res)=>{
   const wallet = await models.wallet.findOne(
     {
       where:{
@@ -111,7 +110,6 @@ const walletDatapayment = async (user,trxRef,time,service,phoneNumber,package,bu
   );
   let serviceCharge = serviceCategory.serviceCharge;
   let discount = service.discount;
-  let amount = service.amount;
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
@@ -209,7 +207,7 @@ const shagoBuyAirtime = async (req,res)=>{
   }
   if(data.useWallet){
     console.log(data.phoneNumber)
-    return await walletpayment(user,trxRef,time,service,data.phoneNumber,res);
+    return await walletpayment(user,trxRef,time,service,data.phoneNumber,data.amount,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -242,12 +240,13 @@ const shagoBuyAirtime = async (req,res)=>{
     );
     let serviceCharge = serviceCategory.serviceCharge;
     let discount = service.discount;
-    let amount = service.amount;
+    let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
     let beneficiary = {
+      amount:amount,
       gateway:"shago",
       service:serviceId,
       phoneNumber:data.phoneNumber
@@ -269,10 +268,10 @@ const shagoBuyAirtime = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await walletpayment(user,trxRef,time,service,data.phoneNumber,res)
+    return await walletpayment(user,trxRef,time,service,data.phoneNumber,data.amount,res)
   }
   if(payment.siteName =='monnify'){
-    return await walletpayment(user,trxRef,time,service,data.phoneNumber,res)
+    return await walletpayment(user,trxRef,time,service,data.phoneNumber,data.amount,res)
   }
 
 }
@@ -369,13 +368,16 @@ const shagoDataPurchase = async (req,res)=>{
     );
     let serviceCharge = serviceCategory.serviceCharge;
     let discount = service.discount;
-    let amount = service.amount;
+    let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
     let beneficiary = {
       gateway:"shago",
+      amount:amount,
+      package:data.code,
+      bundle:data.allowance,
       service:serviceId,
       phoneNumber:data.phoneNumber
     }

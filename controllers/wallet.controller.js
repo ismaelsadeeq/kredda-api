@@ -133,7 +133,7 @@ const airtimePurchase = async (transaction,res)=>{
     let payload = {
       userId:transaction.userId,
       phoneNumber:phoneNumber,
-      amount:service.amount,
+      amount:beneficiary.amount,
       network:service.name,
       reference:trxRef,
       serviceId:service.id,
@@ -141,6 +141,46 @@ const airtimePurchase = async (transaction,res)=>{
       profit:profit
     }
     await shagoApi.airtimePushase(payload,res) 
+  }
+}
+const dataPurchase = async (transaction,res)=>{
+  await transaction.update(
+    {
+      status:"successful",
+      isRedemmed:true,
+    },
+    {
+      where:{
+        reference:transaction.reference
+      }
+    }
+  );
+  let digits = helpers.generateOTP()
+  let beneficiary = JSON.parse(transaction.beneficiary);
+  if(beneficiary.gateway=="shago"){
+    let trxRef = `SHAGO-CREDIT-CARD${digits}`
+    let phoneNumber = beneficiary.phoneNumber;
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    let profit = parseFloat(transaction.amount) - parseFloat(service.amount);
+    let payload = {
+      userId:transaction.userId,
+      phoneNumber:phoneNumber,
+      amount:beneficiary.amount,
+      network:service.name,
+      reference:trxRef,
+      bundle:beneficiary.bundle,
+      package:beneficiary.package,
+      serviceId:service.id,
+      totalServiceFee:transaction.amount,
+      profit:profit
+    }
+    await shagoApi.dataPurchase(payload,res) 
   }
 }
 const webhook =async (req,res)=>{
@@ -204,6 +244,10 @@ const webhook =async (req,res)=>{
         if(transaction.message =="airtime purchase"){
           res.statusCode = 200;
           return await airtimePurchase(transaction,res);
+        }
+        if(transaction.message =="data purchase"){
+          res.statusCode = 200;
+          return await dataPurchase(transaction,res);
         }
         const otherAccount = await models.otherAccount.findOne(
           {
