@@ -77,6 +77,7 @@ const walletpayment = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
       userId:user.id,
       reference:trxRef,
       amount:totalAmount,
+      isRedemmed:true,
       status:"successful",
       time: time
     }
@@ -156,6 +157,7 @@ const walletDatapayment = async (user,trxRef,time,service,phoneNumber,package,bu
       userId:user.id,
       reference:trxRef,
       amount:totalAmount,
+      isRedemmed:true,
       status:"successful",
       time: time
     }
@@ -236,6 +238,7 @@ const walletElectricityPayment = async (user,trxRef,time,service,phoneNumber,met
       description:user.firstName + " purchasing electricity unit",
       userId:user.id,
       reference:trxRef,
+      isRedemmed:true,
       amount:totalAmount,
       status:"successful",
       time: time
@@ -589,6 +592,11 @@ const shagoPurchaseElectricity = async (req,res)=>{
     }
     let beneficiary = {
       amount:amount,
+      meterNo:data.meterNo,
+      disco:data.disco,
+      type:data.type,
+      name:data.name,
+      address:data.address,
       gateway:"shago",
       service:serviceId,
       phoneNumber:data.phoneNumber
@@ -600,7 +608,7 @@ const shagoPurchaseElectricity = async (req,res)=>{
       authorizationCode:creditCard.authCode,
       userId:user.id,
       firstName:user.firstName,
-      message:"airtime purchase",
+      message:"electricity purchase",
       beneficiary:beneficiary
     }
     await paystackApi.chargeAuthorization(payload,payment)

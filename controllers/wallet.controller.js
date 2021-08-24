@@ -129,7 +129,7 @@ const airtimePurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(service.amount);
+    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
       phoneNumber:phoneNumber,
@@ -167,7 +167,7 @@ const dataPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(service.amount);
+    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
       phoneNumber:phoneNumber,
@@ -181,6 +181,49 @@ const dataPurchase = async (transaction,res)=>{
       profit:profit
     }
     await shagoApi.dataPurchase(payload,res) 
+  }
+}
+const electricityPurchase = async (transaction,res)=>{
+  await transaction.update(
+    {
+      status:"successful",
+      isRedemmed:true,
+    },
+    {
+      where:{
+        reference:transaction.reference
+      }
+    }
+  );
+  let digits = helpers.generateOTP()
+  let beneficiary = JSON.parse(transaction.beneficiary);
+  if(beneficiary.gateway=="shago"){
+    let trxRef = `SHAGO-CREDIT-CARD${digits}`
+    let phoneNumber = beneficiary.phoneNumber;
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let payload = {
+      userId:transaction.userId,
+      phoneNumber:phoneNumber,
+      amount:beneficiary.amount,
+      reference:trxRef,
+      meterNo:beneficiary.meterNo,
+      disco:beneficiary.disco,
+      type:beneficiary.type,
+      name:beneficiary.name,
+      address:beneficiary.address,
+      serviceId:service.id,
+      totalServiceFee:transaction.amount,
+      profit:profit
+    }
+    console.log(payload);
+    await shagoApi.purchaseElectricity(payload,res) 
   }
 }
 const webhook =async (req,res)=>{
@@ -248,6 +291,10 @@ const webhook =async (req,res)=>{
         if(transaction.message =="data purchase"){
           res.statusCode = 200;
           return await dataPurchase(transaction,res);
+        }
+        if(transaction.message =="electricity purchase"){
+          res.statusCode = 200;
+          return await electricityPurchase(transaction,res);
         }
         const otherAccount = await models.otherAccount.findOne(
           {
