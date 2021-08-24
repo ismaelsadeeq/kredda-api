@@ -97,7 +97,7 @@ async function chargeAuthorization(payload,paystack){
     res.on('end',async () => {
       const response = JSON.parse(data)
       console.log(response);
-      // if(response.status === true && response.message == "Charge attempted"){
+      if(response.status === true && response.message == "Charge attempted"){
         let time = new Date();
         time = time.toLocaleString()
         const transaction = await models.transaction.create(
@@ -108,15 +108,15 @@ async function chargeAuthorization(payload,paystack){
             beneficiary:beneficiary || "self",
             description:payload.firstName + "funding his/her wallet to perform transaction",
             userId:payload.userId,
-            // reference:response.data.reference,
+            reference:response.data.reference,
             amount:payload.amount,
             isRedemmed:false,
             status:"initiated",
             time: time
           }
         );
-      //   return "charge initiated"
-      // }
+        return "charge initiated"
+      }
       return "something went wrong"
     })
   }).on('error', error => {
