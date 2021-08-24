@@ -20,7 +20,7 @@ router.post('/:serviceId/shago/data-purchase',
   controller.shagoDataPurchase
 );
 // electricity
-router.post('/shago/meter-verification',
+router.get('/:serviceId/shago/meter-verification',
   passport.authenticate('jwt',{session:false}),
   controller.shagoMeterVerification
 );

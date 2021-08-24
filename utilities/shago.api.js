@@ -366,7 +366,7 @@ const purchaseElectricity = async (payload,res)=>{
   request(options,async function (error, response) {
     if (error) throw new Error(error);
     console.log(response.body);
-    const data = req.body;
+    const data = JSON.parse(response.body);
     let time = new Date();
     time = time.toLocaleString()
     if(data.status == 200){
