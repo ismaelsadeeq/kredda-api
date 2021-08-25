@@ -29,7 +29,7 @@ router.post('/:serviceId/shago/electricity-purchase',
   controller.shagoPurchaseElectricity
 );
 // pin
-router.get('/shago/waec/look-up',
+router.get('/shago/waec/pin-look-up',
   passport.authenticate('jwt',{session:false}),
   controller.shagoWaecPinLookup
 );
@@ -45,7 +45,7 @@ router.get('/shago/jamb/verification',
   passport.authenticate('jwt',{session:false}),
   controller.shagoJambVerification
 );
-router.get('/:serviceId/shago/jamb/purchase',
+router.post('/:serviceId/shago/jamb/purchase',
   passport.authenticate('jwt',{session:false}),
   controller.shagoJambPurchase
 );

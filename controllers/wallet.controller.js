@@ -225,7 +225,7 @@ const electricityPurchase = async (transaction,res)=>{
     await shagoApi.purchaseElectricity(payload,res) 
   }
 }
-const electricityPurchase = async (transaction,res)=>{
+const waecPurchase = async (transaction,res)=>{
   await transaction.update(
     {
       status:"successful",
@@ -240,8 +240,7 @@ const electricityPurchase = async (transaction,res)=>{
   let digits = helpers.generateOTP()
   let beneficiary = JSON.parse(transaction.beneficiary);
   if(beneficiary.gateway=="shago"){
-    let trxRef = `SHAGO-CREDIT-CARD${digits}`
-    let phoneNumber = beneficiary.phoneNumber;
+    let trxRef = `SHAGO-CREDIT-CARD${digits}`;
     let service = await models.service.findOne(
       {
         where:{
@@ -261,6 +260,44 @@ const electricityPurchase = async (transaction,res)=>{
     }
     console.log(payload);
     await shagoApi.waecPinPurchase(payload,res) 
+  }
+}
+const jambPurchase = async (transaction,res)=>{
+  await transaction.update(
+    {
+      status:"successful",
+      isRedemmed:true,
+    },
+    {
+      where:{
+        reference:transaction.reference
+      }
+    }
+  );
+  let digits = helpers.generateOTP()
+  let beneficiary = JSON.parse(transaction.beneficiary);
+  if(beneficiary.gateway=="shago"){
+    let trxRef = `SHAGO-CREDIT-CARD${digits}`
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let payload = {
+      userId:transaction.userId,
+      amount:beneficiary.amount,
+      reference:trxRef,
+      type:beneficiary.type,
+      profileCode:beneficiary.profileCode,
+      serviceId:service.id,
+      totalServiceFee:transaction.amount,
+      profit:profit
+    }
+    console.log(payload);
+    await shagoApi.jambPinPurchase(payload,res) 
   }
 }
 const webhook =async (req,res)=>{
@@ -335,7 +372,11 @@ const webhook =async (req,res)=>{
         }
         if(transaction.message =="waec pin purchase"){
           res.statusCode = 200;
-          return await electricityPurchase(transaction,res);
+          return await waecPurchase(transaction,res);
+        }
+        if(transaction.message =="jamb pin purchase"){
+          res.statusCode = 200;
+          return await jambPurchase(transaction,res);
         }
         const otherAccount = await models.otherAccount.findOne(
           {

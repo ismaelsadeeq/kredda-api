@@ -1012,7 +1012,7 @@ const waecPinLookup = async (res)=>{
     return res.json(responseData)
   });
 }
-const waecPinPurchase = async (payload)=>{
+const waecPinPurchase = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -1032,7 +1032,7 @@ const waecPinPurchase = async (payload)=>{
   request(options,async function (error, response) {
     if (error) throw new Error(error);
     console.log(response.body);
-    const data = req.body;
+    const data = JSON.parse(response.body);
     let time = new Date();
     time = time.toLocaleString()
     if(data.status == 200){
@@ -1177,7 +1177,7 @@ const jambProfileVerificaion = async (payload,res)=>{
     return res.json(responseData)
   });
 }
-const jambPinPurchase = async (payload)=>{
+const jambPinPurchase = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -1190,7 +1190,7 @@ const jambPinPurchase = async (payload)=>{
       "serviceCode": "JMB",
       "type": payload.type,
       "profileCode": payload.profileCode,
-      "amount": payload.aount,
+      "amount": payload.amount,
       "request_id": payload.reference
     })
   
@@ -1198,9 +1198,72 @@ const jambPinPurchase = async (payload)=>{
   request(options,async function (error, response) {
     if (error) throw new Error(error);
     console.log(response.body);
-  });
-  const data = JSON.parse(response.body);
-  if(data.status == 200){
+    const data = JSON.parse(response.body);
+    let time = new Date();
+    time = time.toLocaleString()
+    if(data.status == 200){
+      const  createTransaction = await models.serviceTransaction.create(
+        {
+          id:uuid.v4(),
+          userId:payload.userId,
+          serviceId:payload.serviceId,
+          reference:payload.reference,
+          amount:payload.amount,
+          status:"successful",
+          beneficiary:payload.profileCode,
+          time:time,
+          totalServiceFee:payload.totalServiceFee,
+          profit:payload.profit
+        }
+      );
+      res.statusCode = 200;
+      responseData.message = "completed";
+      responseData.status = true;
+      responseData.data = data;
+      return res.json(responseData)
+    }
+    if(data.status == 400){
+      const  createTransaction = await models.serviceTransaction.create(
+        {
+          id:uuid.v4(),
+          userId:payload.userId,
+          serviceId:payload.serviceId,
+          reference:payload.reference,
+          amount:payload.amount,
+          beneficiary:payload.profileCode,
+          time:time,
+          status:"pending",
+          totalServiceFee:payload.totalServiceFee,
+          profit:payload.profit
+        }
+      );
+      res.statusCode = 200;
+      responseData.message = "completed";
+      responseData.status = true;
+      responseData.data = data;
+      return res.json(responseData)
+    }
+    if(data.status == 300){
+      const  createTransaction = await models.serviceTransaction.create(
+        {
+          id:uuid.v4(),
+          userId:payload.userId,
+          serviceId:payload.serviceId,
+          reference:payload.reference,
+          amount:payload.amount,
+          beneficiary:payload.profileCode,
+          time:time,
+          status:"failed",
+          totalServiceFee:payload.totalServiceFee,
+          profit:payload.profit
+        }
+      );
+      res.statusCode = 200;
+      responseData.message = "completed";
+      responseData.status = false;
+      responseData.data = data;
+      return res.json(responseData)
+    }
     const  createTransaction = await models.serviceTransaction.create(
       {
         id:uuid.v4(),
@@ -1208,51 +1271,9 @@ const jambPinPurchase = async (payload)=>{
         serviceId:payload.serviceId,
         reference:payload.reference,
         amount:payload.amount,
-        status:"successful",
         beneficiary:payload.profileCode,
         time:time,
-        totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
-      }
-    );
-    res.statusCode = 200;
-    responseData.message = "completed";
-    responseData.status = true;
-    responseData.data = data;
-    return res.json(responseData)
-  }
-  if(data.status == 400){
-    const  createTransaction = await models.serviceTransaction.create(
-      {
-        id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
-        amount:payload.amount,
-        beneficiary:payload.profileCode,
-        time:time,
-        status:"pending",
-        totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
-      }
-    );
-    res.statusCode = 200;
-    responseData.message = "completed";
-    responseData.status = true;
-    responseData.data = data;
-    return res.json(responseData)
-  }
-  if(data.status == 300){
-    const  createTransaction = await models.serviceTransaction.create(
-      {
-        id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
-        amount:payload.amount,
-        beneficiary:payload.profileCode,
-        time:time,
-        status:"failed",
+        status:"something went wrong",
         totalServiceFee:payload.totalServiceFee,
         profit:payload.profit
       }
@@ -1262,26 +1283,7 @@ const jambPinPurchase = async (payload)=>{
     responseData.status = false;
     responseData.data = data;
     return res.json(responseData)
-  }
-  const  createTransaction = await models.serviceTransaction.create(
-    {
-      id:uuid.v4(),
-      userId:payload.userId,
-      serviceId:payload.serviceId,
-      reference:payload.reference,
-      amount:payload.amount,
-      beneficiary:payload.profileCode,
-      time:time,
-      status:"something went wrong",
-      totalServiceFee:payload.totalServiceFee,
-      profit:payload.profit
-    }
-  );
-  res.statusCode = 200;
-  responseData.message = "completed";
-  responseData.status = false;
-  responseData.data = data;
-  return res.json(responseData)
+  });
 }
 module.exports = {
   queryTransaction,
