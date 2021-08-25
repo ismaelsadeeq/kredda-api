@@ -485,6 +485,7 @@ const cableLookup = async (payload,res)=>{
 }
 const purchaseDstvNoAddOn = async (payload,res)=>{
   var request = require('request');
+  console.log(payload.packageName);
   var options = {
     'method': 'POST',
     'url': 'http://34.68.51.255/shago/public/api/test/b2b',
@@ -510,6 +511,8 @@ const purchaseDstvNoAddOn = async (payload,res)=>{
     if (error) throw new Error(error);
     console.log(response.body);
     const data = JSON.parse(response.body);
+    let time = new Date();
+    time = time.toLocaleString()
     if(data.status == 200){
       const  createTransaction = await models.serviceTransaction.create(
         {
@@ -591,7 +594,7 @@ const purchaseDstvNoAddOn = async (payload,res)=>{
     responseData.message = "completed";
     responseData.status = false;
     responseData.data = data;
-    return res.json(responseData)
+    return res.json(responseData);
   });
 }
 const getDstvAddOns = async (res)=>{
