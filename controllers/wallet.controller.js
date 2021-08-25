@@ -222,8 +222,45 @@ const electricityPurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    console.log(payload);
     await shagoApi.purchaseElectricity(payload,res) 
+  }
+}
+const electricityPurchase = async (transaction,res)=>{
+  await transaction.update(
+    {
+      status:"successful",
+      isRedemmed:true,
+    },
+    {
+      where:{
+        reference:transaction.reference
+      }
+    }
+  );
+  let digits = helpers.generateOTP()
+  let beneficiary = JSON.parse(transaction.beneficiary);
+  if(beneficiary.gateway=="shago"){
+    let trxRef = `SHAGO-CREDIT-CARD${digits}`
+    let phoneNumber = beneficiary.phoneNumber;
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let payload = {
+      userId:transaction.userId,
+      amount:beneficiary.amount,
+      reference:trxRef,
+      numberOfPin:beneficiary.numberOfPin,
+      serviceId:service.id,
+      totalServiceFee:transaction.amount,
+      profit:profit
+    }
+    console.log(payload);
+    await shagoApi.waecPinPurchase(payload,res) 
   }
 }
 const webhook =async (req,res)=>{
@@ -293,6 +330,10 @@ const webhook =async (req,res)=>{
           return await dataPurchase(transaction,res);
         }
         if(transaction.message =="electricity purchase"){
+          res.statusCode = 200;
+          return await electricityPurchase(transaction,res);
+        }
+        if(transaction.message =="waec pin purchase"){
           res.statusCode = 200;
           return await electricityPurchase(transaction,res);
         }
