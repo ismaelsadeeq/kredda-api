@@ -1195,7 +1195,7 @@ const shagoPurchaseDstv = async (req,res)=>{
       authorizationCode:creditCard.authCode,
       userId:user.id,
       firstName:user.firstName,
-      message:"dstv purchase",
+      message:"dstv subscription",
       beneficiary:beneficiary
     }
     await paystackApi.chargeAuthorization(payload,payment)
