@@ -267,6 +267,45 @@ const dstvPurchaseWithAddOn = async (transaction,res)=>{
     await shagoApi.purchaseDstvWithAddOn(payload,res) 
   }
 }
+const startimesPurchase = async (transaction,res)=>{
+  await transaction.update(
+    {
+      status:"successful",
+      isRedemmed:true,
+    },
+    {
+      where:{
+        reference:transaction.reference
+      }
+    }
+  );
+  let digits = helpers.generateOTP()
+  let beneficiary = JSON.parse(transaction.beneficiary);
+  if(beneficiary.gateway=="shago"){
+    let trxRef = `SHAGO-CREDIT-CARD${digits}`
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let payload = {
+      userId:transaction.userId,
+      amount:beneficiary.amount,
+      reference:trxRef,
+      cardNo:beneficiary.cardNo,
+      customerName:beneficiary.customerName,
+      packageName:beneficiary.packageName,
+      serviceId:service.id,
+      totalServiceFee:transaction.amount,
+      profit:profit
+    }
+    console.log(payload);
+    await shagoApi.startimesPurchase(payload,res) 
+  }
+}
 const jambPurchase = async (transaction,res)=>{
   await transaction.update(
     {
@@ -310,6 +349,7 @@ module.exports = {
   airtimePurchase,
   dataPurchase,
   dstvPurchase,
+  startimesPurchase,
   dstvPurchaseWithAddOn,
   jambPurchase,
   waecPurchase,
