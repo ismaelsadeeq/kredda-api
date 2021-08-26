@@ -725,9 +725,6 @@ const shagoPurchaseDstv = async (req,res)=>{
     return await shagoHelpers.dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
 }
-const shagoGetDstvAddOn = async (req,res)=>{
-  return await shagoApi.getDstvAddOns(res);
-}
 const shagoPurchaseDstvWithAddOn = async (req,res)=>{
   const data = req.body;
   const user = req.user;
@@ -833,9 +830,6 @@ const shagoPurchaseDstvWithAddOn = async (req,res)=>{
   if(payment.siteName =='monnify'){
     return await dstvPurchaseWithAddOn(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,data.addOnCode,data.addOnProductName,data.addOnAmount,res);
   }
-}
-const shagoGetDstvAddOn = async (req,res)=>{
-  return await shagoApi.getDstvAddOns(res);
 }
 const shagoPurchaseStartimes = async (req,res)=>{
   const data = req.body;
