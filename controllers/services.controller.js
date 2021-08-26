@@ -634,7 +634,7 @@ const shagoPurchaseDstv = async (req,res)=>{
 
   let time = new Date();
   time = time.toLocaleString();
-  if(!data.amount || !data.cardNo || !data.customerName || !data.packageName || !data.packageCode || !data.period){
+  if(!data.amount || !data.cardNo || !data.customerName || !data.packageName){
     responseData.status = false;
     responseData.message = "data incomplete";
     responseData.data = undefined;
@@ -654,7 +654,7 @@ const shagoPurchaseDstv = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -697,8 +697,6 @@ const shagoPurchaseDstv = async (req,res)=>{
       cardNo:data.cardNo,
       customerName:data.customerName,
       packageName:data.packageName,
-      packageCode:data.packageCode,
-      period:data.period,
       gateway:"shago",
       service:serviceId,
     }
@@ -709,7 +707,7 @@ const shagoPurchaseDstv = async (req,res)=>{
       authorizationCode:creditCard.authCode,
       userId:user.id,
       firstName:user.firstName,
-      message:"dstv subscription",
+      message:"startimes subscription",
       beneficiary:beneficiary
     }
     await paystackApi.chargeAuthorization(payload,payment)
@@ -719,10 +717,10 @@ const shagoPurchaseDstv = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,res);
   }
   if(payment.siteName =='monnify'){
-    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,res);
   }
 }
 const shagoGetDstvAddOn = async (req,res)=>{
@@ -834,17 +832,6 @@ const shagoPurchaseDstvWithAddOn = async (req,res)=>{
     return await dstvPurchaseWithAddOn(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,data.addOnCode,data.addOnProductName,data.addOnAmount,res);
   }
 }
-const shagoPurchaseStartimes = async (req,res)=>{
-  const data = req.body;
-  if(data.type){
-     return await shagoApi.cableTvBouquteLookup(data,res);
-  }
-  res.statusCode = 200;
-  responseData.message = "data is incomplete";
-  responseData.status = false;
-  responseData.data = data;
-  return res.json(responseData)
-}
 const shagoGetDstvAddOn = async (req,res)=>{
   return await shagoApi.getDstvAddOns(res);
 }
@@ -950,6 +937,9 @@ const shagoPurchaseDstv = async (req,res)=>{
   if(payment.siteName =='monnify'){
     return await dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
+}
+const shagoPurchaseStartimes = async (req,res)=>{
+  
 }
 const shagoPurchaseGoTv = async (req,res)=>{
   
