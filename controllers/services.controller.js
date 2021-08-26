@@ -1043,7 +1043,13 @@ const shagoPurchaseGoTv = async (req,res)=>{
 }
 const shagoVerifyTransaction = async (req,res)=>{
   const data = req.body;
-  const user = req.body
+  if(data.reference){
+    return shagoApi.queryTransaction(payload,res);
+  }
+  responseData.status = 200;
+  responseData.message = "transaction reference is required";
+  responseData.data = undefined
+  return res.json(responseData);
 }
 //Baxi
 const baxiPurchaseAirtime = async (req,res)=>{
