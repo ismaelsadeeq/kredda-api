@@ -199,7 +199,7 @@ const webhook =async (req,res)=>{
         }
         if(transaction.message =="goTv subscription"){
           res.statusCode = 200;
-          return await walletHelpers (transaction,res);
+          return await walletHelpers.goTvPurchase(transaction,res);
         }
         const otherAccount = await models.otherAccount.findOne(
           {
