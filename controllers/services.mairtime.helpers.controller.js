@@ -37,9 +37,9 @@ const mtnVTUTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
       {
         id:uuid.v4(),
         transactionType:"debit",
-        message:"airtime purchase",
+        message:"mtn vtu airtime purchase",
         beneficiary:"self",
-        description:user.firstName + "purchasing airtime for a beneficiary",
+        description:user.firstName + "purchasing mtn vtu airtime for a beneficiary",
         userId:user.id,
         reference:trxRef,
         amount:amount,
@@ -66,9 +66,9 @@ const mtnVTUTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
     {
       id:uuid.v4(),
       transactionType:"debit",
-      message:"airtime purchase",
+      message:" mtn vtu airtime purchase",
       beneficiary:phoneNumber,
-      description:user.firstName + "purchasing airtime for a beneficiary",
+      description:user.firstName + "purchasing mtn vtu airtime for a beneficiary",
       userId:user.id,
       reference:trxRef,
       amount:totalAmount,
