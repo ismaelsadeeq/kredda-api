@@ -114,7 +114,7 @@ const airtimeTopUp = (payload,res)=>{
     return res.json(responseData)
   });
 }
-const mtnVTUTopUp = (payload,res)=>{
+const mtnVTUTopUp =async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -171,7 +171,7 @@ const mtnVTUTopUp = (payload,res)=>{
     return res.json(responseData)
   });
 }
-const verifyInternationalNumber = (payload,res)=>{
+const verifyInternationalNumber = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'GET',
@@ -198,7 +198,7 @@ const verifyInternationalNumber = (payload,res)=>{
     return res.json(responseData)
   });
 }
-const rechargeInternationalNumber = (payload,res)=>{
+const rechargeInternationalNumber = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -256,7 +256,7 @@ const rechargeInternationalNumber = (payload,res)=>{
   });
 }
 
-const mtnDataGifting = (payload,res)=>{
+const mtnDataGifting = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -313,7 +313,7 @@ const mtnDataGifting = (payload,res)=>{
     return res.json(responseData)
   });
 }
-const getDataPricing = (payload,res)=>{
+const getDataPricing = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'GET',
@@ -397,7 +397,7 @@ const mtnDataShare = (payload,res)=>{
     return res.json(responseData)
   });
 }
-const dataTopUp = (payload,res)=>{
+const dataTopUp = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -454,7 +454,7 @@ const dataTopUp = (payload,res)=>{
     return res.json(responseData)
   });
 }
-const purchaseWeacDirect = (payload,res)=>{
+const purchaseWeacDirect = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -511,7 +511,7 @@ const purchaseWeacDirect = (payload,res)=>{
     return res.json(responseData)
   });
 }
-const purchaseNecoDirect = (payload,res)=>{
+const purchaseNecoDirect = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -568,7 +568,7 @@ const purchaseNecoDirect = (payload,res)=>{
     return res.json(responseData)
   });
 }
-const getCableCustomerInfo = (payload,res)=>{
+const getCableCustomerInfo = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'GET',
@@ -595,7 +595,7 @@ const getCableCustomerInfo = (payload,res)=>{
     return res.json(responseData)
   });
 }
-const rechargeGoOrDstv = (payload,res)=>{
+const rechargeGoOrDstv = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -652,7 +652,7 @@ const rechargeGoOrDstv = (payload,res)=>{
     return res.json(responseData)
   });
 }
-const rechargeStartimes = (payload,res)=>{
+const rechargeStartimes = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -709,7 +709,7 @@ const rechargeStartimes = (payload,res)=>{
     return res.json(responseData)
   });
 }
-const electricityDiscoLookup = (payload,res)=>{
+const electricityDiscoLookup = async (res)=>{
   var request = require('request');
   var options = {
     'method': 'GET',
@@ -736,7 +736,7 @@ const electricityDiscoLookup = (payload,res)=>{
     return res.json(responseData)
   });
 }
-const electricityMeterVerication = (payload,res)=>{
+const electricityMeterVerication = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'GET',
@@ -763,7 +763,7 @@ const electricityMeterVerication = (payload,res)=>{
     return res.json(responseData)
   });
 }
-const purchaseElectricity = (payload,res)=>{
+const purchaseElectricity = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
