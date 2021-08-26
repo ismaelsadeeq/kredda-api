@@ -6,6 +6,7 @@ const multerConfig = require('../config/multer');
 const shagoApi = require('../utilities/shago.api');
 const options = require('../middlewares/appSetting');
 const paystackApi = require('../utilities/paystack.api');
+const shagoHelpers = require('./services.shago.helpers');
 require('dotenv').config();
 //response
 const responseData = {
@@ -14,494 +15,7 @@ const responseData = {
 	data: null
 }
 //Shago
-const walletpayment = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
-  const wallet = await models.wallet.findOne(
-    {
-      where:{
-        userId:user.id
-      }
-    }
-  );
-  const serviceCategory = await models.serviceCategory.findOne(
-    {
-      where:{
-        id:service.serviceCategoryId
-      }
-    }
-  );
-  let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
-  if(discount){
-    totalAmount = totalAmount  - discount;
-  }
-  let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
-  if(walletBalance < totalAmount){
-    const transaction = await models.transaction.create(
-      {
-        id:uuid.v4(),
-        transactionType:"debit",
-        message:"airtime purchase",
-        beneficiary:"self",
-        description:user.firstName + "purchasing airtime for a beneficiary",
-        userId:user.id,
-        reference:trxRef,
-        amount:amount,
-        status:"failed",
-        time: time
-      }
-    );
-    responseData.status = false;
-    responseData.message = "insufficient funds";
-    responseData.data = undefined;
-    return res.json(responseData);
-  }
-  await models.wallet.update(
-    {
-      accountBalance:walletBalance - totalAmount
-    },
-    {
-      where:{
-        id:wallet.id
-      }
-    }
-  );
-  const transaction = await models.transaction.create(
-    {
-      id:uuid.v4(),
-      transactionType:"debit",
-      message:"airtime purchase",
-      beneficiary:phoneNumber,
-      description:user.firstName + "purchasing airtime for a beneficiary",
-      userId:user.id,
-      reference:trxRef,
-      amount:totalAmount,
-      isRedemmed:true,
-      status:"successful",
-      time: time
-    }
-  );
-  let payload = {
-    userId:user.id,
-    phoneNumber:phoneNumber,
-    amount:amount,
-    network:service.name,
-    reference:trxRef,
-    serviceId:service.id,
-    totalServiceFee:totalAmount,
-    profit:profit
-  }
-  await shagoApi.airtimePushase(payload,res);
-}
-const walletDatapayment = async (user,trxRef,time,service,phoneNumber,package,bundle,amount,res)=>{
-  const wallet = await models.wallet.findOne(
-    {
-      where:{
-        userId:user.id
-      }
-    }
-  );
-  const serviceCategory = await models.serviceCategory.findOne(
-    {
-      where:{
-        id:service.serviceCategoryId
-      }
-    }
-  );
-  let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
-  if(discount){
-    totalAmount = totalAmount  - discount;
-  }
-  let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
-  if(walletBalance < totalAmount){
-    const transaction = await models.transaction.create(
-      {
-        id:uuid.v4(),
-        transactionType:"debit",
-        message:"data purchase",
-        beneficiary:"self",
-        description:user.firstName +" purchasing data for a beneficiary",
-        userId:user.id,
-        reference:trxRef,
-        amount:amount,
-        status:"failed",
-        time: time
-      }
-    );
-    responseData.status = false;
-    responseData.message = "insufficient funds";
-    responseData.data = undefined;
-    return res.json(responseData);
-  }
-  await models.wallet.update(
-    {
-      accountBalance:walletBalance - totalAmount
-    },
-    {
-      where:{
-        id:wallet.id
-      }
-    }
-  );
-  const transaction = await models.transaction.create(
-    {
-      id:uuid.v4(),
-      transactionType:"debit",
-      message:"aitime purchase",
-      beneficiary:phoneNumber,
-      description:user.firstName + " purchasing airtime for a beneficiary",
-      userId:user.id,
-      reference:trxRef,
-      amount:totalAmount,
-      isRedemmed:true,
-      status:"successful",
-      time: time
-    }
-  );
-  let payload = {
-    userId:user.id,
-    phoneNumber:phoneNumber,
-    amount:amount,
-    bundle:bundle,
-    package:package,
-    network:service.name,
-    reference:trxRef,
-    serviceId:service.id,
-    totalServiceFee:totalAmount,
-    profit:profit
-  }
-  await shagoApi.dataPurchase(payload,res)
-}
-const walletElectricityPayment = async (user,trxRef,time,service,phoneNumber,meterNo,disco,type,name,address,amount,res)=>{
-  const wallet = await models.wallet.findOne(
-    {
-      where:{
-        userId:user.id
-      }
-    }
-  );
-  const serviceCategory = await models.serviceCategory.findOne(
-    {
-      where:{
-        id:service.serviceCategoryId
-      }
-    }
-  );
-  let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
-  if(discount){
-    totalAmount = totalAmount  - discount;
-  }
-  let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
-  if(walletBalance < totalAmount){
-    const transaction = await models.transaction.create(
-      {
-        id:uuid.v4(),
-        transactionType:"debit",
-        message:"electricity purchase",
-        beneficiary:"self",
-        description:user.firstName +" purchasing electricity unit",
-        userId:user.id,
-        reference:trxRef,
-        amount:amount,
-        status:"failed",
-        time: time
-      }
-    );
-    responseData.status = false;
-    responseData.message = "insufficient funds";
-    responseData.data = undefined;
-    return res.json(responseData);
-  }
-  await models.wallet.update(
-    {
-      accountBalance:walletBalance - totalAmount
-    },
-    {
-      where:{
-        id:wallet.id
-      }
-    }
-  );
-  const transaction = await models.transaction.create(
-    {
-      id:uuid.v4(),
-      transactionType:"debit",
-      message:"electricity purchase",
-      beneficiary:phoneNumber,
-      description:user.firstName + " purchasing electricity unit",
-      userId:user.id,
-      reference:trxRef,
-      isRedemmed:true,
-      amount:totalAmount,
-      status:"successful",
-      time: time
-    }
-  );
-  let payload = {
-    userId:user.id,
-    phoneNumber:phoneNumber,
-    amount:amount,
-    meterNo:meterNo,
-    disco:disco,
-    type:type,
-    name:name,
-    address:address,
-    reference:trxRef,
-    serviceId:service.id,
-    totalServiceFee:totalAmount,
-    profit:profit
-  }
-  await shagoApi.purchaseElectricity(payload,res)
-}
-const waecPinPurchase = async (user,trxRef,time,service,amount,numberOfPin,res)=>{
-  const wallet = await models.wallet.findOne(
-    {
-      where:{
-        userId:user.id
-      }
-    }
-  );
-  const serviceCategory = await models.serviceCategory.findOne(
-    {
-      where:{
-        id:service.serviceCategoryId
-      }
-    }
-  );
-  let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
-  if(discount){
-    totalAmount = totalAmount  - discount;
-  }
-  let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
-  if(walletBalance < totalAmount){
-    const transaction = await models.transaction.create(
-      {
-        id:uuid.v4(),
-        transactionType:"debit",
-        message:"waec purchase",
-        beneficiary:"self",
-        description:user.firstName +" purchasing Waec pin",
-        userId:user.id,
-        reference:trxRef,
-        amount:amount,
-        status:"failed",
-        time: time
-      }
-    );
-    responseData.status = false;
-    responseData.message = "insufficient funds";
-    responseData.data = undefined;
-    return res.json(responseData);
-  }
-  await models.wallet.update(
-    {
-      accountBalance:walletBalance - totalAmount
-    },
-    {
-      where:{
-        id:wallet.id
-      }
-    }
-  );
-  const transaction = await models.transaction.create(
-    {
-      id:uuid.v4(),
-      transactionType:"debit",
-      message:"waec purchase",
-      beneficiary:"self",
-      description:user.firstName + " purchasing waec pin",
-      userId:user.id,
-      reference:trxRef,
-      isRedemmed:true,
-      amount:totalAmount,
-      status:"successful",
-      time: time
-    }
-  );
-  let payload = {
-    userId:user.id,
-    amount:amount,
-    numberOfPin:numberOfPin,
-    reference:trxRef,
-    serviceId:service.id,
-    totalServiceFee:totalAmount,
-    profit:profit
-  }
-  await shagoApi.waecPinPurchase(payload,res)
-}
-const jambPinPurchase = async (user,trxRef,time,service,type,amount,profileCode,res)=>{
-  const wallet = await models.wallet.findOne(
-    {
-      where:{
-        userId:user.id
-      }
-    }
-  );
-  const serviceCategory = await models.serviceCategory.findOne(
-    {
-      where:{
-        id:service.serviceCategoryId
-      }
-    }
-  );
-  let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
-  if(discount){
-    totalAmount = totalAmount  - discount;
-  }
-  let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
-  if(walletBalance < totalAmount){
-    const transaction = await models.transaction.create(
-      {
-        id:uuid.v4(),
-        transactionType:"debit",
-        message:"jamb pin purchase",
-        beneficiary:"self",
-        description:user.firstName +" purchasing jamb pin",
-        userId:user.id,
-        reference:trxRef,
-        amount:amount,
-        status:"failed",
-        time: time
-      }
-    );
-    responseData.status = false;
-    responseData.message = "insufficient funds";
-    responseData.data = undefined;
-    return res.json(responseData);
-  }
-  await models.wallet.update(
-    {
-      accountBalance:walletBalance - totalAmount
-    },
-    {
-      where:{
-        id:wallet.id
-      }
-    }
-  );
-  const transaction = await models.transaction.create(
-    {
-      id:uuid.v4(),
-      transactionType:"debit",
-      message:"jamb pin purchase",
-      beneficiary:"self",
-      description:user.firstName + " purchasing jamb pin",
-      userId:user.id,
-      reference:trxRef,
-      isRedemmed:true,
-      amount:totalAmount,
-      status:"successful",
-      time: time
-    }
-  );
-  let payload = {
-    userId:user.id,
-    amount:amount,
-    type:type,
-    profileCode:profileCode,
-    reference:trxRef,
-    serviceId:service.id,
-    totalServiceFee:totalAmount,
-    profit:profit
-  }
-  await shagoApi.jambPinPurchase(payload,res)
-}
-const dstvPurchase = async (user,trxRef,time,service,amount,cardNo,customerName,packageName,packageCode,period,res)=>{
-  const wallet = await models.wallet.findOne(
-    {
-      where:{
-        userId:user.id
-      }
-    }
-  );
-  const serviceCategory = await models.serviceCategory.findOne(
-    {
-      where:{
-        id:service.serviceCategoryId
-      }
-    }
-  );
-  let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
-  if(discount){
-    totalAmount = totalAmount  - discount;
-  }
-  let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
-  if(walletBalance < totalAmount){
-    const transaction = await models.transaction.create(
-      {
-        id:uuid.v4(),
-        transactionType:"debit",
-        message:"dstv subscribtion",
-        beneficiary:"self",
-        description:user.firstName +" subscribing to dstv",
-        userId:user.id,
-        reference:trxRef,
-        amount:amount,
-        status:"failed",
-        time: time
-      }
-    );
-    responseData.status = false;
-    responseData.message = "insufficient funds";
-    responseData.data = undefined;
-    return res.json(responseData);
-  }
-  await models.wallet.update(
-    {
-      accountBalance:walletBalance - totalAmount
-    },
-    {
-      where:{
-        id:wallet.id
-      }
-    }
-  );
-  const transaction = await models.transaction.create(
-    {
-      id:uuid.v4(),
-      transactionType:"debit",
-      message:"dstv subscribtion",
-      beneficiary:"self",
-      description:user.firstName +" subscribing to dstv",
-      userId:user.id,
-      reference:trxRef,
-      isRedemmed:true,
-      amount:totalAmount,
-      status:"successful",
-      time: time
-    }
-  );
-  let payload = {
-    userId:user.id,
-    amount:amount,
-    cardNo:cardNo,
-    customerName:customerName,
-    packageName:packageName,
-    packageCode:packageCode,
-    period:period,
-    reference:trxRef,
-    serviceId:service.id,
-    totalServiceFee:totalAmount,
-    profit:profit
-  }
-  await shagoApi.purchaseDstvNoAddOn(payload,res)
-}
+
 const shagoBuyAirtime = async (req,res)=>{
   const data = req.body;
   const user = req.user;
@@ -535,7 +49,7 @@ const shagoBuyAirtime = async (req,res)=>{
   }
   if(data.useWallet){
     console.log(data.phoneNumber)
-    return await walletpayment(user,trxRef,time,service,data.phoneNumber,data.amount,res);
+    return await shagoHelpers.walletpayment(user,trxRef,time,service,data.phoneNumber,data.amount,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -596,10 +110,10 @@ const shagoBuyAirtime = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await walletpayment(user,trxRef,time,service,data.phoneNumber,data.amount,res)
+    return await shagoHelpers.walletpayment(user,trxRef,time,service,data.phoneNumber,data.amount,res)
   }
   if(payment.siteName =='monnify'){
-    return await walletpayment(user,trxRef,time,service,data.phoneNumber,data.amount,res)
+    return await shagoHelpers.walletpayment(user,trxRef,time,service,data.phoneNumber,data.amount,res)
   }
 
 }
@@ -663,7 +177,7 @@ const shagoDataPurchase = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){ 
-    return walletDatapayment(user,trxRef,time,service,data.phoneNumber,data.code,data.allowance,res)
+    return shagoHelpers.walletDatapayment(user,trxRef,time,service,data.phoneNumber,data.code,data.allowance,res)
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -726,10 +240,10 @@ const shagoDataPurchase = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return walletDatapayment(user,trxRef,time,service,data.phoneNumber,data.code,data.allowance,res)
+    return shagoHelpers.walletDatapayment(user,trxRef,time,service,data.phoneNumber,data.code,data.allowance,res)
   }
   if(payment.siteName =='monnify'){
-    return walletDatapayment(user,trxRef,time,service,data.phoneNumber,data.code,data.allowance,res)
+    return shagoHelpers.walletDatapayment(user,trxRef,time,service,data.phoneNumber,data.code,data.allowance,res)
   }
 }
 const shagoMeterVerification = async (req,res)=>{
@@ -794,7 +308,7 @@ const shagoPurchaseElectricity = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await walletElectricityPayment(user,trxRef,time,service,data.phoneNumber,data.meterNo,data.disco,data.type,data.name,data.address,data.amount,res);
+    return await shagoHelpers.walletElectricityPayment(user,trxRef,time,service,data.phoneNumber,data.meterNo,data.disco,data.type,data.name,data.address,data.amount,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -860,10 +374,10 @@ const shagoPurchaseElectricity = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-     return await walletElectricityPayment(user,trxRef,time,service,data.phoneNumber,data.meterNo,data.disco,data.type,data.name,data.address,data.amount,res);
+     return await shagoHelpers.walletElectricityPayment(user,trxRef,time,service,data.phoneNumber,data.meterNo,data.disco,data.type,data.name,data.address,data.amount,res);
   }
   if(payment.siteName =='monnify'){
-     return await walletElectricityPayment(user,trxRef,time,service,data.phoneNumber,data.meterNo,data.disco,data.type,data.name,data.address,data.amount,res);
+     return await shagoHelpers.walletElectricityPayment(user,trxRef,time,service,data.phoneNumber,data.meterNo,data.disco,data.type,data.name,data.address,data.amount,res);
   }
 }
 const shagoWaecPinLookup = async (req,res)=>{
@@ -901,7 +415,7 @@ const shagoWaecPinPurchase = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await waecPinPurchase(user,trxRef,time,service,data.amount,data.numberOfPin,res);
+    return await shagoHelpers.waecPinPurchase(user,trxRef,time,service,data.amount,data.numberOfPin,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -962,10 +476,10 @@ const shagoWaecPinPurchase = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-     return await waecPinPurchase(user,trxRef,time,service,data.amount,data.numberOfPin,res);
+     return await shagoHelpers.waecPinPurchase(user,trxRef,time,service,data.amount,data.numberOfPin,res);
   }
   if(payment.siteName =='monnify'){
-     return await waecPinPurchase(user,trxRef,time,service,data.amount,data.numberOfPin,res);
+     return await shagoHelpers.waecPinPurchase(user,trxRef,time,service,data.amount,data.numberOfPin,res);
   }
 }
 const shagoJambLookUp = async (req,res)=>{
@@ -1015,7 +529,7 @@ const shagoJambPurchase = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await jambPinPurchase(user,trxRef,time,service,data.type,data.amount,data.profileCode,res);
+    return await shagoHelpers.jambPinPurchase(user,trxRef,time,service,data.type,data.amount,data.profileCode,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -1077,15 +591,15 @@ const shagoJambPurchase = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await jambPinPurchase(user,trxRef,time,service,data.type,data.amount,data.profileCode,res);
+    return await shagoHelpers.jambPinPurchase(user,trxRef,time,service,data.type,data.amount,data.profileCode,res);
   }
   if(payment.siteName =='monnify'){
-    return await jambPinPurchase(user,trxRef,time,service,data.type,data.amount,data.profileCode,res);
+    return await shagoHelpers.jambPinPurchase(user,trxRef,time,service,data.type,data.amount,data.profileCode,res);
   }
 }
 const shagoCableLookup = async (req,res)=>{
   const data = req.body;
-  if(data.smartCard&&data.type){
+  if(data.smartCard && data.type){
      return await shagoApi.cableLookup(data,res);
   }
   res.statusCode = 200;
@@ -1095,6 +609,232 @@ const shagoCableLookup = async (req,res)=>{
   return res.json(responseData)
 }
 const shagoCableBouquoteLookup = async (req,res)=>{
+  const data = req.body;
+  if(data.type){
+     return await shagoApi.cableTvBouquteLookup(data,res);
+  }
+  res.statusCode = 200;
+  responseData.message = "data is incomplete";
+  responseData.status = false;
+  responseData.data = data;
+  return res.json(responseData)
+}
+const shagoGetDstvAddOn = async (req,res)=>{
+  return await shagoApi.getDstvAddOns(res);
+}
+const shagoPurchaseDstv = async (req,res)=>{
+  const data = req.body;
+  const user = req.user;
+  const serviceId = req.params.serviceId
+
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `SHAGO-${digits}${firstDigit}`
+
+  let time = new Date();
+  time = time.toLocaleString();
+  if(!data.amount || !data.cardNo || !data.customerName || !data.packageName || !data.packageCode || !data.period){
+    responseData.status = false;
+    responseData.message = "data incomplete";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const service = await models.service.findOne(
+    {
+      where:{
+        id:serviceId
+      }
+    }
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(data.useWallet){
+    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+  }
+  let creditCard;
+  let useDefault = data.useDefault;
+  let creditCardId = data.creditCardId;
+  const payment = await options.getPayment();
+  if(useDefault){
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          isDefault:true
+        }
+      }
+    );
+  } else {
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          id:creditCardId
+        }
+      }
+    )
+  }
+  if(payment.siteName =='paystack'){
+    const serviceCategory = await models.serviceCategory.findOne(
+      {
+        where:{
+          id:service.serviceCategoryId
+        }
+      }
+    );
+    let serviceCharge = serviceCategory.serviceCharge;
+    let discount = service.discount;
+    let amount = data.amount;
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    if(discount){
+      totalAmount = totalAmount  - discount;
+    }
+    let beneficiary = {
+      amount:amount,
+      cardNo:data.cardNo,
+      customerName:data.customerName,
+      packageName:data.packageName,
+      packageCode:data.packageCode,
+      period:data.period,
+      gateway:"shago",
+      service:serviceId,
+    }
+    beneficiary = JSON.stringify(beneficiary);
+    const payload = {
+      amount:totalAmount,
+      email:user.email,
+      authorizationCode:creditCard.authCode,
+      userId:user.id,
+      firstName:user.firstName,
+      message:"dstv subscription",
+      beneficiary:beneficiary
+    }
+    await paystackApi.chargeAuthorization(payload,payment)
+    responseData.status = 200;
+    responseData.message = "payment initiated";
+    responseData.data = undefined
+    return res.json(responseData);
+  }
+  if(payment.siteName =='flutterwave'){
+    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+  }
+  if(payment.siteName =='monnify'){
+    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+  }
+}
+const shagoGetDstvAddOn = async (req,res)=>{
+  return await shagoApi.getDstvAddOns(res);
+}
+const shagoPurchaseDstvWithAddOn = async (req,res)=>{
+  const data = req.body;
+  const user = req.user;
+  const serviceId = req.params.serviceId
+
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `SHAGO-${digits}${firstDigit}`
+
+  let time = new Date();
+  time = time.toLocaleString();
+  if(!data.amount || !data.cardNo || !data.customerName || !data.packageName || !data.packageCode || !data.period || !data.addOnCode || !data.addOnProductName || !data.addOnAmount){
+    responseData.status = false;
+    responseData.message = "data incomplete";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const service = await models.service.findOne(
+    {
+      where:{
+        id:serviceId
+      }
+    }
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(data.useWallet){
+    return await dstvPurchaseWithAddOn(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,data.addOnCode,data.addOnProductName,data.addOnAmount,res);
+  }
+  let creditCard;
+  let useDefault = data.useDefault;
+  let creditCardId = data.creditCardId;
+  const payment = await options.getPayment();
+  if(useDefault){
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          isDefault:true
+        }
+      }
+    );
+  } else {
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          id:creditCardId
+        }
+      }
+    )
+  }
+  if(payment.siteName =='paystack'){
+    const serviceCategory = await models.serviceCategory.findOne(
+      {
+        where:{
+          id:service.serviceCategoryId
+        }
+      }
+    );
+    let serviceCharge = serviceCategory.serviceCharge;
+    let discount = service.discount;
+    let amount = data.amount;
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    if(discount){
+      totalAmount = totalAmount  - discount;
+    }
+    let beneficiary = {
+      amount:amount,
+      cardNo:data.cardNo,
+      customerName:data.customerName,
+      packageName:data.packageName,
+      packageCode:data.packageCode,
+      period:data.period,
+      addOnCode:data.addOnCode,
+      addOnProductName:data.addOnProductName,
+      addOnAmount:data.addOnAmount,
+      gateway:"shago",
+      service:serviceId,
+    }
+    beneficiary = JSON.stringify(beneficiary);
+    const payload = {
+      amount:totalAmount,
+      email:user.email,
+      authorizationCode:creditCard.authCode,
+      userId:user.id,
+      firstName:user.firstName,
+      message:"dstv subscription with add on",
+      beneficiary:beneficiary
+    }
+    await paystackApi.chargeAuthorization(payload,payment)
+    responseData.status = 200;
+    responseData.message = "payment initiated";
+    responseData.data = undefined
+    return res.json(responseData);
+  }
+  if(payment.siteName =='flutterwave'){
+    return await dstvPurchaseWithAddOn(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,data.addOnCode,data.addOnProductName,data.addOnAmount,res);
+  }
+  if(payment.siteName =='monnify'){
+    return await dstvPurchaseWithAddOn(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,data.addOnCode,data.addOnProductName,data.addOnAmount,res);
+  }
+}
+const shagoPurchaseStartimes = async (req,res)=>{
   const data = req.body;
   if(data.type){
      return await shagoApi.cableTvBouquteLookup(data,res);
@@ -1210,12 +950,6 @@ const shagoPurchaseDstv = async (req,res)=>{
   if(payment.siteName =='monnify'){
     return await dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
-}
-const shagoPurchaseDstvWithAddOn = async (req,res)=>{
-  
-}
-const shagoPurchaseStartimes = async (req,res)=>{
-  
 }
 const shagoPurchaseGoTv = async (req,res)=>{
   

@@ -189,6 +189,10 @@ const webhook =async (req,res)=>{
           res.statusCode = 200;
           return await walletHelpers.dstvPurchase(transaction,res);
         }
+        if(transaction.message =="ddstv subscription with add on"){
+          res.statusCode = 200;
+          return await walletHelpers.dstvPurchaseWithAddOn(transaction,res);
+        }
         const otherAccount = await models.otherAccount.findOne(
           {
             where:{
