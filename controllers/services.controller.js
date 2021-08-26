@@ -634,7 +634,7 @@ const shagoPurchaseDstv = async (req,res)=>{
 
   let time = new Date();
   time = time.toLocaleString();
-  if(!data.amount || !data.cardNo || !data.customerName || !data.packageName){
+  if(!data.amount || !data.cardNo || !data.customerName || !data.packageName || !data.packageCode || !data.period){
     responseData.status = false;
     responseData.message = "data incomplete";
     responseData.data = undefined;
@@ -654,7 +654,7 @@ const shagoPurchaseDstv = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,res);
+    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -697,6 +697,8 @@ const shagoPurchaseDstv = async (req,res)=>{
       cardNo:data.cardNo,
       customerName:data.customerName,
       packageName:data.packageName,
+      packageCode:data.packageCode,
+      period:data.period,
       gateway:"shago",
       service:serviceId,
     }
@@ -707,7 +709,7 @@ const shagoPurchaseDstv = async (req,res)=>{
       authorizationCode:creditCard.authCode,
       userId:user.id,
       firstName:user.firstName,
-      message:"startimes subscription",
+      message:"dstv subscription",
       beneficiary:beneficiary
     }
     await paystackApi.chargeAuthorization(payload,payment)
@@ -717,10 +719,10 @@ const shagoPurchaseDstv = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,res);
+    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
   if(payment.siteName =='monnify'){
-    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,res);
+    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
 }
 const shagoGetDstvAddOn = async (req,res)=>{
@@ -835,7 +837,108 @@ const shagoPurchaseDstvWithAddOn = async (req,res)=>{
 const shagoGetDstvAddOn = async (req,res)=>{
   return await shagoApi.getDstvAddOns(res);
 }
-const shagoPurchaseDstv = async (req,res)=>{
+const shagoPurchaseStartimes = async (req,res)=>{
+  const data = req.body;
+  const user = req.user;
+  const serviceId = req.params.serviceId
+
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `SHAGO-${digits}${firstDigit}`
+
+  let time = new Date();
+  time = time.toLocaleString();
+  if(!data.amount || !data.cardNo || !data.customerName || !data.packageName){
+    responseData.status = false;
+    responseData.message = "data incomplete";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const service = await models.service.findOne(
+    {
+      where:{
+        id:serviceId
+      }
+    }
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(data.useWallet){
+    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,res);
+  }
+  let creditCard;
+  let useDefault = data.useDefault;
+  let creditCardId = data.creditCardId;
+  const payment = await options.getPayment();
+  if(useDefault){
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          isDefault:true
+        }
+      }
+    );
+  } else {
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          id:creditCardId
+        }
+      }
+    )
+  }
+  if(payment.siteName =='paystack'){
+    const serviceCategory = await models.serviceCategory.findOne(
+      {
+        where:{
+          id:service.serviceCategoryId
+        }
+      }
+    );
+    let serviceCharge = serviceCategory.serviceCharge;
+    let discount = service.discount;
+    let amount = data.amount;
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    if(discount){
+      totalAmount = totalAmount  - discount;
+    }
+    let beneficiary = {
+      amount:amount,
+      cardNo:data.cardNo,
+      customerName:data.customerName,
+      packageName:data.packageName,
+      gateway:"shago",
+      service:serviceId,
+    }
+    beneficiary = JSON.stringify(beneficiary);
+    const payload = {
+      amount:totalAmount,
+      email:user.email,
+      authorizationCode:creditCard.authCode,
+      userId:user.id,
+      firstName:user.firstName,
+      message:"startimes subscription",
+      beneficiary:beneficiary
+    }
+    await paystackApi.chargeAuthorization(payload,payment)
+    responseData.status = 200;
+    responseData.message = "payment initiated";
+    responseData.data = undefined
+    return res.json(responseData);
+  }
+  if(payment.siteName =='flutterwave'){
+    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,res);
+  }
+  if(payment.siteName =='monnify'){
+    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,res);
+  }
+}
+const shagoPurchaseGoTv = async (req,res)=>{
   const data = req.body;
   const user = req.user;
   const serviceId = req.params.serviceId
@@ -867,7 +970,7 @@ const shagoPurchaseDstv = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+    return await shagoHelpers.goTvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -922,7 +1025,7 @@ const shagoPurchaseDstv = async (req,res)=>{
       authorizationCode:creditCard.authCode,
       userId:user.id,
       firstName:user.firstName,
-      message:"dstv subscription",
+      message:"goTv subscription",
       beneficiary:beneficiary
     }
     await paystackApi.chargeAuthorization(payload,payment)
@@ -932,20 +1035,15 @@ const shagoPurchaseDstv = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+    return await shagoHelpers.goTvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
   if(payment.siteName =='monnify'){
-    return await dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+    return await shagoHelpers.goTvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
 }
-const shagoPurchaseStartimes = async (req,res)=>{
-  
-}
-const shagoPurchaseGoTv = async (req,res)=>{
-  
-}
 const shagoVerifyTransaction = async (req,res)=>{
-  
+  const data = req.body;
+  const user = req.body
 }
 //Baxi
 const baxiPurchaseAirtime = async (req,res)=>{

@@ -855,12 +855,12 @@ const goTvPurchase = async (payload,res)=>{
     'url': 'http://34.68.51.255/shago/public/api/test/b2b',
     'headers': {
       'Content-Type': 'application/json',
-      'hashKey': 'c1df88d180d0163fc53f4efde6288a2c87a2ceaaefae0685fd4a8c01b217e70d'
+      'hashKey': `${process.env.SHAGO_KEY}`
     },
     body: JSON.stringify({
       "serviceCode": "GDB",
       "request_id": payload.reference,
-      "amount": payload.aount,
+      "amount": payload.amount,
       "type": "GOTV",
       "smartCardNo": payload.cardNo,
       "customerName": payload.customerName,
