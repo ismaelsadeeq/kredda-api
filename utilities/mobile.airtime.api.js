@@ -596,7 +596,7 @@ const rechargeGoOrDstv = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://mobileairtimeng.com/httpapi/multichoice?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&phone=${payload.phoneNumber}&amt=${payload.amount}&smartno=${payload.cardNo}&customer=${payload.customername}&invoice=${payload.invoiceNo}&billtype=${payload.type}&customernumber=${payload.customerNumber}user_ref=${payload.reference}&jsn=json`,
+    'url': `https://mobileairtimeng.com/httpapi/multichoice?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&phone=${payload.phoneNumber}&amt=${payload.amount}&smartno=${payload.cardNo}&customer=${payload.customerName}&invoice=${payload.invoiceNo}&billtype=${payload.type}&customernumber=${payload.customerNumber}user_ref=${payload.reference}&jsn=json`,
     'headers': {
       'Content-Type': 'application/json',
     }
