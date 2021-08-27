@@ -143,7 +143,6 @@ const dataPurchase = async (transaction,res)=>{
         dataSize:beneficiary.dataSize,
         network:service.code,
         reference:trxRef,
-
         serviceId:service.id,
         totalServiceFee:transaction.amount,
         profit:profit
