@@ -105,7 +105,6 @@ const airtimeTopUp = async (payload,res)=>{
         profit:payload.profit
       }
     );
-    console.log(res);
     res.statusCode = 200;
     responseData.message = "completed";
     responseData.status = false;
@@ -263,7 +262,6 @@ const mtnDataGifting = async (payload,res)=>{
     'headers': {
       'Content-Type': 'application/json',
     }
-
   };
   request(options,async function (error, response) {
     if (error) throw new Error(error);
