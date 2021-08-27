@@ -501,6 +501,32 @@ const goTvPurchase = async (transaction,res)=>{
     console.log(payload);
     return await shagoApi.goTvPurchase(payload,res) 
   }
+  if(beneficiary.gateway=="mobile airtime"){
+    let trxRef = `mAIRTIME-CREDIT-CARD${digits}`
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let payload = {
+      userId:transaction.userId,
+      amount:beneficiary.amount,
+      reference:trxRef,
+      cardNo:beneficiary.cardNo,
+      type:"gotv"
+      customerName:beneficiary.customerName,
+      invoiceNo:beneficiary.invoiceNo,
+      customerNumber:beneficiary.customerNumber,
+      serviceId:service.id,
+      totalServiceFee:transaction.amount,
+      profit:profit
+    }
+    console.log(payload);
+    return await mobileAirtime.rechargeGoOrDstv(payload,res) 
+  }
 }
 const jambPurchase = async (transaction,res)=>{
   await transaction.update(

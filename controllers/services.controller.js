@@ -2122,7 +2122,7 @@ const mAirtimeRechargeGoTv = async (req,res)=>{
       authorizationCode:creditCard.authCode,
       userId:user.id,
       firstName:user.firstName,
-      message:"go tv purchase",
+      message:"goTv subscription",
       beneficiary:beneficiary
     }
     await paystackApi.chargeAuthorization(payload,payment)
