@@ -169,7 +169,7 @@ const webhook =async (req,res)=>{
           res.statusCode = 200;
           return await walletHelpers.airtimePurchase(transaction,res);
         }
-        if(transaction.message =="data purchase" || transaction.message =="mtn data gifting"){
+        if(transaction.message =="data purchase" || transaction.message =="mtn data gifting" || transaction.message =="mtn data share"){
           res.statusCode = 200;
           return await walletHelpers.dataPurchase(transaction,res);
         }

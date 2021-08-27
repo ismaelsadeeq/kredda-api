@@ -149,6 +149,20 @@ const dataPurchase = async (transaction,res)=>{
       }
       return await mobileAirtime.mtnDataGifting(payload,res) 
     }
+    if(beneficiary.message=="mtn data share"){
+      let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+      let payload = {
+        userId:transaction.userId,
+        phoneNumber:phoneNumber,
+        dataSize:beneficiary.dataSize,
+        network:service.code,
+        reference:trxRef,
+        serviceId:service.id,
+        totalServiceFee:transaction.amount,
+        profit:profit
+      }
+      return await mobileAirtime.mtnDataShare(payload,res) 
+    }
   }
 }
 const electricityPurchase = async (transaction,res)=>{
