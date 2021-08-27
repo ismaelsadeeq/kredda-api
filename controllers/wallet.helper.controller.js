@@ -80,6 +80,7 @@ const airtimePurchase = async (transaction,res)=>{
     }
     if(transaction.message=="foreign airtime purchase"){
       payload.productId = beneficiary.product;
+      payload.country = beneficiary.country;
       return await mobileAirtime.rechargeInternationalNumber(payload,res);
     }
 
