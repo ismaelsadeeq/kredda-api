@@ -1038,8 +1038,11 @@ const shagoPurchaseGoTv = async (req,res)=>{
   }
 }
 const shagoVerifyTransaction = async (req,res)=>{
-  const data = req.body;
-  if(data.reference){
+  const reference = req.params.reference;
+  if(reference){
+    let payload = {
+      reference:reference
+    }
     return shagoApi.queryTransaction(payload,res);
   }
   responseData.status = 200;
