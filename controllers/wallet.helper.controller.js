@@ -219,6 +219,29 @@ const electricityPurchase = async (transaction,res)=>{
     }
     return await shagoApi.purchaseElectricity(payload,res) 
   }
+  if(beneficiary.gateway=="mobile airtime"){
+    let trxRef = `mAIRTIME-CREDIT-CARD${digits}`
+    let phoneNumber = beneficiary.phoneNumber;
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let payload = {
+      userId:transaction.userId,
+      amount:beneficiary.amount,
+      reference:trxRef,
+      meterNo:beneficiary.meterNo,
+      type:beneficiary.type,
+      serviceId:service.id,
+      totalServiceFee:transaction.amount,
+      profit:profit
+    }
+    return await mobileAirtime.purchaseElectricity(payload,res) 
+  }
 }
 const waecPurchase = async (transaction,res)=>{
   await transaction.update(
