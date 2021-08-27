@@ -97,7 +97,7 @@ async function chargeAuthorization(payload,paystack){
     res.on('end',async () => {
       const response = JSON.parse(data)
       console.log(response);
-      // if(response.status === true && response.message == "Charge attempted"){
+      if(response.status === true && response.message == "Charge attempted"){
         let time = new Date();
         time = time.toLocaleString()
         const transaction = await models.transaction.create(
@@ -115,8 +115,8 @@ async function chargeAuthorization(payload,paystack){
             time: time
           }
         );
-      //   return "charge initiated"
-      // }
+        return "charge initiated"
+      }
       return "something went wrong"
     })
   }).on('error', error => {
