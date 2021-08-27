@@ -321,7 +321,6 @@ const mtnDataGifting = async (user,trxRef,time,service,phoneNumber,amount,dataSi
   let payload = {
     userId:user.id,
     phoneNumber:phoneNumber,
-    amount:amount,
     dataSize:dataSize,
     network:service.code,
     reference:trxRef,

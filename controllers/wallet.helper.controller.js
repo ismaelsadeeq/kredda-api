@@ -123,7 +123,33 @@ const dataPurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    await shagoApi.dataPurchase(payload,res) 
+    return await shagoApi.dataPurchase(payload,res) 
+  }
+  if(beneficiary.gateway =="mobile airtime"){
+    let trxRef = `mAIRTIME-CREDIT-CARD${digits}`
+    let phoneNumber = beneficiary.phoneNumber;
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    if(beneficiary.message=="mtn data gifting"){
+      let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+      let payload = {
+        userId:transaction.userId,
+        phoneNumber:phoneNumber,
+        dataSize:beneficiary.dataSize,
+        network:service.code,
+        reference:trxRef,
+
+        serviceId:service.id,
+        totalServiceFee:transaction.amount,
+        profit:profit
+      }
+      return await mobileAirtime.mtnDataGifting(payload,res) 
+    }
   }
 }
 const electricityPurchase = async (transaction,res)=>{
@@ -165,7 +191,7 @@ const electricityPurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    await shagoApi.purchaseElectricity(payload,res) 
+    return await shagoApi.purchaseElectricity(payload,res) 
   }
 }
 const waecPurchase = async (transaction,res)=>{
@@ -202,7 +228,7 @@ const waecPurchase = async (transaction,res)=>{
       profit:profit
     }
     console.log(payload);
-    await shagoApi.waecPinPurchase(payload,res) 
+    return await shagoApi.waecPinPurchase(payload,res) 
   }
 }
 const dstvPurchase = async (transaction,res)=>{
@@ -243,7 +269,7 @@ const dstvPurchase = async (transaction,res)=>{
       profit:profit
     }
     console.log(payload);
-    await shagoApi.purchaseDstvNoAddOn(payload,res) 
+    return await shagoApi.purchaseDstvNoAddOn(payload,res) 
   }
 }
 const dstvPurchaseWithAddOn = async (transaction,res)=>{
@@ -287,7 +313,7 @@ const dstvPurchaseWithAddOn = async (transaction,res)=>{
       profit:profit
     }
     console.log(payload);
-    await shagoApi.purchaseDstvWithAddOn(payload,res) 
+    return await shagoApi.purchaseDstvWithAddOn(payload,res) 
   }
 }
 const startimesPurchase = async (transaction,res)=>{
@@ -326,7 +352,7 @@ const startimesPurchase = async (transaction,res)=>{
       profit:profit
     }
     console.log(payload);
-    await shagoApi.startimesPurchase(payload,res) 
+    return await shagoApi.startimesPurchase(payload,res) 
   }
 }
 const goTvPurchase = async (transaction,res)=>{
@@ -367,7 +393,7 @@ const goTvPurchase = async (transaction,res)=>{
       profit:profit
     }
     console.log(payload);
-    await shagoApi.goTvPurchase(payload,res) 
+    return await shagoApi.goTvPurchase(payload,res) 
   }
 }
 const jambPurchase = async (transaction,res)=>{
@@ -405,7 +431,7 @@ const jambPurchase = async (transaction,res)=>{
       profit:profit
     }
     console.log(payload);
-    await shagoApi.jambPinPurchase(payload,res) 
+    return await shagoApi.jambPinPurchase(payload,res) 
   }
 }
 
