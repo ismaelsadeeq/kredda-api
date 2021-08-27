@@ -656,6 +656,8 @@ const purchaseDstvWithAddOn = async (payload,res)=>{
     if (error) throw new Error(error);
     console.log(response.body);
     const data = JSON.parse(response.body);
+    let time = new Date();
+    time = time.toLocaleString();
     if(data.status == 200){
       const  createTransaction = await models.serviceTransaction.create(
         {

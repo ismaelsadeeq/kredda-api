@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     status:DataTypes.STRING,
     amount: DataTypes.STRING,
     time:DataTypes.STRING,
-    beneficiary: DataTypes.STRING,
+    beneficiary: DataTypes.STRING(1234),
     description: DataTypes.STRING,
     isRedemmed: DataTypes.BOOLEAN
   }, {

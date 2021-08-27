@@ -66,7 +66,7 @@ router.post('/:serviceId/shago/purchase-dstv',
   passport.authenticate('jwt',{session:false}),
   controller.shagoPurchaseDstv
 );
-router.post('/shago/purchase-dstv-addOn',
+router.post('/:serviceId/shago/purchase-dstv-addOn',
   passport.authenticate('jwt',{session:false}),
   controller.shagoPurchaseDstvWithAddOn
 );

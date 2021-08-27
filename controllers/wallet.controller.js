@@ -201,6 +201,10 @@ const webhook =async (req,res)=>{
           res.statusCode = 200;
           return await walletHelpers.goTvPurchase(transaction,res);
         }
+        if(transaction.message =="mtn vtu airtime purchase" || transaction.message =="airtime purchase"){
+          res.statusCode = 200;
+          return await walletHelpers.airtimePurchase(transaction,res);
+        }
         const otherAccount = await models.otherAccount.findOne(
           {
             where:{

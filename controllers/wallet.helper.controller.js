@@ -4,6 +4,7 @@ const options = require('../middlewares/appSetting');
 const helpers = require('../utilities/helpers');
 const paystackApi = require('../utilities/paystack.api');
 const shagoApi = require('../utilities/shago.api');
+const mobileAirtime = require('../utilities/mobile.airtime.api');
 let crypto = require('crypto');
 var request = require('request');
 require('dotenv').config();
@@ -13,18 +14,6 @@ const responseData = {
 	message: "Completed",
 	data: null
 }
-const apiKey = process.env.FREECONVERTER
-async function getSecret(){
-  const payment = await options.getPayment();
-  let privateKey;
-  if(payment.privateKey){
-    privateKey = payment.privateKey;
-  }else{
-    privateKey = payment.testPrivateKey
-  }
-  return privateKey;
-}
-
 const airtimePurchase = async (transaction,res)=>{
   await transaction.update(
     {
@@ -60,7 +49,32 @@ const airtimePurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    await shagoApi.airtimePushase(payload,res) 
+    return await shagoApi.airtimePushase(payload,res) 
+  }
+  if(beneficiary.gateway=="mobile airtime"){
+    let trxRef = `MAIRTIME-CREDIT-CARD${digits}`
+    let phoneNumber = beneficiary.phoneNumber;
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let payload = {
+      userId:transaction.userId,
+      phoneNumber:phoneNumber,
+      amount:beneficiary.amount,
+      network:service.code,
+      reference:trxRef,
+      serviceId:service.id,
+      totalServiceFee:transaction.amount,
+      profit:profit
+    }
+    if(transaction.message=="mtn vtu airtime purchase"){
+      return await mobileAirtime.mtnVTUTopUp(payload,res);
+    }
   }
 }
 const dataPurchase = async (transaction,res)=>{

@@ -33,7 +33,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       beneficiary: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(1234)
       },
       description: {
         type: Sequelize.STRING

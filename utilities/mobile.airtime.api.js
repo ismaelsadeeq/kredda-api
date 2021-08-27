@@ -57,7 +57,7 @@ const checkTransactionStatus = (payload,res)=>{
   });
 }
 
-const airtimeTopUp = (payload,res)=>{
+const airtimeTopUp = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
