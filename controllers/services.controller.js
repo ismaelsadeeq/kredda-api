@@ -1458,7 +1458,7 @@ const mAirtimeMtnDataGifting = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let discount = service.discount;
     let amount = data.amount;
-    let totalAmount = parseFloat(data.amountInNaira) + parseFloat(serviceCharge); 
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1558,7 +1558,7 @@ const mAirtimeMtnDataShare = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let discount = service.discount;
     let amount = data.amount;
-    let totalAmount = parseFloat(data.amountInNaira) + parseFloat(serviceCharge); 
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1678,7 +1678,7 @@ const mAirtimeDataTopUp = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let discount = service.discount;
     let amount = data.amount;
-    let totalAmount = parseFloat(data.amountInNaira) + parseFloat(serviceCharge); 
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1790,7 +1790,7 @@ const mAirtimeElectricityPurchase = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let discount = service.discount;
     let amount = data.amount;
-    let totalAmount = parseFloat(data.amountInNaira) + parseFloat(serviceCharge); 
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1826,7 +1826,99 @@ const mAirtimeElectricityPurchase = async (req,res)=>{
   }
 }
 const mAirtimeWaecPurchase = async (req,res)=>{
-  
+  const data = req.body;
+  const user = req.user;
+  const serviceId = req.params.serviceId
+
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `SHAGO-${digits}${firstDigit}`
+
+  let time = new Date();
+  time = time.toLocaleString();
+  const service = await models.service.findOne(
+    {
+      where:{
+        id:serviceId
+      }
+    }
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(data.useWallet){
+    return await mAirtimeHelpers.purchaseElectricity(user,trxRef,time,service,service.amount,serviceId,data.meterNo,data.type,res);
+  }
+  let creditCard;
+  let useDefault = data.useDefault;
+  let creditCardId = data.creditCardId;
+  const payment = await options.getPayment();
+  if(useDefault){
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          isDefault:true
+        }
+      }
+    );
+  } else {
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          id:creditCardId
+        }
+      }
+    )
+  }
+  if(payment.siteName =='paystack'){
+    const serviceCategory = await models.serviceCategory.findOne(
+      {
+        where:{
+          id:service.serviceCategoryId
+        }
+      }
+    );
+    let serviceCharge = serviceCategory.serviceCharge;
+    let discount = service.discount;
+    let amount = service.amount;
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    if(discount){
+      totalAmount = totalAmount  - discount;
+    }
+    let beneficiary = {
+      amount:amount,
+      meterNo:data.meterNo,
+      type:data.type,
+      gateway:"mobile airtime",
+      service:serviceId,
+      phoneNumber:data.phoneNumber
+    }
+    beneficiary = JSON.stringify(beneficiary);
+    const payload = {
+      amount:totalAmount,
+      email:user.email,
+      authorizationCode:creditCard.authCode,
+      userId:user.id,
+      firstName:user.firstName,
+      message:"electricity purchase",
+      beneficiary:beneficiary
+    }
+    await paystackApi.chargeAuthorization(payload,payment)
+    responseData.status = 200;
+    responseData.message = "payment initiated";
+    responseData.data = undefined
+    return res.json(responseData);
+  }
+  if(payment.siteName =='flutterwave'){
+      return await mAirtimeHelpers.purchaseElectricity(user,trxRef,time,service,data.amount,serviceId,data.meterNo,data.type,res);
+  }
+  if(payment.siteName =='monnify'){
+      return await mAirtimeHelpers.purchaseElectricity(user,trxRef,time,service,data.amount,serviceId,data.meterNo,data.type,res);
+  }
 }
 const mAirtimeNecoPurchase = async (req,res)=>{
   
