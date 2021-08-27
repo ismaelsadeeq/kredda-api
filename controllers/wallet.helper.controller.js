@@ -352,13 +352,13 @@ const goTvPurchase = async (transaction,res)=>{
       customerName:beneficiary.customerName,
       packageName:beneficiary.packageName,
       packageCode:beneficiary.packageCode,
-      period:data.period,
+      period:beneficiary.period,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
       profit:profit
     }
     console.log(payload);
-    await shagoApi.startimesPurchase(payload,res) 
+    await shagoApi.goTvPurchase(payload,res) 
   }
 }
 const jambPurchase = async (transaction,res)=>{
