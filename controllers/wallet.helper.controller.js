@@ -75,6 +75,9 @@ const airtimePurchase = async (transaction,res)=>{
     if(transaction.message=="mtn vtu airtime purchase"){
       return await mobileAirtime.mtnVTUTopUp(payload,res);
     }
+    if(transaction.message=="airtime purchase"){
+      return await mobileAirtime.airtimeTopUp(payload,res);
+    }
   }
 }
 const dataPurchase = async (transaction,res)=>{

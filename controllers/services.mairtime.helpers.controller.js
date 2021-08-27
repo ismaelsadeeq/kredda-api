@@ -156,7 +156,7 @@ const airtimePurchase = async (user,trxRef,time,service,phoneNumber,amount,res)=
       status:"successful",
       time: time
     }
-  );
+  );;
   let payload = {
     userId:user.id,
     phoneNumber:phoneNumber,

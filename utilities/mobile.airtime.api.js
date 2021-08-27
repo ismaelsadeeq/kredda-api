@@ -58,13 +58,13 @@ const checkTransactionStatus = (payload,res)=>{
 }
 
 const airtimeTopUp = async (payload,res)=>{
+  console.log(payload.phoneNumber);
   var request = require('request');
+  let url =`https://mobileairtimeng.com/httpapi/?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumber}&amt=${payload.amount}&user_ref=${payload.reference}&jsn=json`
+  console.log(url);
   var options = {
     'method': 'POST',
-    'url': `https://mobileairtimeng.com/httpapi/?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumer}&amt=${payload.amount}&user_ref=${payload.reference}&jsn=json`,
-    'headers': {
-      'Content-Type': 'application/json',
-    }
+    'url': url,
 
   };
   request(options,async function (error, response) {
@@ -119,7 +119,7 @@ const mtnVTUTopUp =async (payload,res)=>{
   console.log(process.env.MOBILE_AIRTIME_PHONENUMBER,"hgjkl;")
   var options = {
     'method': 'POST',
-    'url': `https://mobileairtimeng.com/httpapi/mtnevd?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumer}&amt=${payload.amount}&user_ref=${payload.reference}&jsn=json`,
+    'url': `https://mobileairtimeng.com/httpapi/mtnevd?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumber}&amt=${payload.amount}&user_ref=${payload.reference}&jsn=json`,
     'headers': {
       'Content-Type': 'application/json',
     }
@@ -175,8 +175,8 @@ const mtnVTUTopUp =async (payload,res)=>{
 const verifyInternationalNumber = async (payload,res)=>{
   var request = require('request');
   var options = {
-    'method': 'GET',
-    'url': `https://mobileairtimeng.com/httpapi/globalvtu-conf?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&phone=${payload.phoneNumer}&country=${payload.country}&jsn=json`,
+    'method': 'POST',
+    'url': `https://mobileairtimeng.com/httpapi/globalvtu-conf?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&phone=${payload.phoneNumber}&country=${payload.country}&jsn=json`,
     'headers': {
       'Content-Type': 'application/json',
     }
@@ -203,7 +203,7 @@ const rechargeInternationalNumber = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://mobileairtimeng.com/httpapi/globalvtu?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&phone=${payload.phoneNumer}&amt=${payload.amount}&product=${payload.productId}&user_ref=${payload.reference}&jsn=json`,
+    'url': `https://mobileairtimeng.com/httpapi/globalvtu?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&phone=${payload.phoneNumber}&amt=${payload.amount}&product=${payload.productId}&user_ref=${payload.reference}&jsn=json`,
     'headers': {
       'Content-Type': 'application/json',
     }
@@ -261,7 +261,7 @@ const mtnDataGifting = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://mobileairtimeng.com/httpapi/cdatashare?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumer}&datasize=${payload.dataSize}&user_ref=${payload.reference}&jsn=json`,
+    'url': `https://mobileairtimeng.com/httpapi/cdatashare?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumber}&datasize=${payload.dataSize}&user_ref=${payload.reference}&jsn=json`,
     'headers': {
       'Content-Type': 'application/json',
     }
@@ -345,7 +345,7 @@ const mtnDataShare = (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://mobileairtimeng.com/httpapi/datashare?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumer}&datasize=${payload.dataSize}&user_ref=${payload.reference}&jsn=json`,
+    'url': `https://mobileairtimeng.com/httpapi/datashare?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumber}&datasize=${payload.dataSize}&user_ref=${payload.reference}&jsn=json`,
     'headers': {
       'Content-Type': 'application/json',
     }
@@ -402,7 +402,7 @@ const dataTopUp = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://mobileairtimeng.com/httpapi/datatopup.php?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumer}&user_ref=${payload.reference}&amt=${payload.amount}&jsn=json`,
+    'url': `https://mobileairtimeng.com/httpapi/datatopup.php?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumber}&user_ref=${payload.reference}&amt=${payload.amount}&jsn=json`,
     'headers': {
       'Content-Type': 'application/json',
     }
