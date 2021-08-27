@@ -1093,7 +1093,7 @@ const mAirtimeMtnVtuTopUp = async (req,res)=>{
   let digits = helpers.generateOTP()
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
-  let trxRef = `SHAGO-${digits}${firstDigit}`
+  let trxRef = `mAIRTIME-${digits}${firstDigit}`
 
   let time = new Date();
   time = time.toLocaleString();
@@ -1299,7 +1299,7 @@ const mAirtimeRechargeInternational = async (req,res)=>{
   let digits = helpers.generateOTP()
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
-  let trxRef = `SHAGO-${digits}${firstDigit}`
+  let trxRef = `mAIRTIME-${digits}${firstDigit}`
 
   let time = new Date();
   time = time.toLocaleString();
@@ -1400,7 +1400,7 @@ const mAirtimeMtnDataGifting = async (req,res)=>{
   let digits = helpers.generateOTP()
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
-  let trxRef = `SHAGO-${digits}${firstDigit}`
+  let trxRef = `mAIRTIME-${digits}${firstDigit}`
 
   let time = new Date();
   time = time.toLocaleString();
@@ -1500,7 +1500,7 @@ const mAirtimeMtnDataShare = async (req,res)=>{
   let digits = helpers.generateOTP()
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
-  let trxRef = `SHAGO-${digits}${firstDigit}`
+  let trxRef = `mAIRTIME-${digits}${firstDigit}`
 
   let time = new Date();
   time = time.toLocaleString();
@@ -1620,7 +1620,7 @@ const mAirtimeDataTopUp = async (req,res)=>{
   let digits = helpers.generateOTP()
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
-  let trxRef = `SHAGO-${digits}${firstDigit}`
+  let trxRef = `mAIRTIME-${digits}${firstDigit}`
 
   let time = new Date();
   time = time.toLocaleString();
@@ -1732,7 +1732,7 @@ const mAirtimeElectricityPurchase = async (req,res)=>{
   let digits = helpers.generateOTP()
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
-  let trxRef = `SHAGO-${digits}${firstDigit}`
+  let trxRef = `mAIRTIME-${digits}${firstDigit}`
 
   let time = new Date();
   time = time.toLocaleString();
@@ -1833,7 +1833,7 @@ const mAirtimeWaecPurchase = async (req,res)=>{
   let digits = helpers.generateOTP()
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
-  let trxRef = `SHAGO-${digits}${firstDigit}`
+  let trxRef = `mAIRTIME-${digits}${firstDigit}`
 
   let time = new Date();
   time = time.toLocaleString();
@@ -1919,7 +1919,97 @@ const mAirtimeWaecPurchase = async (req,res)=>{
   }
 }
 const mAirtimeNecoPurchase = async (req,res)=>{
-  
+  const data = req.body;
+  const user = req.user;
+  const serviceId = req.params.serviceId
+
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `mAIRTIME-${digits}${firstDigit}`
+
+  let time = new Date();
+  time = time.toLocaleString();
+  const service = await models.service.findOne(
+    {
+      where:{
+        id:serviceId
+      }
+    }
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(data.useWallet){
+    return await mAirtimeHelpers.necoPinPurchase(user,trxRef,time,service,service.amount,res);
+  }
+  let creditCard;
+  let useDefault = data.useDefault;
+  let creditCardId = data.creditCardId;
+  const payment = await options.getPayment();
+  if(useDefault){
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          isDefault:true
+        }
+      }
+    );
+  } else {
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          id:creditCardId
+        }
+      }
+    )
+  }
+  if(payment.siteName =='paystack'){
+    const serviceCategory = await models.serviceCategory.findOne(
+      {
+        where:{
+          id:service.serviceCategoryId
+        }
+      }
+    );
+    let serviceCharge = serviceCategory.serviceCharge;
+    let discount = service.discount;
+    let amount = service.amount;
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    if(discount){
+      totalAmount = totalAmount  - discount;
+    }
+    let beneficiary = {
+      amount:amount,
+      gateway:"mobile airtime",
+      service:serviceId,
+      phoneNumber:data.phoneNumber
+    }
+    beneficiary = JSON.stringify(beneficiary);
+    const payload = {
+      amount:totalAmount,
+      email:user.email,
+      authorizationCode:creditCard.authCode,
+      userId:user.id,
+      firstName:user.firstName,
+      message:"neco pin purchase",
+      beneficiary:beneficiary
+    }
+    await paystackApi.chargeAuthorization(payload,payment)
+    responseData.status = 200;
+    responseData.message = "payment initiated";
+    responseData.data = undefined
+    return res.json(responseData);
+  }
+  if(payment.siteName =='flutterwave'){
+      return await mAirtimeHelpers.necoPinPurchase(user,trxRef,time,service,service.amount,res);
+  }
+  if(payment.siteName =='monnify'){
+      return await mAirtimeHelpers.necoPinPurchase(user,trxRef,time,service,service.amount,res);
+  }
 }
 const mAirtimeGetCableInfo = async (req,res)=>{
   

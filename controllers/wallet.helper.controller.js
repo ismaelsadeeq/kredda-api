@@ -301,6 +301,42 @@ const waecPurchase = async (transaction,res)=>{
     return await mobileAirtime.purchaseWeacDirect(payload,res) 
   }
 }
+const necoPurchase = async (transaction,res)=>{
+  await transaction.update(
+    {
+      status:"successful",
+      isRedemmed:true,
+    },
+    {
+      where:{
+        reference:transaction.reference
+      }
+    }
+  );
+  let digits = helpers.generateOTP()
+  let beneficiary = JSON.parse(transaction.beneficiary);
+  if(beneficiary.gateway=="mobile airtime"){
+    let trxRef = `mAIRTIME-CREDIT-CARD${digits}`;
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let payload = {
+      userId:transaction.userId,
+      amount:beneficiary.amount,
+      reference:trxRef,
+      serviceId:service.id,
+      totalServiceFee:transaction.amount,
+      profit:profit
+    }
+    console.log(payload);
+    return await mobileAirtime.purchaseNecoDirect(payload,res) 
+  }
+}
 const dstvPurchase = async (transaction,res)=>{
   await transaction.update(
     {

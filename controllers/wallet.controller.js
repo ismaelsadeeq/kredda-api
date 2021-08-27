@@ -181,6 +181,10 @@ const webhook =async (req,res)=>{
           res.statusCode = 200;
           return await walletHelpers.waecPurchase(transaction,res);
         }
+        if(transaction.message =="neco pin purchase"){
+          res.statusCode = 200;
+          return await walletHelpers.necoPurchase(transaction,res);
+        }
         if(transaction.message =="jamb pin purchase"){
           res.statusCode = 200;
           return await walletHelpers.jambPurchase(transaction,res);
