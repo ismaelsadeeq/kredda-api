@@ -1851,7 +1851,7 @@ const mAirtimeWaecPurchase = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await mAirtimeHelpers.purchaseElectricity(user,trxRef,time,service,service.amount,serviceId,data.meterNo,data.type,res);
+    return await mAirtimeHelpers.waecPinPurchase(user,trxRef,time,service,service.amount,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -1891,8 +1891,6 @@ const mAirtimeWaecPurchase = async (req,res)=>{
     }
     let beneficiary = {
       amount:amount,
-      meterNo:data.meterNo,
-      type:data.type,
       gateway:"mobile airtime",
       service:serviceId,
       phoneNumber:data.phoneNumber
@@ -1904,7 +1902,7 @@ const mAirtimeWaecPurchase = async (req,res)=>{
       authorizationCode:creditCard.authCode,
       userId:user.id,
       firstName:user.firstName,
-      message:"electricity purchase",
+      message:"waec pin purchase",
       beneficiary:beneficiary
     }
     await paystackApi.chargeAuthorization(payload,payment)
@@ -1914,10 +1912,10 @@ const mAirtimeWaecPurchase = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-      return await mAirtimeHelpers.purchaseElectricity(user,trxRef,time,service,data.amount,serviceId,data.meterNo,data.type,res);
+      return await mAirtimeHelpers.waecPinPurchase(user,trxRef,time,service,service.amount,res);
   }
   if(payment.siteName =='monnify'){
-      return await mAirtimeHelpers.purchaseElectricity(user,trxRef,time,service,data.amount,serviceId,data.meterNo,data.type,res);
+      return await mAirtimeHelpers.waecPinPurchase(user,trxRef,time,service,service.amount,res);
   }
 }
 const mAirtimeNecoPurchase = async (req,res)=>{
