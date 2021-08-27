@@ -1464,7 +1464,7 @@ const mAirtimeMtnDataGifting = async (req,res)=>{
     }
     let beneficiary = {
       amount:amount,
-      dataSize:data.size
+      dataSize:data.size,
       gateway:"mobile airtime",
       service:serviceId,
       phoneNumber:data.phoneNumber
@@ -1564,7 +1564,7 @@ const mAirtimeMtnDataShare = async (req,res)=>{
     }
     let beneficiary = {
       amount:amount,
-      dataSize:data.size
+      dataSize:data.size,
       gateway:"mobile airtime",
       service:serviceId,
       phoneNumber:data.phoneNumber
@@ -2355,8 +2355,7 @@ const mAirtimeVerifyTransaction = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData);
   }
-  l
-  return await mAirtimeApi.(reference,res);
+  return await mAirtimeApi.checkTransactionStatus(reference,res);
 }
 
 module.exports = {

@@ -171,6 +171,7 @@ const webhook =async (req,res)=>{
         }
         if(transaction.message =="data purchase" || transaction.message =="mtn data gifting" || transaction.message =="mtn data share"){
           res.statusCode = 200;
+          console.log(transaction)
           return await walletHelpers.dataPurchase(transaction,res);
         }
         if(transaction.message =="electricity purchase"){

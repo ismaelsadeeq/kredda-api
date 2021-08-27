@@ -135,7 +135,8 @@ const dataPurchase = async (transaction,res)=>{
         }
       }
     );
-    if(beneficiary.message=="mtn data gifting"){
+    console.log(transaction.message);
+    if(transaction.message=="mtn data gifting"){
       let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
       let payload = {
         userId:transaction.userId,
@@ -149,7 +150,7 @@ const dataPurchase = async (transaction,res)=>{
       }
       return await mobileAirtime.mtnDataGifting(payload,res) 
     }
-    if(beneficiary.message=="mtn data share"){
+    if(transaction.message=="mtn data share"){
       let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
       let payload = {
         userId:transaction.userId,
@@ -163,7 +164,7 @@ const dataPurchase = async (transaction,res)=>{
       }
       return await mobileAirtime.mtnDataShare(payload,res) 
     }
-    if(beneficiary.message=="data purchase"){
+    if(transaction.message=="data purchase"){
       let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
       let payload = {
         userId:transaction.userId,
@@ -598,5 +599,6 @@ module.exports = {
   dstvPurchaseWithAddOn,
   jambPurchase,
   waecPurchase,
-  electricityPurchase
+  electricityPurchase,
+  necoPurchase
 }
