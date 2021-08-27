@@ -1303,7 +1303,7 @@ const mAirtimeRechargeInternational = async (req,res)=>{
 
   let time = new Date();
   time = time.toLocaleString();
-  if(!data.phoneNumber || !data.amount){
+  if(!data.phoneNumber || !data.amount || !data.product || !data.country){
     responseData.status = false;
     responseData.message = "data is incomplete";
     responseData.data = undefined;
@@ -1323,7 +1323,7 @@ const mAirtimeRechargeInternational = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await mAirtimeHelpers.airtimePurchase(user,trxRef,time,service,data.phoneNumber,data.amount,res);
+    return await mAirtimeHelpers.foreignAirtimePurchase(user,trxRef,time,service,data.phoneNumber,data.amount,data.amountInNaira,data.product,data.country,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -1357,12 +1357,14 @@ const mAirtimeRechargeInternational = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let discount = service.discount;
     let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let totalAmount = parseFloat(data.amountInNaira) + parseFloat(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
     let beneficiary = {
+      product:data.product,
       amount:amount,
+      country:data.country,
       gateway:"mobile airtime",
       service:serviceId,
       phoneNumber:data.phoneNumber
@@ -1374,7 +1376,7 @@ const mAirtimeRechargeInternational = async (req,res)=>{
       authorizationCode:creditCard.authCode,
       userId:user.id,
       firstName:user.firstName,
-      message:"airtime purchase",
+      message:"foreign airtime purchase",
       beneficiary:beneficiary
     }
     await paystackApi.chargeAuthorization(payload,payment)
@@ -1384,10 +1386,10 @@ const mAirtimeRechargeInternational = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await mAirtimeHelpers.mtnVTUTopUp(user,trxRef,time,service,data.phoneNumber,data.amount,res)
+    return await mAirtimeHelpers.foreignAirtimePurchase(user,trxRef,time,service,data.phoneNumber,data.amount,data.amountInNaira,data.product,data.country,res)
   }
   if(payment.siteName =='monnify'){
-    return await mAirtimeHelpers.mtnVTUTopUp(user,trxRef,time,service,data.phoneNumber,data.amount,res)
+    return await mAirtimeHelpers.foreignAirtimePurchase(user,trxRef,time,service,data.phoneNumber,data.amount,data.amountInNaira,data.product,data.country,res)
   }
 }
 const mAirtimeMtnDataGifting = async (req,res)=>{

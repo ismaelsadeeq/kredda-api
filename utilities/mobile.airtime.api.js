@@ -58,10 +58,8 @@ const checkTransactionStatus = (payload,res)=>{
 }
 
 const airtimeTopUp = async (payload,res)=>{
-  console.log(payload.phoneNumber);
   var request = require('request');
   let url =`https://mobileairtimeng.com/httpapi/?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumber}&amt=${payload.amount}&user_ref=${payload.reference}&jsn=json`
-  console.log(url);
   var options = {
     'method': 'POST',
     'url': url,
@@ -107,6 +105,7 @@ const airtimeTopUp = async (payload,res)=>{
         profit:payload.profit
       }
     );
+    console.log(res);
     res.statusCode = 200;
     responseData.message = "completed";
     responseData.status = false;
@@ -116,7 +115,6 @@ const airtimeTopUp = async (payload,res)=>{
 }
 const mtnVTUTopUp =async (payload,res)=>{
   var request = require('request');
-  console.log(process.env.MOBILE_AIRTIME_PHONENUMBER,"hgjkl;")
   var options = {
     'method': 'POST',
     'url': `https://mobileairtimeng.com/httpapi/mtnevd?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumber}&amt=${payload.amount}&user_ref=${payload.reference}&jsn=json`,
@@ -203,7 +201,7 @@ const rechargeInternationalNumber = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://mobileairtimeng.com/httpapi/globalvtu?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&phone=${payload.phoneNumber}&amt=${payload.amount}&product=${payload.productId}&user_ref=${payload.reference}&jsn=json`,
+    'url': `https://mobileairtimeng.com/httpapi/globalvtu?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&phone=${payload.phoneNumber}&country=${payload.country}&amt=${payload.amount}&product=${payload.productId}&user_ref=${payload.reference}&jsn=json`,
     'headers': {
       'Content-Type': 'application/json',
     }

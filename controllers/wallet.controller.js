@@ -201,7 +201,7 @@ const webhook =async (req,res)=>{
           res.statusCode = 200;
           return await walletHelpers.goTvPurchase(transaction,res);
         }
-        if(transaction.message =="mtn vtu airtime purchase" || transaction.message =="airtime purchase"){
+        if(transaction.message =="mtn vtu airtime purchase" || transaction.message =="airtime purchase" || transaction.message =="foreign airtime purchase"){
           res.statusCode = 200;
           return await walletHelpers.airtimePurchase(transaction,res);
         }
