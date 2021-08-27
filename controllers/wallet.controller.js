@@ -185,10 +185,6 @@ const webhook =async (req,res)=>{
           res.statusCode = 200;
           return await walletHelpers.jambPurchase(transaction,res);
         }
-        if(transaction.message =="jamb pin purchase"){
-          res.statusCode = 200;
-          return await walletHelpers.jambPurchase(transaction,res);
-        }
         if(transaction.message =="dstv subscription"){
           res.statusCode = 200;
           return await walletHelpers.dstvPurchase(transaction,res);
