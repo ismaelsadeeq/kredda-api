@@ -2066,8 +2066,9 @@ const mAirtimeRechargeGoTv = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData);
   }
+  let type ="gotv";
   if(data.useWallet){
-    return await mAirtimeHelpers.goTvRecharge(user,trxRef,time,service,service.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,type,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -2100,7 +2101,7 @@ const mAirtimeRechargeGoTv = async (req,res)=>{
     );
     let serviceCharge = serviceCategory.serviceCharge;
     let discount = service.discount;
-    let amount = service.amount;
+    let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
@@ -2110,6 +2111,7 @@ const mAirtimeRechargeGoTv = async (req,res)=>{
       cardNo:data.cardNo,
       customerName:data.customerName,
       invoiceNo:data.invoiceNo,
+      type:type,
       customerNumber:data.customerNumber,
       gateway:"mobile airtime",
       service:serviceId,
@@ -2132,17 +2134,218 @@ const mAirtimeRechargeGoTv = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await mAirtimeHelpers.goTvRecharge(user,trxRef,time,service,service.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,type,res);
   }
   if(payment.siteName =='monnify'){
-    return await mAirtimeHelpers.goTvRecharge(user,trxRef,time,service,service.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,type,res);
   }
 }
 const mAirtimeRechargeDstv = async (req,res)=>{
-  
+  const data = req.body;
+  const user = req.user;
+  const serviceId = req.params.serviceId
+
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `mAIRTIME-${digits}${firstDigit}`
+  if(!data.phoneNumber || !data.amount || !data.cardNo || !data.customerName || !data.invoiceNo || !data.customerNumber){
+    responseData.status = false;
+    responseData.message = "data is incomplete";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  let time = new Date();
+  time = time.toLocaleString();
+  const service = await models.service.findOne(
+    {
+      where:{
+        id:serviceId
+      }
+    }
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  let type = "dstv";
+  if(data.useWallet){
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,type,res);
+  }
+  let creditCard;
+  let useDefault = data.useDefault;
+  let creditCardId = data.creditCardId;
+  const payment = await options.getPayment();
+  if(useDefault){
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          isDefault:true
+        }
+      }
+    );
+  } else {
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          id:creditCardId
+        }
+      }
+    )
+  }
+  if(payment.siteName =='paystack'){
+    const serviceCategory = await models.serviceCategory.findOne(
+      {
+        where:{
+          id:service.serviceCategoryId
+        }
+      }
+    );
+    let serviceCharge = serviceCategory.serviceCharge;
+    let discount = service.discount;
+    let amount = data.amount;
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    if(discount){
+      totalAmount = totalAmount  - discount;
+    }
+    let beneficiary = {
+      amount:amount,
+      cardNo:data.cardNo,
+      customerName:data.customerName,
+      invoiceNo:data.invoiceNo,
+      type:type,
+      customerNumber:data.customerNumber,
+      gateway:"mobile airtime",
+      service:serviceId,
+      phoneNumber:data.phoneNumber
+    }
+    beneficiary = JSON.stringify(beneficiary);
+    const payload = {
+      amount:totalAmount,
+      email:user.email,
+      authorizationCode:creditCard.authCode,
+      userId:user.id,
+      firstName:user.firstName,
+      message:"dstv subscription",
+      beneficiary:beneficiary
+    }
+    await paystackApi.chargeAuthorization(payload,payment)
+    responseData.status = 200;
+    responseData.message = "payment initiated";
+    responseData.data = undefined
+    return res.json(responseData);
+  }
+  if(payment.siteName =='flutterwave'){
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,type,res);
+  }
+  if(payment.siteName =='monnify'){
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,type,res);
+  }
 }
 const mAirtimeRechargeStartimes = async (req,res)=>{
-  
+  const data = req.body;
+  const user = req.user;
+  const serviceId = req.params.serviceId
+
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `mAIRTIME-${digits}${firstDigit}`
+  if(!data.phoneNumber || !data.amount || !data.cardNo){
+    responseData.status = false;
+    responseData.message = "data is incomplete";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  let time = new Date();
+  time = time.toLocaleString();
+  const service = await models.service.findOne(
+    {
+      where:{
+        id:serviceId
+      }
+    }
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(data.useWallet){
+    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,data.amount,data.cardNo,res);
+  }
+  let creditCard;
+  let useDefault = data.useDefault;
+  let creditCardId = data.creditCardId;
+  const payment = await options.getPayment();
+  if(useDefault){
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          isDefault:true
+        }
+      }
+    );
+  } else {
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          id:creditCardId
+        }
+      }
+    )
+  }
+  if(payment.siteName =='paystack'){
+    const serviceCategory = await models.serviceCategory.findOne(
+      {
+        where:{
+          id:service.serviceCategoryId
+        }
+      }
+    );
+    let serviceCharge = serviceCategory.serviceCharge;
+    let discount = service.discount;
+    let amount = data.amount;
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    if(discount){
+      totalAmount = totalAmount  - discount;
+    }
+    let beneficiary = {
+      amount:amount,
+      cardNo:data.cardNo,
+      customerName:data.customerName,
+      invoiceNo:data.invoiceNo,
+      type:type,
+      customerNumber:data.customerNumber,
+      gateway:"mobile airtime",
+      service:serviceId,
+      phoneNumber:data.phoneNumber
+    }
+    beneficiary = JSON.stringify(beneficiary);
+    const payload = {
+      amount:totalAmount,
+      email:user.email,
+      authorizationCode:creditCard.authCode,
+      userId:user.id,
+      firstName:user.firstName,
+      message:"dstv subscription",
+      beneficiary:beneficiary
+    }
+    await paystackApi.chargeAuthorization(payload,payment)
+    responseData.status = 200;
+    responseData.message = "payment initiated";
+    responseData.data = undefined
+    return res.json(responseData);
+  }
+  if(payment.siteName =='flutterwave'){
+    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,data.amount,data.cardNo,res);
+  }
+  if(payment.siteName =='monnify'){
+    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,data.amount,data.cardNo,res);
+  }
 }
 const mAirtimeVerifyTransaction = async (req,res)=>{
   

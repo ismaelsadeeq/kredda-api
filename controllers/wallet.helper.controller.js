@@ -516,7 +516,7 @@ const goTvPurchase = async (transaction,res)=>{
       amount:beneficiary.amount,
       reference:trxRef,
       cardNo:beneficiary.cardNo,
-      type:"gotv"
+      type:beneficiary.type,
       customerName:beneficiary.customerName,
       invoiceNo:beneficiary.invoiceNo,
       customerNumber:beneficiary.customerNumber,
