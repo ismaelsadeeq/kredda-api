@@ -11,7 +11,7 @@ const checkTransactionStatus = (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'GET',
-    'url': `https://mobileairtimeng.com/httpapi/status?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.process.env.MOBILE_AIRTIME_KEY}&transid=${payload.reference}&jsn=json`,
+    'url': `https://mobileairtimeng.com/httpapi/status?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.process.env.MOBILE_AIRTIME_KEY}&transid=${payload}&jsn=json`,
     'headers': {
       'Content-Type': 'application/json',
     }

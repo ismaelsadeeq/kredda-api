@@ -2348,7 +2348,15 @@ const mAirtimeRechargeStartimes = async (req,res)=>{
   }
 }
 const mAirtimeVerifyTransaction = async (req,res)=>{
-  
+  const reference = req.params.reference;
+  if(!reference){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  l
+  return await mAirtimeApi.(reference,res);
 }
 
 module.exports = {
