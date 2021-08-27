@@ -638,6 +638,7 @@ const waecPinPurchase = async (user,trxRef,time,service,amount,res)=>{
     }
   );;
   let payload = {
+    amount:amount,
     reference:trxRef,
     serviceId:service.id,
     totalServiceFee:totalAmount,
