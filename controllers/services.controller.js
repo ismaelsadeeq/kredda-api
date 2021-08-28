@@ -2015,7 +2015,7 @@ const mAirtimeNecoPurchase = async (req,res)=>{
 }
 const mAirtimeGetCableInfo = async (req,res)=>{
   const data = req.body;
-  const serviceId = req.params.id;
+  const serviceId = req.params.serviceId;
   const service = await models.service.findOne(
     {
       where:{
@@ -2070,7 +2070,7 @@ const mAirtimeRechargeGoTv = async (req,res)=>{
   }
   let type ="gotv";
   if(data.useWallet){
-    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,type,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -2136,10 +2136,10 @@ const mAirtimeRechargeGoTv = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,type,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
   }
   if(payment.siteName =='monnify'){
-    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,type,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
   }
 }
 const mAirtimeRechargeDstv = async (req,res)=>{
@@ -2174,7 +2174,7 @@ const mAirtimeRechargeDstv = async (req,res)=>{
   }
   let type = "dstv";
   if(data.useWallet){
-    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,type,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -2240,10 +2240,10 @@ const mAirtimeRechargeDstv = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,type,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
   }
   if(payment.siteName =='monnify'){
-    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,type,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
   }
 }
 const mAirtimeRechargeStartimes = async (req,res)=>{

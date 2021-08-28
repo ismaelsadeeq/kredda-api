@@ -628,7 +628,7 @@ const waecPinPurchase = async (user,trxRef,time,service,amount,res)=>{
       id:uuid.v4(),
       transactionType:"debit",
       message:"waec pin purchase",
-      beneficiary:phoneNumber,
+      beneficiary:"self",
       description:user.firstName + "purchasing waec pin for a beneficiary",
       userId:user.id,
       reference:trxRef,
@@ -705,7 +705,7 @@ const necoPinPurchase = async (user,trxRef,time,service,amount,res)=>{
       id:uuid.v4(),
       transactionType:"debit",
       message:"neco pin purchase",
-      beneficiary:phoneNumber,
+      beneficiary:"self",
       description:user.firstName + "purchasing neco pin for a beneficiary",
       userId:user.id,
       reference:trxRef,
@@ -724,7 +724,7 @@ const necoPinPurchase = async (user,trxRef,time,service,amount,res)=>{
   }
   await mobileAirtime.purchaseNecoDirect(payload,res);
 }
-const tvRecharge = async (user,trxRef,time,service,amount,cardNo,customerName,invoiceNo,customerNumber,type,res)=>{
+const tvRecharge = async (user,trxRef,time,service,amount,cardNo,customerName,invoiceNo,customerNumber,phoneNumber,type,res)=>{
   const wallet = await models.wallet.findOne(
     {
       where:{
@@ -794,10 +794,11 @@ const tvRecharge = async (user,trxRef,time,service,amount,cardNo,customerName,in
   );;
   let payload = {
     amount:amount,
-    cardNo:data.cardNo,
-    customerName:data.customerName,
-    invoiceNo:data.invoiceNo,
-    customerNumber:data.customerNumber,
+    cardNo:cardNo,
+    customerName:customerName,
+    invoiceNo:invoiceNo,
+    phoneNumber:phoneNumber,
+    customerNumber:customerNumber,
     type:type,
     reference:trxRef,
     serviceId:service.id,

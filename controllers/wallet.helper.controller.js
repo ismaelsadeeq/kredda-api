@@ -223,7 +223,6 @@ const electricityPurchase = async (transaction,res)=>{
   }
   if(beneficiary.gateway=="mobile airtime"){
     let trxRef = `mAIRTIME-CREDIT-CARD${digits}`
-    let phoneNumber = beneficiary.phoneNumber;
     let service = await models.service.findOne(
       {
         where:{
@@ -539,6 +538,7 @@ const goTvPurchase = async (transaction,res)=>{
       userId:transaction.userId,
       amount:beneficiary.amount,
       reference:trxRef,
+      phoneNumber:beneficiary.phoneNumber,
       cardNo:beneficiary.cardNo,
       type:beneficiary.type,
       customerName:beneficiary.customerName,

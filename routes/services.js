@@ -133,7 +133,7 @@ router.post('/:serviceId/mobile-airtime/electricity-purchase',
   controller.mAirtimeElectricityPurchase
 );
 // pin
-router.get('/mobile-airtime/waec-purchase',
+router.post('/:serviceId/mobile-airtime/waec-purchase',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeWaecPurchase
 );
@@ -142,7 +142,7 @@ router.post('/:serviceId/mobile-airtime/neco-purchase',
   controller.mAirtimeNecoPurchase
 );
 // cable
-router.get('/mobile-airtime/cable/info',
+router.get('/:serviceId/mobile-airtime/cable/info',
   passport.authenticate('jwt',{session:false}),
   controller.mAirtimeGetCableInfo
 );
