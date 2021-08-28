@@ -1602,13 +1602,14 @@ const mAirtimeGetDataPricing = async (req,res)=>{
     }
   );
   if(!service){
-    esponseData.status = false;
+    responseData.status = false;
     responseData.message = "something went wrong";
     responseData.data = undefined;
     return res.json(responseData);
   }
+  let network = service.name.toLowerCase();
   const payload = {
-    network:service.code
+    network:network
   }
   return await mAirtimeApi.getDataPricing(payload,res);
 }

@@ -313,13 +313,14 @@ const mtnDataGifting = async (payload,res)=>{
 }
 const getDataPricing = async (payload,res)=>{
   var request = require('request');
+  let url =`https://mobileairtimeng.com/httpapi/get-items?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&service=${payload.network}&jsn=json`
+  console.log(url);
   var options = {
     'method': 'GET',
-    'url': `https://mobileairtimeng.com/httpapi/get-items?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&service=${payload.network}&jsn=json`,
+    'url': url,
     'headers': {
       'Content-Type': 'application/json',
     }
-
   };
   request(options,async function (error, response) {
     if (error) throw new Error(error);

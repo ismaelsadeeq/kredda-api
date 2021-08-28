@@ -480,6 +480,7 @@ const dataTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
   );;
   let payload = {
     userId:user.id,
+    amount:amount,
     phoneNumber:phoneNumber,
     network:service.code,
     reference:trxRef,

@@ -171,6 +171,7 @@ const dataPurchase = async (transaction,res)=>{
         phoneNumber:phoneNumber,
         network:service.code,
         reference:trxRef,
+        amount:beneficiary.amount,
         serviceId:service.id,
         totalServiceFee:transaction.amount,
         profit:profit
