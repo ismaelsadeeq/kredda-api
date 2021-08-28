@@ -475,6 +475,7 @@ const startimesPurchase = async (transaction,res)=>{
       userId:transaction.userId,
       amount:beneficiary.amount,
       reference:trxRef,
+      phoneNumber:beneficiary.phoneNumber,
       cardNo:beneficiary.cardNo,
       serviceId:service.id,
       totalServiceFee:transaction.amount,

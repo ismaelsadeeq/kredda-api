@@ -807,7 +807,7 @@ const tvRecharge = async (user,trxRef,time,service,amount,cardNo,customerName,in
   }
   await mobileAirtime.rechargeGoOrDstv(payload,res);
 }
-const startimesRecharge = async (user,trxRef,time,service,amount,cardNo,res)=>{
+const startimesRecharge = async (user,trxRef,time,service,amount,cardNo,phoneNumber,res)=>{
   const wallet = await models.wallet.findOne(
     {
       where:{
@@ -877,7 +877,8 @@ const startimesRecharge = async (user,trxRef,time,service,amount,cardNo,res)=>{
   );
   let payload = {
     amount:amount,
-    cardNo:data.cardNo,
+    cardNo:cardNo,
+    phoneNumber:phoneNumber,
     reference:trxRef,
     serviceId:service.id,
     totalServiceFee:totalAmount,

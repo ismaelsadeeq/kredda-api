@@ -2277,7 +2277,7 @@ const mAirtimeRechargeStartimes = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,data.amount,data.cardNo,res);
+    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.phoneNumber,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -2343,10 +2343,10 @@ const mAirtimeRechargeStartimes = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,data.amount,data.cardNo,res);
+    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.phoneNumber,res);
   }
   if(payment.siteName =='monnify'){
-    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,data.amount,data.cardNo,res);
+    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.phoneNumber,res);
   }
 }
 const mAirtimeVerifyTransaction = async (req,res)=>{
