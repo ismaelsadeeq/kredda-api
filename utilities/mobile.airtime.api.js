@@ -7,11 +7,12 @@ const responseData = {
 	message: "Completed",
 	data: null
 }
-const checkTransactionStatus = (payload,res)=>{
+const checkTransactionStatus = async (payload,res)=>{
   var request = require('request');
+  console.log(payload);
   var options = {
     'method': 'GET',
-    'url': `https://mobileairtimeng.com/httpapi/status?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.process.env.MOBILE_AIRTIME_KEY}&transid=${payload}&jsn=json`,
+    'url': `https://mobileairtimeng.com/httpapi/status?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&transid=${payload}&jsn=json`,
     'headers': {
       'Content-Type': 'application/json',
     }
@@ -29,7 +30,7 @@ const checkTransactionStatus = (payload,res)=>{
         },
         {
           where:{
-            reference:payload.reference
+            reference:payload
           }
         }
       );
@@ -45,7 +46,7 @@ const checkTransactionStatus = (payload,res)=>{
       },
       {
         where:{
-          reference:payload.reference
+          reference:payload
         }
       }
     );

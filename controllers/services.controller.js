@@ -2318,10 +2318,6 @@ const mAirtimeRechargeStartimes = async (req,res)=>{
     let beneficiary = {
       amount:amount,
       cardNo:data.cardNo,
-      customerName:data.customerName,
-      invoiceNo:data.invoiceNo,
-      type:type,
-      customerNumber:data.customerNumber,
       gateway:"mobile airtime",
       service:serviceId,
       phoneNumber:data.phoneNumber
@@ -2333,7 +2329,7 @@ const mAirtimeRechargeStartimes = async (req,res)=>{
       authorizationCode:creditCard.authCode,
       userId:user.id,
       firstName:user.firstName,
-      message:"dstv subscription",
+      message:"startimes subscription",
       beneficiary:beneficiary
     }
     await paystackApi.chargeAuthorization(payload,payment)
@@ -2353,7 +2349,7 @@ const mAirtimeVerifyTransaction = async (req,res)=>{
   const reference = req.params.reference;
   if(!reference){
     responseData.status = false;
-    responseData.message = "something went wrong";
+    responseData.message = "transaction reference is required";
     responseData.data = undefined;
     return res.json(responseData);
   }
