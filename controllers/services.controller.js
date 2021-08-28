@@ -1737,12 +1737,13 @@ const mAirtimeElectricityPurchase = async (req,res)=>{
 
   let time = new Date();
   time = time.toLocaleString();
-  if(!data.serviceId || !data.amount || data.type){
+  if(!data.serviceId || !data.amount || !data.type){
     responseData.status = false;
     responseData.message = "data is incomplete";
     responseData.data = undefined;
     return res.json(responseData);
   }
+  console.log(serviceId);
   const service = await models.service.findOne(
     {
       where:{

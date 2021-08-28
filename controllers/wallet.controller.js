@@ -125,7 +125,6 @@ const webhook =async (req,res)=>{
           }
         }
       );
-      console.log(transaction);
       if(transaction.isRedemmed == false){
         console.log(transaction.message);
         if(transaction.message == "payment of loan"){

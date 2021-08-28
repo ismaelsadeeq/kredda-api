@@ -314,7 +314,6 @@ const mtnDataGifting = async (payload,res)=>{
 const getDataPricing = async (payload,res)=>{
   var request = require('request');
   let url =`https://mobileairtimeng.com/httpapi/get-items?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&service=${payload.network}&jsn=json`
-  console.log(url);
   var options = {
     'method': 'GET',
     'url': url,
@@ -764,9 +763,10 @@ const electricityMeterVerication = async (payload,res)=>{
 }
 const purchaseElectricity = async (payload,res)=>{
   var request = require('request');
+  let url = `http://mobileairtimeng.com/httpapi/power-pay?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&user_ref=${payload.reference}&service=${payload.serviceId}&meterno=${payload.meterNo}&mtype=${payload.type}&amt=${payload.amount}&jsn=json`
   var options = {
     'method': 'POST',
-    'url': `http://mobileairtimeng.com/httpapi/power-pay?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}user_ref=${payload.reference}&service=${payload.serviceId}&meterno=${payload.meterNo}&mtype=${payload.type}&amt=${payload.amount}&jsn=json`,
+    'url': url,
     'headers': {
       'Content-Type': 'application/json',
     }
