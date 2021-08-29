@@ -406,6 +406,7 @@ const buyCable = async (user,trxRef,time,service,amount,cardNo,productMonthsPaid
     productMonthsPaidFor:productMonthsPaidFor,
     addonMonthsPaidFor:addonMonthsPaidFor,
     productCode:productCode,
+    addonCode:addonCode,
     type:serviceType,
     reference:trxRef,
     serviceId:service.id,
