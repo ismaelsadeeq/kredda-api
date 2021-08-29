@@ -1528,16 +1528,6 @@ const baxiCableAddOnLookUp = async (req,res)=>{
 }
 const baxiPurchaseCable = async (req,res)=>{
   const data = req.body;
-  if(!data.type){
-    responseData.status = false;
-    responseData.message = "service type is required";
-    responseData.data = undefined;
-    return res.json(responseData);
-  }
-  return await baxiApi.getEpinBundles(data,res);
-}
-const baxiPurchasePin = async (req,res)=>{
-  const data = req.body;
   const user = req.user;
   const serviceId = req.params.serviceId
 
