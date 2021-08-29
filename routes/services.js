@@ -172,11 +172,11 @@ router.post('/:serviceId/baxi/airtime',
   controller.baxiPurchaseAirtime
 );
 // data
-router.get('/baxi/get/data-bundle',
+router.get('/:serviceId/baxi/data-bundle',
   passport.authenticate('jwt',{session:false}),
   controller.baxiGetDataBundle
 );
-router.post('/baxi/purchase/data',
+router.post('/:serviceId/baxi/purchase/data',
   passport.authenticate('jwt',{session:false}),
   controller.baxiPurchaseData
 );

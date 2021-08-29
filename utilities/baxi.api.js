@@ -58,26 +58,21 @@ const queryTransaction = async (payload,res)=>{
 }
 const purchaseAirtime = async (payload,res)=>{
   var request = require('request');
+  let url = `https://payments.baxipay.com.ng/api/baxipay/services/airtime/request?phone=${payload.phoneNumber}&amount=${payload.amount}&service_type=${payload.type}&plan=${payload.plan}&agentId=${process.env.AGENT_ID}&agentReference=${payload.reference}`;
+  console.log(url);
   var options = {
     'method': 'POST',
-    'url': `https://payments.baxipay.com.ng/api/baxipay ​/services​/airtime​/request`,
+    'url': url,
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`
-    },
-    body:{
-      agentReference:payload.reference,
-      agentId:process.env.AGENT_ID,
-      plan:payload.plan,
-      service_type:payload.type,
-      amount:payload.amount,
-      phone:payload.phoneNumber
     }
   };
   request(options,async function (error, response) {
     if (error) throw new Error(error);
     let data = JSON.parse(response.body);
-    console.log(data)
+    let time = new Date();
+    time = time.toLocaleString()
     if(data.code ==200 && data.data.transactionStatus=="success"){
       const  createTransaction = await models.serviceTransaction.create(
         {
@@ -124,14 +119,11 @@ const getDataBundles = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://payments.baxipay.com.ng/api/baxipay/services​/databundle​/bundles`,
+    'url': `https://payments.baxipay.com.ng/api/baxipay/services​/databundle​/bundles?service_type=${payload.type}`,
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`,
       'Baxi-date': new Date()
-    },
-    body:{
-      service_type:payload.type
     }
   };
   request(options,async function (error, response) {
@@ -154,27 +146,23 @@ const getDataBundles = async (payload,res)=>{
 }
 const purchaseData = async (payload,res)=>{
   var request = require('request');
+  let url = `https://payments.baxipay.com.ng/api/baxipay/services/databundle/request?agentReference=${payload.reference}&agentId=${process.env.AGENT_ID}&datacode=${payload.code}&service_type=${payload.type}&amount=${payload.amount}&phone=${payload.phoneNumber}`;
+  console.log(url);
   var options = {
     'method': 'POST',
-    'url': `https://payments.baxipay.com.ng/api/baxipay​/services​/databundle​/request`,
+    'url': url,
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`,
       'Baxi-date':new Date()
-    },
-    body:{
-      agentReference:payload.reference,
-      agentId:process.env.AGENT_ID,
-      datacode:payload.cCode,
-      service_type:payload.type,
-      amount:payload.amount,
-      phone:payload.phoneNumber
     }
   };
   request(options,async function (error, response) {
     if (error) throw new Error(error);
     let data = JSON.parse(response.body);
     console.log(data)
+    let time = new Date();
+    time = time.toLocaleString()
     if(data.code ==200 && data.status=="success"){
       const  createTransaction = await models.serviceTransaction.create(
         {
@@ -221,14 +209,11 @@ const getCableBouquets = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://payments.baxipay.com.ng/api/baxipay/services/multichoice/list`,
+    'url': `https://payments.baxipay.com.ng/api/baxipay/services/multichoice/list?service_type=${payload.type}`,
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`,
       'Baxi-date': new Date()
-    },
-    body:{
-      service_type:payload.type
     }
   };
   request(options,async function (error, response) {
@@ -253,15 +238,11 @@ const getCableBouquetsAddOn = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://payments.baxipay.com.ng/api/baxipay/services/multichoice/addons`,
+    'url': `https://payments.baxipay.com.ng/api/baxipay/services/multichoice/addons?product_code=${payload.productCode}&service_type=${payload.type}`,
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`,
       'Baxi-date': new Date()
-    },
-    body:{
-      product_code:payload.productCode,
-      service_type:payload.type
     }
   };
   request(options,async function (error, response) {
@@ -286,28 +267,19 @@ const purchaseCableTv = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://payments.baxipay.com.ng/api/baxipay/services/multichoice/request`,
+    'url': `https://payments.baxipay.com.ng/api/baxipay/services/multichoice/request?agentReference=${payload.reference}&smartcard_number=${payload.cardNo}&product_monthsPaidFor=${payload.productMonthsPaidFor}&addon_monthsPaidFor=${payload.addonMonthsPaidFor}&addon_code=${payload.addonCode}&agentId=${process.env.AGENT_ID}&product_code=${payload.productCode}&service_type=${payload.type}&total_amount=${payload.amount}`,
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`,
       'Baxi-date':new Date()
-    },
-    body:{
-      agentReference:payload.reference,
-      smartcard_number:payload.cardNo,
-      product_monthsPaidFor:payload.productMonthsPaidFor,
-      addon_monthsPaidFor:payload.addonMonthsPaidFor,
-      addon_code:payload.addonCode,
-      agentId:process.env.AGENT_ID,
-      product_code:payload.productCode,
-      service_type:payload.type,
-      total_amount:payload.amount
     }
   };
   request(options,async function (error, response) {
     if (error) throw new Error(error);
     let data = JSON.parse(response.body);
-    console.log(data)
+    console.log(data);
+    let time = new Date();
+    time = time.toLocaleString()
     if(data.code ==200 && data.status=="success"){
       const  createTransaction = await models.serviceTransaction.create(
         {
@@ -354,14 +326,11 @@ const getEpinBundles = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://payments.baxipay.com.ng/api/baxipay/services/epin/bundles`,
+    'url': `https://payments.baxipay.com.ng/api/baxipay/services/epin/bundles?service_type=${payload.type}`,
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`,
       'Baxi-date': new Date()
-    },
-    body:{
-      service_type:payload.type
     }
   };
   request(options,async function (error, response) {
@@ -386,25 +355,19 @@ const purchaseWaecDirectPin = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://payments.baxipay.com.ng/api/baxipay/services​/epin​/request`,
+    'url': `https://payments.baxipay.com.ng/api/baxipay/services​/epin​/request?agentReference=${payload.reference}&agentId=${process.env.AGENT_ID}&pinValue=${payload.pinValue}&numberOfPins=${payload.numberOfPins}&service_type=${payload.type}`,
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`,
       'Baxi-date':new Date()
-    },
-    body:{
-      agentReference:payload.reference,
-      agentId:process.env.AGENT_ID,
-      pinValue:payload.pinValue,
-      numberOfPins:payload.numberOfPins,
-      service_type:payload.type,
-      amount:payload.amount
     }
   };
   request(options,async function (error, response) {
     if (error) throw new Error(error);
     let data = JSON.parse(response.body);
     console.log(data)
+    let time = new Date();
+    time = time.toLocaleString()
     if(data.code ==200 && data.status=="success"){
       const  createTransaction = await models.serviceTransaction.create(
         {
@@ -479,14 +442,10 @@ const accountVerification = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://payments.baxipay.com.ng/api/baxipay/services/namefinder/query`,
+    'url': `https://payments.baxipay.com.ng/api/baxipay/services/namefinder/query?account_number=${payload.meterNo}&service_type=${payload.type}`,
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`
-    },
-    body:{
-      account_number:payload.meterNo,
-      service_type:payload.type
     }
   };
   request(options,async function (error, response) {
@@ -511,25 +470,19 @@ const purchaseElectricity = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://payments.baxipay.com.ng/api/baxipay/services/electricity/request`,
+    'url': `https://payments.baxipay.com.ng/api/baxipay/services/electricity/request?agentReference=${payload.reference}&agentId=${process.env.AGENT_ID}&account_number=${payload.meterNo}&service_type=${payload.type}&amount=${payload.amount}&phone=${payload.phoneNumber}`,
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`,
       'Baxi-date':new Date()
-    },
-    body:{
-      agentReference:payload.reference,
-      agentId:process.env.AGENT_ID,
-      account_number:payload.meterNo,
-      service_type:payload.type,
-      amount:payload.amount,
-      phone:payload.phoneNumber
     }
   };
   request(options,async function (error, response) {
     if (error) throw new Error(error);
     let data = JSON.parse(response.body);
     console.log(data)
+    let time = new Date();
+    time = time.toLocaleString()
     if(data.code ==200 && data.status=="success"){
       const  createTransaction = await models.serviceTransaction.create(
         {

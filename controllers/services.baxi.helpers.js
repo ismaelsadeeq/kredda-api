@@ -168,7 +168,7 @@ const buyData = async (user,trxRef,time,service,phoneNumber,amount,type,code,res
     totalServiceFee:totalAmount,
     profit:profit
   }
-  await baxiApi.purchaseData(payload,res);
+  return await baxiApi.purchaseData(payload,res);
 }
 const buyElectricity = async (user,trxRef,time,service,phoneNumber,amount,code,meterNo,res)=>{
   const wallet = await models.wallet.findOne(
