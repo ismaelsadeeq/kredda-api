@@ -664,7 +664,7 @@ const cablePurchase = async (transaction,res)=>{
     addonMonthsPaidFor:beneficiary.addonMonthsPaidFor,
     productCode:beneficiary.productCode,
     addOnCode:beneficiary.addOnCode,
-    type:beneficiary.serviceType,
+    type:beneficiary.type,
     serviceId:service.id,
     totalServiceFee:transaction.amount,
     profit:profit

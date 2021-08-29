@@ -1518,7 +1518,7 @@ const baxiCableLookUp = async (req,res)=>{
 }
 const baxiCableAddOnLookUp = async (req,res)=>{
   const data = req.body;
-  if(!data.type || data.productCode){
+  if(!data.type || !data.productCode){
     responseData.status = false;
     responseData.message = "data is incomplete";
     responseData.data = undefined;
