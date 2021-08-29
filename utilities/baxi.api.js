@@ -165,7 +165,7 @@ const purchaseData = async (payload,res)=>{
     body:{
       agentReference:payload.reference,
       agentId:process.env.AGENT_ID,
-      datacode:payload.dataCode,
+      datacode:payload.cCode,
       service_type:payload.type,
       amount:payload.amount,
       phone:payload.phoneNumber
@@ -217,7 +217,7 @@ const purchaseData = async (payload,res)=>{
     return res.json(responseData)
   });
 }
-const getCableBouquets = async (req,res)=>{
+const getCableBouquets = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -249,7 +249,7 @@ const getCableBouquets = async (req,res)=>{
     return res.json(responseData)
   });
 }
-const getCableBouquetsAddOn = async (req,res)=>{
+const getCableBouquetsAddOn = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -350,7 +350,7 @@ const purchaseCableTv = async (payload,res)=>{
     return res.json(responseData)
   });
 }
-const getEpinBundles = async (req,res)=>{
+const getEpinBundles = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -448,7 +448,7 @@ const purchaseWaecDirectPin = async (payload,res)=>{
     return res.json(responseData)
   });
 }
-const getAvailableElectricityBillers = async (req,res)=>{
+const getAvailableElectricityBillers = async (res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
@@ -456,8 +456,37 @@ const getAvailableElectricityBillers = async (req,res)=>{
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`
+    }
+  };
+  request(options,async function (error, response) {
+    if (error) throw new Error(error);
+    let data = JSON.parse(response.body);
+    console.log(data)
+    if(data.code ==200 && data.status=="success"){
+      res.statusCode = 200;
+      responseData.message = "completed";
+      responseData.status = true;
+      responseData.data = data;
+      return res.json(responseData)
+    }
+    res.statusCode = 200;
+    responseData.message = "completed";
+    responseData.status = false;
+    responseData.data = data;
+    return res.json(responseData)
+  });
+}
+const accountVerification = async (payload,res)=>{
+  var request = require('request');
+  var options = {
+    'method': 'POST',
+    'url': `https://payments.baxipay.com.ng/api/baxipay/services/namefinder/query`,
+    'headers': {
+      'Content-Type': 'application/json',
+      'Authorization':`Api-key ${process.env.BAXI_KEY}`
     },
     body:{
+      account_number:payload.meterNo,
       service_type:payload.type
     }
   };
@@ -555,5 +584,6 @@ module.exports = {
   getEpinBundles,
   purchaseWaecDirectPin,
   getAvailableElectricityBillers,
+  accountVerification,
   purchaseElectricity
 }

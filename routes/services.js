@@ -185,7 +185,15 @@ router.get('/baxi/get/discos',
   passport.authenticate('jwt',{session:false}),
   controller.baxiGetDisco
 );
-router.post('/:serviceId/baxi/get/purchase/electricty',
+router.get('/baxi/meter/verification',
+  passport.authenticate('jwt',{session:false}),
+  controller.baxiGetDisco
+);
+router.post('/baxi/meter-verification',
+  passport.authenticate('jwt',{session:false}),
+  controller.baxiPurchaseElectricity
+);
+router.post('/:serviceId/baxi/purchase/electricty',
   passport.authenticate('jwt',{session:false}),
   controller.baxiPurchaseElectricity
 );

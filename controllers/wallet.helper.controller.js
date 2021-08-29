@@ -196,6 +196,30 @@ const dataPurchase = async (transaction,res)=>{
       return await mobileAirtime.dataTopUp(payload,res) 
     }
   }
+  if(beneficiary.gateway=="baxi"){
+    let trxRef = `BAXI-CREDIT-CARD${digits}`
+    let phoneNumber = beneficiary.phoneNumber;
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let payload = {
+      userId:transaction.userId,
+      phoneNumber:phoneNumber,
+      amount:beneficiary.amount,
+      type:beneficiary.type,
+      code:beneficiary.code,
+      reference:trxRef,
+      serviceId:service.id,
+      totalServiceFee:transaction.amount,
+      profit:profit
+    }
+    return await baxiApi.purchaseData(payload,res) 
+  }
 }
 const electricityPurchase = async (transaction,res)=>{
   await transaction.update(
@@ -259,6 +283,29 @@ const electricityPurchase = async (transaction,res)=>{
       profit:profit
     }
     return await mobileAirtime.purchaseElectricity(payload,res) 
+  }
+  if(beneficiary.gateway=="baxi"){
+    let trxRef = `BAXI-CREDIT-CARD${digits}`
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let payload = {
+      userId:transaction.userId,
+      amount:beneficiary.amount,
+      reference:trxRef,
+      meterNo:beneficiary.meterNo,
+      phoneNumber:beneficiary.phoneNumber,
+      type:beneficiary.code,
+      serviceId:service.id,
+      totalServiceFee:transaction.amount,
+      profit:profit
+    }
+    return await baxiApi.purchaseElectricity(payload,res) 
   }
 }
 const waecPurchase = async (transaction,res)=>{

@@ -1179,13 +1179,220 @@ const baxiGetDataBundle = async (req,res)=>{
   return await baxiApi.getDataBundles(payload,res)
 }
 const baxiPurchaseData = async (req,res)=>{
-  
+  const data = req.body;
+  const user = req.user;
+  const serviceId = req.params.serviceId
+
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `SHAGO-${digits}${firstDigit}`
+
+  let time = new Date();
+  time = time.toLocaleString();
+  if(!data.phoneNumber || !data.amount || !data.code){
+    responseData.status = false;
+    responseData.message = "data is incomplete";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const service = await models.service.findOne(
+    {
+      where:{
+        id:serviceId
+      }
+    }
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  let type = service.name.toLowerCase();
+  if(data.useWallet){
+    return await baxiHelpers.buyData(user,trxRef,time,service,data.phoneNumber,data.amount,type,data.code,res);
+  }
+  let creditCard;
+  let useDefault = data.useDefault;
+  let creditCardId = data.creditCardId;
+  const payment = await options.getPayment();
+  if(useDefault){
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          isDefault:true
+        }
+      }
+    );
+  } else {
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          id:creditCardId
+        }
+      }
+    )
+  }
+  if(payment.siteName =='paystack'){
+    const serviceCategory = await models.serviceCategory.findOne(
+      {
+        where:{
+          id:service.serviceCategoryId
+        }
+      }
+    );
+    let serviceCharge = serviceCategory.serviceCharge;
+    let discount = service.discount;
+    let amount = data.amount;
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    if(discount){
+      totalAmount = totalAmount  - discount;
+    }
+    let beneficiary = {
+      amount:amount,
+      gateway:"baxi",
+      service:serviceId,
+      type:type,
+      code:data.code,
+      phoneNumber:data.phoneNumber
+    }
+    beneficiary = JSON.stringify(beneficiary);
+    const payload = {
+      amount:totalAmount,
+      email:user.email,
+      authorizationCode:creditCard.authCode,
+      userId:user.id,
+      firstName:user.firstName,
+      message:"data purchase",
+      beneficiary:beneficiary
+    }
+    await paystackApi.chargeAuthorization(payload,payment)
+    responseData.status = 200;
+    responseData.message = "payment initiated";
+    responseData.data = undefined
+    return res.json(responseData);
+  }
+  if(payment.siteName =='flutterwave'){
+    return await baxiHelpers.buyData(user,trxRef,time,service,data.phoneNumber,data.amount,type,data.code,res)
+  }
+  if(payment.siteName =='monnify'){
+    return await baxiHelpers.buyData(user,trxRef,time,service,data.phoneNumber,data.amount,type,data.code,res)
+  }
 }
 const baxiGetDisco = async (req,res)=>{
-  
+  return await baxiApi.getAvailableElectricityBillers(res);
+}
+const baxiMeterVerification = async (req,res)=>{
+  const data = req.body;
+  if(!data.meterNo || !data.type){
+    responseData.status = false;
+    responseData.message = "data incomple";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  return await baxiApi.accountVerification(data,res);
 }
 const baxiPurchaseElectricity = async (req,res)=>{
-  
+  const data = req.body;
+  const user = req.user;
+  const serviceId = req.params.serviceId
+
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `SHAGO-${digits}${firstDigit}`
+
+  let time = new Date();
+  time = time.toLocaleString();
+  if(!data.phoneNumber || !data.amount || !data.code || !data.meterNo){
+    responseData.status = false;
+    responseData.message = "data is incomplete";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const service = await models.service.findOne(
+    {
+      where:{
+        id:serviceId
+      }
+    }
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(data.useWallet){
+    return await baxiHelpers.buyElectricity(user,trxRef,time,service,data.phoneNumber,data.amount,data.code,data.meterNo,res);
+  }
+  let creditCard;
+  let useDefault = data.useDefault;
+  let creditCardId = data.creditCardId;
+  const payment = await options.getPayment();
+  if(useDefault){
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          isDefault:true
+        }
+      }
+    );
+  } else {
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          id:creditCardId
+        }
+      }
+    )
+  }
+  if(payment.siteName =='paystack'){
+    const serviceCategory = await models.serviceCategory.findOne(
+      {
+        where:{
+          id:service.serviceCategoryId
+        }
+      }
+    );
+    let serviceCharge = serviceCategory.serviceCharge;
+    let discount = service.discount;
+    let amount = data.amount;
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    if(discount){
+      totalAmount = totalAmount  - discount;
+    }
+    let beneficiary = {
+      amount:amount,
+      gateway:"baxi",
+      service:serviceId,
+      meterNo:data.meterNo,
+      code:data.code,
+      phoneNumber:data.phoneNumber
+    }
+    beneficiary = JSON.stringify(beneficiary);
+    const payload = {
+      amount:totalAmount,
+      email:user.email,
+      authorizationCode:creditCard.authCode,
+      userId:user.id,
+      firstName:user.firstName,
+      message:"electricity purchase",
+      beneficiary:beneficiary
+    }
+    await paystackApi.chargeAuthorization(payload,payment)
+    responseData.status = 200;
+    responseData.message = "payment initiated";
+    responseData.data = undefined
+    return res.json(responseData);
+  }
+  if(payment.siteName =='flutterwave'){
+    return await baxiHelpers.buyElectricity(user,trxRef,time,service,data.phoneNumber,data.amount,data.code,data.meterNo,res);
+  }
+  if(payment.siteName =='monnify'){
+    return await baxiHelpers.buyElectricity(user,trxRef,time,service,data.phoneNumber,data.amount,data.code,data.meterNo,res);
+  }
 }
 const baxiGetPinBundle = async (req,res)=>{
   
@@ -2520,6 +2727,7 @@ module.exports = {
   baxiGetDataBundle,
   baxiPurchaseData,
   baxiGetDisco,
+  baxiMeterVerification,
   baxiPurchaseElectricity,
   baxiGetPinBundle,
   baxiPurchasePin,
