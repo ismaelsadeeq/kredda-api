@@ -5,6 +5,7 @@ const helpers = require('../utilities/helpers');
 const multerConfig = require('../config/multer');
 const shagoApi = require('../utilities/shago.api');
 const mAirtimeApi = require('../utilities/mobile.airtime.api');
+const baxiApi = require('../utilities/baxi.api');
 const options = require('../middlewares/appSetting');
 const paystackApi = require('../utilities/paystack.api');
 const shagoHelpers = require('./services.shago.helpers');
@@ -1156,7 +1157,26 @@ const baxiPurchaseAirtime = async (req,res)=>{
   }
 }
 const baxiGetDataBundle = async (req,res)=>{
-  
+  const data = req.body;
+  const serviceId = req.params.serviceId;
+  const service = await models.service.findOne(
+    {
+      where:{
+        id:serviceId
+      }
+    }
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  let type = service.name.toLowerCase()
+  let payload = {
+    type:type
+  }
+  return await baxiApi.getDataBundles(payload,res)
 }
 const baxiPurchaseData = async (req,res)=>{
   
