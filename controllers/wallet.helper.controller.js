@@ -5,15 +5,9 @@ const helpers = require('../utilities/helpers');
 const paystackApi = require('../utilities/paystack.api');
 const shagoApi = require('../utilities/shago.api');
 const mobileAirtime = require('../utilities/mobile.airtime.api');
-let crypto = require('crypto');
-var request = require('request');
+const baxiApi = require('../utilities/baxi.api');
 require('dotenv').config();
 //response
-const responseData = {
-	status: true,
-	message: "Completed",
-	data: null
-}
 const airtimePurchase = async (transaction,res)=>{
   await transaction.update(
     {
@@ -83,7 +77,30 @@ const airtimePurchase = async (transaction,res)=>{
       payload.country = beneficiary.country;
       return await mobileAirtime.rechargeInternationalNumber(payload,res);
     }
-
+  }
+  if(beneficiary.gateway=="baxi"){
+    let trxRef = `BAXI-CREDIT-CARD${digits}`
+    let phoneNumber = beneficiary.phoneNumber;
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let payload = {
+      userId:transaction.userId,
+      phoneNumber:phoneNumber,
+      amount:beneficiary.amount,
+      type:beneficiary.type,
+      plan:beneficiary.plan,
+      reference:trxRef,
+      serviceId:service.id,
+      totalServiceFee:transaction.amount,
+      profit:profit
+    }
+    return await baxiApi.purchaseAirtime(payload,res) 
   }
 }
 const dataPurchase = async (transaction,res)=>{
