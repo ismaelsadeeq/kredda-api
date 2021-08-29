@@ -11,7 +11,7 @@ const queryTransaction = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'GET',
-    'url': `https://payments.baxipay.com.ng/api/baxipay/superagent/transaction/requery?agentReference=${payload.referece}`,
+    'url': `https://payments.baxipay.com.ng/api/baxipay/superagent/transaction/requery?agentReference=${payload}`,
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`

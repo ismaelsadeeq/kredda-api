@@ -1641,7 +1641,14 @@ const baxiPurchasePin = async (req,res)=>{
   }
 }
 const baxiVerifyTransaction = async (req,res)=>{
-  
+  const reference = req.params.reference;
+  if(!reference){
+    responseData.status = false;
+    responseData.message = "transaction reference is required";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  return await baxiApi.queryTransaction(reference,res);
 }
 //mobile Airtime
 const mAirtimeMtnVtuTopUp = async (req,res)=>{
