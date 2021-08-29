@@ -21,7 +21,14 @@ const queryTransaction = async (payload,res)=>{
   request(options,async function (error, response) {
     if (error) throw new Error(error);
     let data = JSON.parse(response.body);
-    console.log(data)
+    console.log(data);
+    if(data.status=="error"){
+      res.statusCode = 200;
+      responseData.message = "completed";
+      responseData.status = true;
+      responseData.data = data;
+      return res.json(responseData)
+    }
     if(data.code ==200 && data.data.transactionStatus=="success"){
       await models.serviceTransaction.update(
         {
@@ -33,6 +40,13 @@ const queryTransaction = async (payload,res)=>{
           }
         }
       );
+      res.statusCode = 200;
+      responseData.message = "completed";
+      responseData.status = true;
+      responseData.data = data;
+      return res.json(responseData)
+    }
+    if(data.status=="error"){
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
