@@ -152,7 +152,6 @@ const dataPurchase = async (transaction,res)=>{
         }
       }
     );
-    console.log(transaction.message);
     if(transaction.message=="mtn data gifting"){
       let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
       let payload = {
@@ -362,7 +361,6 @@ const waecPurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    console.log(payload);
     return await mobileAirtime.purchaseWeacDirect(payload,res) 
   }
   if(beneficiary.gateway=="baxi"){
@@ -386,7 +384,6 @@ const waecPurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    console.log(payload);
     return await mobileAirtime.purchaseWeacDirect(payload,res) 
   }
 }
