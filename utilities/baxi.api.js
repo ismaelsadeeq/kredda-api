@@ -413,8 +413,8 @@ const purchaseWaecDirectPin = async (payload,res)=>{
 const getAvailableElectricityBillers = async (res)=>{
   var request = require('request');
   var options = {
-    'method': 'POST',
-    'url': `https://payments.baxipay.com.ng/api/baxipay/services​/electricity​/billers`,
+    'method': 'GET',
+    'url': `https://payments.baxipay.com.ng/api/baxipay/services/electricity/billers`,
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`
