@@ -340,7 +340,6 @@ const waecPurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    console.log(payload);
     return await shagoApi.waecPinPurchase(payload,res) 
   }
   if(beneficiary.gateway=="mobile airtime"){
@@ -419,7 +418,6 @@ const necoPurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    console.log(payload);
     return await mobileAirtime.purchaseNecoDirect(payload,res) 
   }
 }
@@ -460,7 +458,6 @@ const dstvPurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    console.log(payload);
     return await shagoApi.purchaseDstvNoAddOn(payload,res) 
   }
 }
@@ -504,7 +501,6 @@ const dstvPurchaseWithAddOn = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    console.log(payload);
     return await shagoApi.purchaseDstvWithAddOn(payload,res) 
   }
 }
@@ -543,7 +539,6 @@ const startimesPurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    console.log(payload);
     return await shagoApi.startimesPurchase(payload,res) 
   }
   if(beneficiary.gateway=="mobile airtime"){
@@ -566,7 +561,6 @@ const startimesPurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    console.log(payload);
     return await mobileAirtime.rechargeStartimes(payload,res) 
   }
 }
@@ -607,7 +601,6 @@ const goTvPurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    console.log(payload);
     return await shagoApi.goTvPurchase(payload,res) 
   }
   if(beneficiary.gateway=="mobile airtime"){
@@ -634,7 +627,7 @@ const goTvPurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    console.log(payload);
+
     return await mobileAirtime.rechargeGoOrDstv(payload,res) 
   }
 }
@@ -676,7 +669,6 @@ const cablePurchase = async (transaction,res)=>{
     totalServiceFee:transaction.amount,
     profit:profit
   }
-  console.log(payload);
   return await baxiApi.purchaseCableTv(payload,res) 
 }
 const jambPurchase = async (transaction,res)=>{
@@ -713,7 +705,6 @@ const jambPurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    console.log(payload);
     return await shagoApi.jambPinPurchase(payload,res) 
   }
 }
