@@ -167,7 +167,7 @@ router.post('/mobile-airtime/transaction/verify/:reference',
 // Baxi
 
 // airtime
-router.post('/:serviceId/baxi/purchase/airtime',
+router.post('/:serviceId/baxi/airtime',
   passport.authenticate('jwt',{session:false}),
   controller.baxiPurchaseAirtime
 );
