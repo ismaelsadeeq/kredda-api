@@ -398,8 +398,7 @@ const purchaseWaecDirectPin = async (payload,res)=>{
       pinValue:payload.pinValue,
       numberOfPins:payload.numberOfPins,
       service_type:payload.type,
-      amount:payload.amount,
-      phone:payload.phoneNumber
+      amount:payload.amount
     }
   };
   request(options,async function (error, response) {
