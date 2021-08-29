@@ -641,6 +641,47 @@ const goTvPurchase = async (transaction,res)=>{
     return await mobileAirtime.rechargeGoOrDstv(payload,res) 
   }
 }
+const cablePurchase = async (transaction,res)=>{
+  await transaction.update(
+    {
+      status:"successful",
+      isRedemmed:true,
+    },
+    {
+      where:{
+        reference:transaction.reference
+      }
+    }
+  );
+  let digits = helpers.generateOTP()
+  let beneficiary = JSON.parse(transaction.beneficiary);
+  beneficiary.gateway=="mobile airtime"
+  let trxRef = `BAXI-CREDIT-CARD${digits}`
+  let service = await models.service.findOne(
+    {
+      where:{
+        id:beneficiary.service
+      }
+    }
+  );
+  let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+  let payload = {
+    userId:transaction.userId,
+    amount:beneficiary.amount,
+    reference:trxRef,
+    cardNo:beneficiary.cardNo,
+    productMonthsPaidFor:beneficiary.productMonthsPaidFor,
+    addonMonthsPaidFor:beneficiary.addonMonthsPaidFor,
+    productCode:beneficiary.productCode,
+    addOnCode:beneficiary.addOnCode,
+    type:beneficiary.serviceType,
+    serviceId:service.id,
+    totalServiceFee:transaction.amount,
+    profit:profit
+  }
+  console.log(payload);
+  return await baxiApi.purchaseCableTv(payload,res) 
+}
 const jambPurchase = async (transaction,res)=>{
   await transaction.update(
     {
@@ -686,6 +727,7 @@ module.exports = {
   dstvPurchase,
   startimesPurchase,
   goTvPurchase,
+  cablePurchase,
   dstvPurchaseWithAddOn,
   jambPurchase,
   waecPurchase,

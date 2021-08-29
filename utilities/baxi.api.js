@@ -221,7 +221,7 @@ const getCableBouquets = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://payments.baxipay.com.ng/api/baxipay/services​/databundle​/bundles`,
+    'url': `https://payments.baxipay.com.ng/api/baxipay/services/multichoice/list`,
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`,
@@ -297,7 +297,7 @@ const purchaseCableTv = async (payload,res)=>{
       smartcard_number:payload.cardNo,
       product_monthsPaidFor:payload.productMonthsPaidFor,
       addon_monthsPaidFor:payload.addonMonthsPaidFor,
-      addon_code:addonCode,
+      addon_code:payload.addonCode,
       agentId:process.env.AGENT_ID,
       product_code:payload.productCode,
       service_type:payload.type,

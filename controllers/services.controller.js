@@ -1062,7 +1062,7 @@ const baxiPurchaseAirtime = async (req,res)=>{
   let digits = helpers.generateOTP()
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
-  let trxRef = `SHAGO-${digits}${firstDigit}`
+  let trxRef = `BAXI-${digits}${firstDigit}`
 
   let time = new Date();
   time = time.toLocaleString();
@@ -1186,7 +1186,7 @@ const baxiPurchaseData = async (req,res)=>{
   let digits = helpers.generateOTP()
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
-  let trxRef = `SHAGO-${digits}${firstDigit}`
+  let trxRef = `BAXI-${digits}${firstDigit}`
 
   let time = new Date();
   time = time.toLocaleString();
@@ -1301,7 +1301,7 @@ const baxiPurchaseElectricity = async (req,res)=>{
   let digits = helpers.generateOTP()
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
-  let trxRef = `SHAGO-${digits}${firstDigit}`
+  let trxRef = `BAXI-${digits}${firstDigit}`
 
   let time = new Date();
   time = time.toLocaleString();
@@ -1412,7 +1412,7 @@ const baxiPurchasePin = async (req,res)=>{
   let digits = helpers.generateOTP()
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
-  let trxRef = `SHAGO-${digits}${firstDigit}`
+  let trxRef = `BAXI-${digits}${firstDigit}`
 
   let time = new Date();
   time = time.toLocaleString();
@@ -1507,13 +1507,138 @@ const baxiPurchasePin = async (req,res)=>{
   }
 }
 const baxiCableLookUp = async (req,res)=>{
-  
+  const data = req.body;
+  if(!data.type){
+    responseData.status = false;
+    responseData.message = "service type is required";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  return await baxiApi.getCableBouquets(data,res);
 }
 const baxiCableAddOnLookUp = async (req,res)=>{
-  
+  const data = req.body;
+  if(!data.type || data.productCode){
+    responseData.status = false;
+    responseData.message = "data is incomplete";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  return await baxiApi.getCableBouquetsAddOn(data,res);
 }
 const baxiPurchaseCable = async (req,res)=>{
+  const data = req.body;
+  if(!data.type){
+    responseData.status = false;
+    responseData.message = "service type is required";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  return await baxiApi.getEpinBundles(data,res);
+}
+const baxiPurchasePin = async (req,res)=>{
+  const data = req.body;
+  const user = req.user;
+  const serviceId = req.params.serviceId
 
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `BAXI-${digits}${firstDigit}`
+
+  let time = new Date();
+  time = time.toLocaleString();
+  if(!data.amount || !data.cardNo || !data.productMonthsPaidFor ||!data.productCode || !data.serviceType){
+    responseData.status = false;
+    responseData.message = "data is incomplete";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const service = await models.service.findOne(
+    {
+      where:{
+        id:serviceId
+      }
+    }
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(data.useWallet){
+    return await baxiHelpers.buyCable(user,trxRef,time,service,data.amount,data.cardNo,data.productMonthsPaidFor,data.productCode,data.serviceType,data.addonMonthsPaidFor,data.addonCode,res);
+  }
+  let creditCard;
+  let useDefault = data.useDefault;
+  let creditCardId = data.creditCardId;
+  const payment = await options.getPayment();
+  if(useDefault){
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          isDefault:true
+        }
+      }
+    );
+  } else {
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          id:creditCardId
+        }
+      }
+    )
+  }
+  if(payment.siteName =='paystack'){
+    const serviceCategory = await models.serviceCategory.findOne(
+      {
+        where:{
+          id:service.serviceCategoryId
+        }
+      }
+    );
+    let serviceCharge = serviceCategory.serviceCharge;
+    let discount = service.discount;
+    let amount = data.amount;
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    if(discount){
+      totalAmount = totalAmount  - discount;
+    }
+    let beneficiary = {
+      amount:amount,
+      gateway:"baxi",
+      service:serviceId,
+      cardNo:data.cardNo,
+      productMonthsPaidFor:data.productMonthsPaidFor,
+      addonMonthsPaidFor:data.addonMonthsPaidFor,
+      productCode:data.productCode,
+      addOnCode:data.addOnCode,
+      type:data.serviceType
+    }
+    beneficiary = JSON.stringify(beneficiary);
+    const payload = {
+      amount:totalAmount,
+      email:user.email,
+      authorizationCode:creditCard.authCode,
+      userId:user.id,
+      firstName:user.firstName,
+      message:"cable purchase",
+      beneficiary:beneficiary
+    }
+    await paystackApi.chargeAuthorization(payload,payment)
+    responseData.status = 200;
+    responseData.message = "payment initiated";
+    responseData.data = undefined
+    return res.json(responseData);
+  }
+  if(payment.siteName =='flutterwave'){
+    return await baxiHelpers.buyCable(user,trxRef,time,service,data.amount,data.cardNo,data.productMonthsPaidFor,data.productCode,data.serviceType,data.addonMonthsPaidFor,data.addonCode,res);
+  }
+  if(payment.siteName =='monnify'){
+    return await baxiHelpers.buyCable(user,trxRef,time,service,data.amount,data.cardNo,data.productMonthsPaidFor,data.productCode,data.serviceType,data.addonMonthsPaidFor,data.addonCode,res);
+  }
 }
 const baxiVerifyTransaction = async (req,res)=>{
   
