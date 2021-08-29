@@ -1395,7 +1395,14 @@ const baxiPurchaseElectricity = async (req,res)=>{
   }
 }
 const baxiGetPinBundle = async (req,res)=>{
-  
+  const data = req.body;
+  if(!data.type){
+    responseData.status = false;
+    responseData.message = "service type is required";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  return await baxiApi.getEpinBundles(data,res);
 }
 const baxiPurchasePin = async (req,res)=>{
   
