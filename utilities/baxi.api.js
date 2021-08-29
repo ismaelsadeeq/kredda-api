@@ -67,7 +67,7 @@ const purchaseAirtime = async (payload,res)=>{
     },
     body:{
       agentReference:payload.reference,
-      agentId:process.env.agentId,
+      agentId:process.env.AGENT_ID,
       plan:payload.plan,
       service_type:payload.type,
       amount:payload.amount,
@@ -164,7 +164,7 @@ const purchaseData = async (payload,res)=>{
     },
     body:{
       agentReference:payload.reference,
-      agentId:process.env.agentId,
+      agentId:process.env.AGENT_ID,
       datacode:payload.dataCode,
       service_type:payload.type,
       amount:payload.amount,
@@ -298,7 +298,7 @@ const purchaseCableTv = async (payload,res)=>{
       product_monthsPaidFor:payload.productMonthsPaidFor,
       addon_monthsPaidFor:payload.addonMonthsPaidFor,
       addon_code:addonCode,
-      agentId:process.env.agentId,
+      agentId:process.env.AGENT_ID,
       product_code:payload.productCode,
       service_type:payload.type,
       total_amount:payload.amount
@@ -394,7 +394,7 @@ const purchaseWaecDirectPin = async (payload,res)=>{
     },
     body:{
       agentReference:payload.reference,
-      agentId:process.env.agentId,
+      agentId:process.env.AGENT_ID,
       pinValue:payload.pinValue,
       numberOfPins:payload.numberOfPins,
       service_type:payload.type,
@@ -491,7 +491,7 @@ const purchaseElectricity = async (payload,res)=>{
     },
     body:{
       agentReference:payload.reference,
-      agentId:process.env.agentId,
+      agentId:process.env.AGENT_ID,
       account_number:payload.meterNo,
       service_type:payload.type,
       amount:payload.amount,
