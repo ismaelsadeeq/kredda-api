@@ -1405,7 +1405,106 @@ const baxiGetPinBundle = async (req,res)=>{
   return await baxiApi.getEpinBundles(data,res);
 }
 const baxiPurchasePin = async (req,res)=>{
-  
+  const data = req.body;
+  const user = req.user;
+  const serviceId = req.params.serviceId
+
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `SHAGO-${digits}${firstDigit}`
+
+  let time = new Date();
+  time = time.toLocaleString();
+  data.type = "waec";
+  if(!data.pinValue || !data.noOfPins || !data.type || !data.amount){
+    responseData.status = false;
+    responseData.message = "data is incomplete";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const service = await models.service.findOne(
+    {
+      where:{
+        id:serviceId
+      }
+    }
+  );
+  if(!service){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(data.useWallet){
+    return await baxiHelpers.buyWaecPin(user,trxRef,time,service,data.pinValue, data.noOfPins,data.type,data.amount,res);
+  }
+  let creditCard;
+  let useDefault = data.useDefault;
+  let creditCardId = data.creditCardId;
+  const payment = await options.getPayment();
+  if(useDefault){
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          isDefault:true
+        }
+      }
+    );
+  } else {
+    creditCard = await models.creditCard.findOne(
+      {
+        where:{
+          id:creditCardId
+        }
+      }
+    )
+  }
+  if(payment.siteName =='paystack'){
+    const serviceCategory = await models.serviceCategory.findOne(
+      {
+        where:{
+          id:service.serviceCategoryId
+        }
+      }
+    );
+    let serviceCharge = serviceCategory.serviceCharge;
+    let discount = service.discount;
+    let amount = data.amount;
+    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    if(discount){
+      totalAmount = totalAmount  - discount;
+    }
+    let beneficiary = {
+      amount:amount,
+      gateway:"baxi",
+      service:serviceId,
+      pinValue:data.pinValue,
+      noOfPins:data.noOfPins,
+      type:data.type
+    }
+    beneficiary = JSON.stringify(beneficiary);
+    const payload = {
+      amount:totalAmount,
+      email:user.email,
+      authorizationCode:creditCard.authCode,
+      userId:user.id,
+      firstName:user.firstName,
+      message:"waec pin purchase",
+      beneficiary:beneficiary
+    }
+    await paystackApi.chargeAuthorization(payload,payment)
+    responseData.status = 200;
+    responseData.message = "payment initiated";
+    responseData.data = undefined
+    return res.json(responseData);
+  }
+  if(payment.siteName =='flutterwave'){
+    return await baxiHelpers.buyWaecPin(user,trxRef,time,service,data.pinValue, data.noOfPins,data.type,data.amount,res);
+  }
+  if(payment.siteName =='monnify'){
+    return await baxiHelpers.buyWaecPin(user,trxRef,time,service,data.pinValue, data.noOfPins,data.type,data.amount,res);
+  }
 }
 const baxiCableLookUp = async (req,res)=>{
   

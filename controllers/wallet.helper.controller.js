@@ -365,6 +365,30 @@ const waecPurchase = async (transaction,res)=>{
     console.log(payload);
     return await mobileAirtime.purchaseWeacDirect(payload,res) 
   }
+  if(beneficiary.gateway=="baxi"){
+    let trxRef = `BAXI-CREDIT-CARD${digits}`;
+    let service = await models.service.findOne(
+      {
+        where:{
+          id:beneficiary.service
+        }
+      }
+    );
+    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let payload = {
+      userId:transaction.userId,
+      amount:beneficiary.amount,
+      reference:trxRef,
+      pinValue:beneficiary.pinValue,
+      numberOfPins:beneficiary.noOfPins,
+      type:beneficiary.type,
+      serviceId:service.id,
+      totalServiceFee:transaction.amount,
+      profit:profit
+    }
+    console.log(payload);
+    return await mobileAirtime.purchaseWeacDirect(payload,res) 
+  }
 }
 const necoPurchase = async (transaction,res)=>{
   await transaction.update(

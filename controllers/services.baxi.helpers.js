@@ -199,7 +199,7 @@ const buyElectricity = async (user,trxRef,time,service,phoneNumber,amount,code,m
         id:uuid.v4(),
         transactionType:"debit",
         message:"electricity purchase",
-        beneficiary:phoneNumber,
+        beneficiary:meterNo,
         description:user.firstName + "purchasing electricity for a beneficiary",
         userId:user.id,
         reference:trxRef,
@@ -228,7 +228,7 @@ const buyElectricity = async (user,trxRef,time,service,phoneNumber,amount,code,m
       id:uuid.v4(),
       transactionType:"debit",
       message:"electricity purchase",
-      beneficiary:phoneNumber,
+      beneficiary:meterNo,
       description:user.firstName + "purchasing electricity for a beneficiary",
       userId:user.id,
       reference:trxRef,
@@ -248,10 +248,92 @@ const buyElectricity = async (user,trxRef,time,service,phoneNumber,amount,code,m
     totalServiceFee:totalAmount,
     profit:profit
   }
-  await baxiApi.purchaseElectricity(payload,res);
+  await baxiApi.purchaseElectricity(payload,res)
+}
+const buyWaecPin = async (user,trxRef,time,service,pinValue,noOfPins,type,amount,res)=>{
+  const wallet = await models.wallet.findOne(
+    {
+      where:{
+        userId:user.id
+      }
+    }
+  );
+  const serviceCategory = await models.serviceCategory.findOne(
+    {
+      where:{
+        id:service.serviceCategoryId
+      }
+    }
+  );
+  let serviceCharge = serviceCategory.serviceCharge;
+  let discount = service.discount;
+  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+  if(discount){
+    totalAmount = totalAmount  - discount;
+  }
+  let profit = totalAmount - amount;
+  let walletBalance = parseFloat(wallet.accountBalance);
+  if(walletBalance < totalAmount){
+    const transaction = await models.transaction.create(
+      {
+        id:uuid.v4(),
+        transactionType:"debit",
+        message:"waec pin purchase",
+        beneficiary:phoneNumber,
+        description:user.firstName + "purchasing waec pin for a beneficiary",
+        userId:user.id,
+        reference:trxRef,
+        amount:amount,
+        status:"failed",
+        time: time
+      }
+    );
+    responseData.status = false;
+    responseData.message = "insufficient funds";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  await models.wallet.update(
+    {
+      accountBalance:walletBalance - totalAmount
+    },
+    {
+      where:{
+        id:wallet.id
+      }
+    }
+  );
+  const transaction = await models.transaction.create(
+    {
+      id:uuid.v4(),
+      transactionType:"debit",
+      message:"waec pin purchase",
+      beneficiary:phoneNumber,
+      description:user.firstName + "purchasing waec pin for a beneficiary",
+      userId:user.id,
+      reference:trxRef,
+      amount:totalAmount,
+      isRedemmed:true,
+      status:"successful",
+      time: time
+    }
+  );
+  let payload = {
+    userId:user.id,
+    amount:amount,
+    pinValue:pinValue,
+    numberOfPins:noOfPins,
+    type:type,
+    reference:trxRef,
+    serviceId:service.id,
+    totalServiceFee:totalAmount,
+    profit:profit
+  }
+  await baxiApi.purchaseWaecDirectPin(payload,res);
 }
 module.exports = {
   buyAirtime,
   buyData,
   buyElectricity,
+  buyWaecPin,
 }
