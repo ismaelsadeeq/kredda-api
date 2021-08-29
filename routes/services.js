@@ -185,9 +185,9 @@ router.get('/baxi/get/discos',
   passport.authenticate('jwt',{session:false}),
   controller.baxiGetDisco
 );
-router.get('/baxi/meter/verification',
+router.post('/baxi/meter/verification',
   passport.authenticate('jwt',{session:false}),
-  controller.baxiGetDisco
+  controller.baxiMeterVerification
 );
 router.post('/baxi/meter-verification',
   passport.authenticate('jwt',{session:false}),

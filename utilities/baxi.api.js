@@ -355,7 +355,7 @@ const purchaseWaecDirectPin = async (payload,res)=>{
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://payments.baxipay.com.ng/api/baxipay/services​/epin​/request?agentReference=${payload.reference}&agentId=${process.env.AGENT_ID}&pinValue=${payload.pinValue}&numberOfPins=${payload.numberOfPins}&service_type=${payload.type}`,
+    'url': `https://payments.baxipay.com.ng/api/baxipay/services/epin/request?agentReference=${payload.reference}&agentId=${process.env.AGENT_ID}&pinValue=${payload.pinValue}&numberOfPins=${payload.numberOfPins}&service_type=${payload.type}&amount=${payload.amount}`,
     'headers': {
       'Content-Type': 'application/json',
       'Authorization':`Api-key ${process.env.BAXI_KEY}`,
