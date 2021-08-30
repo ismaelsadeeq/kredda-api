@@ -956,7 +956,7 @@ async function createATransferReciepient(paystack,payload,userId,respond){
       if(response.status === true && response.message == "Transfer recipient created successfully"){
         const updateBankDetail = await models.bank.update(
           {
-            recipientCodel:response.data.recipient_code
+            recipientCode:response.data.recipient_code
           },
           {
             where:{
@@ -988,6 +988,7 @@ async function initiateATransfer(paystack,payload,userId,respond){
   }else{
     privateKey = paystack.testPrivateKey
   }
+  console.log(payload);
   const https = require('https')
   const params = JSON.stringify({
     "source": "balance",

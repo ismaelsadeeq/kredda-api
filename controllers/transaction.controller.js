@@ -1,5 +1,6 @@
-const { parse } = require('uuid');
+const options = require('../middlewares/appSetting');
 const models = require('../models');
+const paystackApi = require('../utilities/paystack.api')
 require('dotenv').config();
 //response
 const responseData = {
@@ -244,7 +245,7 @@ const getATransactionInfo = async (req,res)=>{
 }
 
 const createTransferRecipient = async (req,res)=>{
-  const payment = await getPayment();
+  const payment = await options.getPayment();
   if(!payment){
     responseData.status = 200;
     responseData.status = true
@@ -292,7 +293,7 @@ const createTransferRecipient = async (req,res)=>{
   }
 }
 const initiateATransfer = async (req,res)=>{
-  const payment = await getPayment();
+  const payment = await options.getPayment();
   const user = req.user
   const data = req.body;
   const bankId = req.params.bankId
