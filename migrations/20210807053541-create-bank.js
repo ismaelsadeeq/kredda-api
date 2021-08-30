@@ -20,6 +20,12 @@ module.exports = {
           as:'userId'
         }
       },
+      firstName: {
+        type: Sequelize.STRING
+      },
+      lastName: {
+        type: Sequelize.STRING
+      },
       bankName: {
         type: Sequelize.STRING
       },

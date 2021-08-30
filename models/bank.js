@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
     })
   }
   bank.init({
+    firstName: DataTypes.STRING,
+    lastName: DataTypes.STRING,
     bankName: DataTypes.STRING,
     bankCode: DataTypes.STRING,
     accountNumber: DataTypes.STRING,
