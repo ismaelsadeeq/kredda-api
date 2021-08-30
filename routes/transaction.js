@@ -3,6 +3,16 @@ const passport = require('passport');
 var router = express.Router();
 const controller = require('../controllers/transaction.controller');
 
+router.post('/paystack/create-recipient',
+  passport.authenticate('jwt',{session:false}),
+  controller.createTransferRecipient
+);
+
+router.put('/withdraw-fund/:bankId',
+  passport.authenticate('jwt',{session:false}),
+  controller.initiateATransfer
+);
+
 router.get('/service/user',
   passport.authenticate('jwt',{session:false}),
   controller.userNewServiceTransactions

@@ -241,6 +241,57 @@ const getATransactionInfo = async (req,res)=>{
   responseData.data = transaction;
   return res.json(responseData);
 }
+
+const createTransferRecipient = async (req,res)=>{
+  const payment = await getPayment();
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(payment.siteName =='paystack'){
+    const user = req.user
+  const bankDetail = await models.bankDetail.findOne(
+    {
+      where:{
+        userId:user.id
+      }
+    }
+  );
+  if(!bankDetail.recipientCode){
+    const payload = {
+      name:`${user.firstName} ${user.lastName}`,
+      accountNumber:bankDetail.accountNumber,
+      bankCode:bankDetail.bankCode
+    }
+    const reciepientCode = await paystackApi.createATransferReciepient(payload,user.id);
+    responseData.status = true;
+    responseData.message = "Reciepient code generated";
+    responseData.data = reciepientCode
+    return res.json(responseData)
+  }
+  responseData.status = true;
+  responseData.message = "Reciepient Code already generated";
+  responseData.data = undefined;
+  return res.json(responseData)
+  }
+  if(payment.siteName =='flutterwave'){
+    responseData.status = 200;
+    responseData.status = false
+    responseData.message = "transfer reciepient is appilicable to paystack only";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(payment.siteName =='monnify'){
+    responseData.status = 200;
+    responseData.status = false
+    responseData.message = "transfer reciepient is appilicable to paystack only";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+}
 module.exports = {
   //service 
   userNewServiceTransactions,
@@ -253,5 +304,9 @@ module.exports = {
   failedTransactions,
   successfulTransactions,
   getTransaction,
-  getATransactionInfo
+  getATransactionInfo,
+
+  //widthraw
+  createTransferRecipient,
+  initiateATransfer
 }

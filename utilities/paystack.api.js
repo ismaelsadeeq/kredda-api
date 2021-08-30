@@ -920,7 +920,122 @@ async function verifyAccountNumber(paystack,payload,userId,responsee){
   req.write(params)
   req.end()
 }
+async function createATransferReciepient(paystack,payload,userId){
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }else{
+    privateKey = paystack.testPrivateKey
+  }
+  const https = require('https')
+  const params = JSON.stringify({
+     // "type":"nuban",
+     "name" : payload.name,
+     "account_number": payload.accountNumber,
+     "bank_code": payload.bankCode,
+     "currency": "NGN"
+  })
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: '/transferrecipient',
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${privateKey}`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const req = https.request(options, res => {
+    let data = ''
+    res.on('data', (chunk) => {
+      data += chunk
+    });
+    res.on('end',async () => {
+      const response = JSON.parse(data)
+      console.log(response);
+      if(response.status === true && response.message == "Transfer recipient created successfully"){
+        const updateBankDetail = await models.bank.update(
+          {
+            recipientCodel:response.data.recipient_code
+          },
+          {
+            where:{
+              userId:userId
+            }
+          }
+        )
+        return response
+      }
+      return "something went wrong";
+    })
+  }).on('error', error => {
+    console.error(error)
+  })
+  req.write(params)
+  req.end()
+}
 
+async function initiateATransfer(payload,userId){
+  const https = require('https')
+  const params = JSON.stringify({
+    "source": "balance",
+    "amount": payload.amount,
+    "recipient": payload.recipientCode,
+    "reason": payload.reason
+  })
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: '/transfer',
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const req = https.request(options, res => {
+    let data = ''
+    res.on('data', (chunk) => {
+      data += chunk
+    });
+    res.on('end',async () => {
+      const response = JSON.parse(data)
+      console.log(response);
+      if(response.status === true){
+        let date = new Date();
+        date = date.toLocaleString();
+        const createPayment = await models.payment.create(
+          {
+            id:uuid.v4(),
+            userId:userId,
+            amount:parseFloat(payload.amount) / 100,
+            time:date,
+            status:"pending",
+            referenceCode:payload.referenceCode,
+            transferCode:response.data.transfer_code
+          }
+        )
+        const createTransaction = await models.transaction.create(
+          {
+            id:uuid.v4(),
+            userId:userId,
+            transactionType:"debit",
+            amount:parseFloat(payload.amount) / 100,
+            time:date,
+            status:"pending",
+            reference:response.data.transfer_code,
+          }
+        );
+        return response
+      }
+      return "something went wrong";
+    })
+  }).on('error', error => {
+    console.error(error)
+  })
+  req.write(params)
+  req.end()
+}
 module.exports = {
   validateBvn,
   chargeAuthorization,
@@ -933,5 +1048,7 @@ module.exports = {
   submitBirthday,
   submitAddress,
   checkPendingCharge,
-  verifyAccountNumber
+  verifyAccountNumber,
+  createATransferReciepient,
+  initiateATransfer
 }
