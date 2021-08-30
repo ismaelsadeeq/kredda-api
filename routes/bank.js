@@ -5,7 +5,6 @@ const passport = require('passport');
 const controller = require('../controllers/bank.controller');
 
 
-//not tested 
 router.post('/fund/:id', 
   passport.authenticate('jwt',{session:false}),
   controller.fundAccount
