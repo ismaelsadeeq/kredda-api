@@ -1022,7 +1022,7 @@ async function initiateATransfer(paystack,payload,userId,respond){
             userId:userId,
             transactionType:"debit",
             message:"payment",
-            beneficiary:"self",
+            beneficiary:response.data.reference,
             description:"wallet fund widthrawal",
             amount:parseFloat(payload.amount) / 100,
             time:date,
@@ -1036,6 +1036,61 @@ async function initiateATransfer(paystack,payload,userId,respond){
         responseData.message = "widthrawal initiated";
         responseData.data = response;
         return respond.json(responseData)
+      }
+      res.statusCode = 200
+      responseData.status = true;
+      responseData.message = "something went wrong";
+      responseData.data = response;
+      return respond.json(responseData)
+    })
+  }).on('error', error => {
+    console.error(error)
+  })
+  req.write(params)
+  req.end()
+}
+async function verifyTransfer(paystack,payload,userId,respond){
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }else{
+    privateKey = paystack.testPrivateKey
+  }
+  const https = require('https')
+  const params = JSON.stringify({
+  })
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: `/transfer/verify/:${payload.reference}`,
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${privateKey}`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const req = https.request(options, res => {
+    let data = ''
+    res.on('data', (chunk) => {
+      data += chunk
+    });
+    res.on('end',async () => {
+      const response = JSON.parse(data)
+      console.log(response);
+      if(response.status === true ){
+        if(response.status==="success"){
+          await models.transaction.update(
+            {
+              
+            }
+          )
+          res.statusCode = 200
+          responseData.status = true;
+          responseData.message = "widthrawal initiated";
+          responseData.data = response;
+          return respond.json(responseData)
+        }
+        
       }
       res.statusCode = 200
       responseData.status = true;
