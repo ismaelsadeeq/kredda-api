@@ -15,13 +15,13 @@ router.get('/service/user/success',
   passport.authenticate('jwt',{session:false}),
   controller.successfulServiceTransactions
 );
+router.get('/service/info/:reference',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAServiceTransactionInfo
+);
 router.get('/service/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getServiceTransaction
-);
-router.get('/service/:reference',
-  passport.authenticate('jwt',{session:false}),
-  controller.getAServiceTransactionInfo
 );
 router.get('/user',
   passport.authenticate('jwt',{session:false}),
