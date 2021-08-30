@@ -3,15 +3,19 @@ const passport = require('passport');
 var router = express.Router();
 const controller = require('../controllers/transaction.controller');
 
-router.get('/user-new-transactions',
+router.get('/user',
   passport.authenticate('jwt',{session:false}),
   controller.userNewTransactions
 );
-router.get('/user-transactions',
+router.get('/user/failed',
   passport.authenticate('jwt',{session:false}),
-  controller.userTransaction
+  controller.failedTransactions
 );
-router.get('/transaction',
+router.get('/user/success',
+  passport.authenticate('jwt',{session:false}),
+  controller.successfulTransactions
+);
+router.get('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getransaction
 );
