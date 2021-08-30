@@ -222,7 +222,7 @@ const fundAccount = async (req,res)=>{
     }
   );
   if(trueAccount){
-    await models.trueAccount.update(
+    await models.otherAccount.update(
       {
         status:false
       },
