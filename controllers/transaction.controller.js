@@ -1,3 +1,4 @@
+const { parse } = require('uuid');
 const models = require('../models');
 require('dotenv').config();
 //response
@@ -288,6 +289,100 @@ const createTransferRecipient = async (req,res)=>{
     responseData.message = "transfer reciepient is appilicable to paystack only";
     responseData.data = undefined;
     return res.json(responseData);
+  }
+}
+const initiateATransfer = async (req,res)=>{
+  const payment = await getPayment();
+  const user = req.user
+  const data = req.body;
+  const bankId = req.params.bankId
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  let amountInNaira = parseFloat(data.amount);
+  if(amountInNaira < 0 ){
+    responseData.status = true;
+    responseData.message = "Cannot withdraw negative amount";
+    responseData.data = undefined;
+    return res.json(responseData)
+  }
+  const wallet = await models.wallet.findOne(
+    {
+      where:{
+        userId:user.id
+      }
+    }
+  );
+  let walletBalance = parseFloat(wallet.accountBalance);
+  if(walletBalance < parseFloat(data.amount)){
+    responseData.status = 200;
+    responseData.status = false
+    responseData.message = "insufficient funds";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const bankDetail = await models.bank.findOne(
+    {
+      where:{
+        id:bankId
+      }
+    }
+  );
+  if(!bankDetail.accountNumber){
+    res.statusCode = 200
+    responseData.status = false;
+    responseData.message = "widthrawal account number not added";
+    responseData.data = undefined;
+    return res.json(responseData)
+  }
+  if(bankDetail.isAccountValid !== true){
+    res.statusCode = 200
+    responseData.status = false;
+    responseData.message = "incorrect account number";
+    responseData.data = undefined;
+    return res.json(responseData)
+  }
+  if(payment.siteName =='paystack'){
+    if(!bankDetail.recipientCode){
+      res.statusCode = 200
+      responseData.status = false;
+      responseData.message = "recipient code not generated";
+      responseData.data = undefined;
+      return res.json(responseData)
+    }
+    await models.wallet.update(
+      {
+        accountBalance:parseFloat(wallet.accountBalance) - amountInNaira,
+      },
+      {
+        where:{userId:user.id}
+      }
+    )
+    const reciepientCode = await models.bank.findOne(
+      {
+        where:{
+          id:bankId
+        },
+        attributes:['recipientCode']
+      }
+    )
+    const payload = {
+      amount:amountInNaira * 100,
+      recipientCode:reciepientCode,
+      reason:data.widthrawalReason
+    }
+    return await paystackApi.initiateATransfer(payment,payload,user.id,res);
+    
+  }
+  if(payment.siteName =='flutterwave'){
+    
+  }
+  if(payment.siteName =='monnify'){
+    
   }
 }
 module.exports = {

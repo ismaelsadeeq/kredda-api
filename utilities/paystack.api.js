@@ -981,7 +981,13 @@ async function createATransferReciepient(paystack,payload,userId,respond){
   req.end()
 }
 
-async function initiateATransfer(payload,userId){
+async function initiateATransfer(paystack,payload,userId,respond){
+  let privateKey;
+  if(paystack.privateKey){
+    privateKey = paystack.privateKey;
+  }else{
+    privateKey = paystack.testPrivateKey
+  }
   const https = require('https')
   const params = JSON.stringify({
     "source": "balance",
@@ -995,7 +1001,7 @@ async function initiateATransfer(payload,userId){
     path: '/transfer',
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      Authorization: `Bearer ${privateKey}`,
       'Content-Type': 'application/json'
     }
   }
@@ -1010,31 +1016,32 @@ async function initiateATransfer(payload,userId){
       if(response.status === true){
         let date = new Date();
         date = date.toLocaleString();
-        const createPayment = await models.payment.create(
-          {
-            id:uuid.v4(),
-            userId:userId,
-            amount:parseFloat(payload.amount) / 100,
-            time:date,
-            status:"pending",
-            referenceCode:payload.referenceCode,
-            transferCode:response.data.transfer_code
-          }
-        )
         const createTransaction = await models.transaction.create(
           {
             id:uuid.v4(),
             userId:userId,
             transactionType:"debit",
+            message:"payment",
+            beneficiary:"self",
+            description:"wallet fund widthrawal",
             amount:parseFloat(payload.amount) / 100,
             time:date,
             status:"pending",
+            isRedemmed:false,
             reference:response.data.transfer_code,
           }
         );
-        return response
+        res.statusCode = 200
+        responseData.status = true;
+        responseData.message = "widthrawal initiated";
+        responseData.data = response;
+        return respond.json(responseData)
       }
-      return "something went wrong";
+      res.statusCode = 200
+      responseData.status = true;
+      responseData.message = "something went wrong";
+      responseData.data = response;
+      return respond.json(responseData)
     })
   }).on('error', error => {
     console.error(error)
