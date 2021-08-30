@@ -1,7 +1,4 @@
 const models = require('../models');
-const multer = require('multer');
-const uuid = require('uuid');
-const multerConfig = require('../config/multer');
 require('dotenv').config();
 //response
 const responseData = {
@@ -9,7 +6,124 @@ const responseData = {
 	message: "Completed",
 	data: null
 }
-//Shago
+const userNewServiceTransactions = async (req,res)=>{
+  let pageLimit = parseInt(req.query.pageLimit);
+  let currentPage = parseInt(req.query.currentPage);
+  let	skip = currentPage * pageLimit;
+  const transactions = await models.serviceTransaction.findAll(
+    {
+      order:[['createdAt','DESC']],
+      offset:skip,
+      limit:pageLimit,
+      where:{
+        userId:req.user.id,
+      }
+    }
+  );
+  if(!transactions){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = transactions;
+  return res.json(responseData);
+}
+const failedServiceTransactions = async (req,res)=>{
+  let pageLimit = parseInt(req.query.pageLimit);
+  let currentPage = parseInt(req.query.currentPage);
+  let	skip = currentPage * pageLimit;
+  const transactions = await models.serviceTransaction.findAll(
+    {
+      order:[['createdAt','DESC']],
+      offset:skip,
+      limit:pageLimit,
+      where:{
+        userId:req.user.id,
+        status:"failed"
+      }
+    }
+  );
+  if(!transactions){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = transactions;
+  return res.json(responseData);
+}
+const successfulServiceTransactions = async (req,res)=>{
+  let pageLimit = parseInt(req.query.pageLimit);
+  let currentPage = parseInt(req.query.currentPage);
+  let	skip = currentPage * pageLimit;
+  const transactions = await models.serviceTransaction.findAll(
+    {
+      order:[['createdAt','DESC']],
+      offset:skip,
+      limit:pageLimit,
+      where:{
+        userId:req.user.id,
+        status:"successful"
+      }
+    }
+  );
+  if(!transactions){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = transactions;
+  return res.json(responseData);
+}
+const getServiceTransaction = async (req,res)=>{
+  const id = req.params.id;
+  const transaction = await models.serviceTransaction.findOne(
+    {
+      where:{
+        id:id
+      }
+    }
+  );
+  if(!transaction){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = transaction;
+  return res.json(responseData);
+}
+const getAServiceTransactionInfo = async (req,res)=>{
+  const reference = req.params.reference;
+  const transaction = await models.serviceTransaction.findOne(
+    {
+      where:{
+        reference:reference
+      }
+    }
+  );
+  if(!transaction){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = transaction;
+  return res.json(responseData);
+}
+
 const userNewTransactions = async (req,res)=>{
   let pageLimit = parseInt(req.query.pageLimit);
   let currentPage = parseInt(req.query.currentPage);
@@ -18,7 +132,10 @@ const userNewTransactions = async (req,res)=>{
     {
       order:[['createdAt','DESC']],
       offset:skip,
-      limit:pageLimit
+      limit:pageLimit,
+      where:{
+        userId:req.user.id,
+      }
     }
   );
   if(!transactions){
@@ -42,6 +159,7 @@ const failedTransactions = async (req,res)=>{
       offset:skip,
       limit:pageLimit,
       where:{
+        userId:req.user.id,
         status:"failed"
       }
     }
@@ -67,6 +185,7 @@ const successfulTransactions = async (req,res)=>{
       offset:skip,
       limit:pageLimit,
       where:{
+        userId:req.user.id,
         status:"successful"
       }
     }
@@ -82,7 +201,7 @@ const successfulTransactions = async (req,res)=>{
   responseData.data = transactions;
   return res.json(responseData);
 }
-const getransaction = async (req,res)=>{
+const getTransaction = async (req,res)=>{
   const id = req.params.id;
   const transaction = await models.transaction.findOne(
     {
@@ -123,9 +242,16 @@ const getATransactionInfo = async (req,res)=>{
   return res.json(responseData);
 }
 module.exports = {
+  //service 
+  userNewServiceTransactions,
+  failedServiceTransactions,
+  successfulServiceTransactions,
+  getServiceTransaction,
+  getAServiceTransactionInfo,
+
   userNewTransactions,
   failedTransactions,
   successfulTransactions,
-  getransaction,
+  getTransaction,
   getATransactionInfo
 }
