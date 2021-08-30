@@ -56,6 +56,18 @@ const userCreateATicket = async (req,res)=>{
   })
 }
 const adminReplyToTicket = async (req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
   multerConfig.singleUpload(req, res, async function(err) {
     if (err instanceof multer.MulterError) {
       return res.json(err.message);
@@ -64,7 +76,6 @@ const adminReplyToTicket = async (req,res)=>{
     } else if(req.body){
       const data = req.body;
       const ticketId = req.params.ticketId;
-      const user = req.user;
       const ticket = await models.ticket.findOne(
         {
           where:{
@@ -202,7 +213,10 @@ const getTicketReplies = async (req,res)=>{
     {
       order:[['createdAt','DESC']],
       offset:skip,
-      limit:pageLimit
+      limit:pageLimit,
+      where:{
+        ticketId:req.params.ticketId
+      }
     }
   );
   if(!ticketReplies){
@@ -217,6 +231,18 @@ const getTicketReplies = async (req,res)=>{
   return res.json(responseData);
 }
 const getNewTickets = async (req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
   let pageLimit = parseInt(req.query.pageLimit);
   let currentPage = parseInt(req.query.currentPage);
   let	skip = currentPage * pageLimit;
@@ -225,6 +251,68 @@ const getNewTickets = async (req,res)=>{
       order:[['createdAt','DESC']],
       offset:skip,
       limit:pageLimit
+    }
+  );
+  if(!tickets){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = tickets;
+  return res.json(responseData);
+}
+const getNewOpenTickets = async (req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  let pageLimit = parseInt(req.query.pageLimit);
+  let currentPage = parseInt(req.query.currentPage);
+  let	skip = currentPage * pageLimit;
+  const tickets = await models.ticket.findAll(
+    {
+      order:[['createdAt','DESC']],
+      offset:skip,
+      limit:pageLimit,
+      where:{
+        status:1
+      }
+    }
+  );
+  if(!tickets){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = tickets;
+  return res.json(responseData);
+}
+const getTickets = async (req,res)=>{
+  let pageLimit = parseInt(req.query.pageLimit);
+  let currentPage = parseInt(req.query.currentPage);
+  let	skip = currentPage * pageLimit;
+  const tickets = await models.ticket.findAll(
+    {
+      order:[['createdAt','DESC']],
+      offset:skip,
+      limit:pageLimit,
+      where:{
+        userId:req.user.id
+      }
     }
   );
   if(!tickets){
@@ -288,6 +376,8 @@ module.exports = {
   getTicketReply,
   getTicketReplies,
   getNewTickets,
+  getNewOpenTickets,
   getTicket,
   closeTicket,
+  getTickets
 }

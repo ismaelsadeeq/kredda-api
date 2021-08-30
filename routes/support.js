@@ -3,7 +3,7 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/support.controller');
 
-router.post('/user/create',
+router.post('/create',
   passport.authenticate('jwt',{session:false}),
   controller.userCreateATicket
 );
@@ -11,23 +11,31 @@ router.post('/admin/reply/:ticketId',
   passport.authenticate('jwt',{session:false}),
   controller.adminReplyToTicket
 );
-router.post('/user/reply',
+router.post('/user/reply/:ticketId',
   passport.authenticate('jwt',{session:false}),
   controller.userReplyToTicket
+);
+router.get('/reply/:ticketId',
+  passport.authenticate('jwt',{session:false}),
+  controller.getTicketReplies
 );
 router.get('/reply/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getTicketReply
 );
-router.get('/reply',
-  passport.authenticate('jwt',{session:false}),
-  controller.getTicketReplies
-);
 router.get('/admin/tiket/new',
   passport.authenticate('jwt',{session:false}),
   controller.getNewTickets
 );
-router.put('/admin/tiket/close',
+router.get('/admin/tiket/open',
+  passport.authenticate('jwt',{session:false}),
+  controller.getNewOpenTickets
+);
+router.get('/user/tiket',
+  passport.authenticate('jwt',{session:false}),
+  controller.getTickets
+);
+router.put('/admin/tiket/close/:id',
   passport.authenticate('jwt',{session:false}),
   controller.closeTicket
 );
