@@ -253,29 +253,27 @@ const createTransferRecipient = async (req,res)=>{
   }
   if(payment.siteName =='paystack'){
     const user = req.user
-  const bankDetail = await models.bankDetail.findOne(
-    {
-      where:{
-        userId:user.id
+    const bankId = req.params.bankId
+    const bankDetail = await models.bank.findOne(
+      {
+        where:{
+          id:bankId
+        }
       }
+    );
+    if(!bankDetail.recipientCode){
+      const payload = {
+        name:`${bankDetail.firstName || user.firstName} ${bankDetail.lastName || user.lastName}`,
+        accountNumber:bankDetail.accountNumber,
+        bankCode:bankDetail.bankCode
+      }
+      return await paystackApi.createATransferReciepient(payment,payload,user.id,res);
+      
     }
-  );
-  if(!bankDetail.recipientCode){
-    const payload = {
-      name:`${user.firstName} ${user.lastName}`,
-      accountNumber:bankDetail.accountNumber,
-      bankCode:bankDetail.bankCode
-    }
-    const reciepientCode = await paystackApi.createATransferReciepient(payload,user.id);
     responseData.status = true;
-    responseData.message = "Reciepient code generated";
-    responseData.data = reciepientCode
+    responseData.message = "Reciepient Code already generated";
+    responseData.data = undefined;
     return res.json(responseData)
-  }
-  responseData.status = true;
-  responseData.message = "Reciepient Code already generated";
-  responseData.data = undefined;
-  return res.json(responseData)
   }
   if(payment.siteName =='flutterwave'){
     responseData.status = 200;

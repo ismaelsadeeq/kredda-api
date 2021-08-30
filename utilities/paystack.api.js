@@ -920,7 +920,7 @@ async function verifyAccountNumber(paystack,payload,userId,responsee){
   req.write(params)
   req.end()
 }
-async function createATransferReciepient(paystack,payload,userId){
+async function createATransferReciepient(paystack,payload,userId,respond){
   let privateKey;
   if(paystack.privateKey){
     privateKey = paystack.privateKey;
@@ -964,9 +964,15 @@ async function createATransferReciepient(paystack,payload,userId){
             }
           }
         )
-        return response
+        responseData.status = true;
+        responseData.message = "Reciepient code generated";
+        responseData.data = response
+        return respond.json(responseData)
       }
-      return "something went wrong";
+      responseData.status = true;
+      responseData.message = "something went wrong";
+      responseData.data = response
+      return respond.json(responseData)
     })
   }).on('error', error => {
     console.error(error)
