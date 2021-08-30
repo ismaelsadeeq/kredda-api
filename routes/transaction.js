@@ -35,12 +35,12 @@ router.get('/user/success',
   passport.authenticate('jwt',{session:false}),
   controller.successfulTransactions
 );
+router.get('/info/:reference',
+  passport.authenticate('jwt',{session:false}),
+  controller.getATransactionInfo
+);
 router.get('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getTransaction
-);
-router.get('/:reference',
-  passport.authenticate('jwt',{session:false}),
-  controller.getATransactionInfo
 );
 module.exports = router;
