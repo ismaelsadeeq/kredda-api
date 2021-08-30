@@ -321,6 +321,130 @@ const webhook =async (req,res)=>{
       responseData.data = undefined;
       return res.json(responseData)
     }
+    if(data.event ==="transfer.success"){
+      await models.transaction.update(
+        {
+          status:"success" 
+        },
+        {
+          where:{
+            reference:data.data.transfer_code
+          }
+        }
+      );
+      responseData.message = "Success";
+      responseData.status = true;
+      responseData.data = undefined;
+      return res.json(responseData)
+    }
+    //fund failed
+    if(data.event ==="transfer.failed"){
+      await models.transaction.update(
+        {
+          status:"Failed" 
+        },
+        {
+          where:{
+            reference:data.data.transfer_code
+          }
+        }
+      );
+      await models.payment.update(
+        {
+          status:"Failed" 
+        },
+        {
+          where:{
+            transferCode:data.data.transfer_code
+          }
+        }
+      );
+      const createTransaction = await models.transaction.create(
+        {
+          id:uuid.v4(),
+          userId:transaction.userId,
+          transactionType:"credit",
+          amount:parseFloat(data.data.amount)/100,
+          time:data.data.recipient.created_at,
+          status:"Success",
+          reference:data.data.transfer_code
+        }
+      );
+      const wallet = await models.wallet.findOne(
+        {
+          where:{
+            userId:transaction.userId,
+          }
+        }
+      )
+      await models.wallet.update(
+        {
+          accountBalance:parseFloat(wallet.accountBalance) + parseFloat(data.data.amount)/100,
+        },
+        {
+          where:{
+            userId:transaction.userId,
+          }
+        }
+      )
+      responseData.message = "Success";
+      responseData.status = true;
+      responseData.data = undefined;
+      return res.json(responseData)
+    }
+    //fund reversed
+    if(data.event ==="transfer.reversed"){
+      const transaction = await models.transaction.findOne(
+        {
+          where:{
+            reference:data.data.transfer_code
+          }
+        }
+      );
+      await models.transaction.update(
+        {
+          status:"Reversed" 
+        },
+        {
+          where:{
+            reference:data.data.transfer_code
+          }
+        }
+      );
+      const createTransaction = await models.transaction.create(
+        {
+          id:uuid.v4(),
+          userId:transaction.userId,
+          transactionType:"credit",
+          amount:parseFloat(data.data.amount)/100,
+          time:data.data.recipient.created_at,
+          status:"Success",
+          reference:data.data.transfer_code
+        }
+      );
+      const wallet = await models.wallet.findOne(
+        {
+          where:{
+            userId:transaction.userId
+          }
+        }
+      );
+      const reverse = await models.wallet.update(
+        {
+          accountBalance:parseFloat(wallet.accountBalance) + parseFloat(data.data.amount)/100,
+        },
+        {
+          where:
+          {
+            userId:transaction.userId
+          }
+        }
+      );
+      responseData.message = "Transaction Reversed";
+      responseData.status = true;
+      responseData.data = null;
+      return res.json(responseData)
+    }
     res.statusCode = 200;
     responseData.message = "Invalid payload";
     responseData.status = false;

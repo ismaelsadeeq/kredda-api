@@ -1049,7 +1049,7 @@ async function initiateATransfer(paystack,payload,userId,respond){
   req.write(params)
   req.end()
 }
-async function verifyTransfer(paystack,payload,userId,respond){
+async function verifyTransfer(paystack,payload,respond){
   let privateKey;
   if(paystack.privateKey){
     privateKey = paystack.privateKey;
@@ -1078,19 +1078,34 @@ async function verifyTransfer(paystack,payload,userId,respond){
       const response = JSON.parse(data)
       console.log(response);
       if(response.status === true ){
-        if(response.status==="success"){
+        if(response.data.status==="success"){
           await models.transaction.update(
             {
-              
+              status:"success",
+            },
+            {
+              beneficiary:payload.reference
             }
           )
           res.statusCode = 200
           responseData.status = true;
-          responseData.message = "widthrawal initiated";
+          responseData.message = "completed";
           responseData.data = response;
           return respond.json(responseData)
         }
-        
+        await models.transaction.update(
+          {
+            status:response.data.status,
+          },
+          {
+            beneficiary:payload.reference
+          }
+        )
+        res.statusCode = 200
+        responseData.status = true;
+        responseData.message = "completed";
+        responseData.data = response;
+        return respond.json(responseData)
       }
       res.statusCode = 200
       responseData.status = true;
@@ -1118,5 +1133,6 @@ module.exports = {
   checkPendingCharge,
   verifyAccountNumber,
   createATransferReciepient,
-  initiateATransfer
+  initiateATransfer,
+  verifyTransfer
 }
