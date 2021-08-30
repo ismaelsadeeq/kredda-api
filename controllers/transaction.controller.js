@@ -440,7 +440,7 @@ const validatePayment = async (req,res)=>{
     let payload = {
       id:transaction.beneficiary
     };
-    return paystackApi.verifyTransfer(payment,payload,res);
+    return flutterwaveApi.validateTransfer(payment,payload,res);
   }
 }
 module.exports = {
@@ -459,5 +459,6 @@ module.exports = {
 
   //widthraw
   createTransferRecipient,
-  initiateATransfer
+  initiateATransfer,
+  validatePayment
 }

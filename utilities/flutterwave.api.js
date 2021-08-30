@@ -456,7 +456,7 @@ async function initiateATransfer(flutterwave,data,responsee){
     return responsee.json(responseData)
   });
 }
-async function validateTransfer(data,flutterwave,responsee){
+async function validateTransfer(flutterwave,data,responsee){
   let privateKey;
   if(flutterwave.privateKey){
     privateKey = flutterwave.privateKey;
@@ -466,7 +466,7 @@ async function validateTransfer(data,flutterwave,responsee){
   var request = require('request');
   var options = {
     'method': 'POST',
-    'url': `https://api.flutterwave.com/v3/transfers/:${payload.id}`,
+    'url': `https://api.flutterwave.com/v3/transfers/:${data.id}`,
     'headers': {
       'Authorization': `Bearer ${privateKey}`
     },

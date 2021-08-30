@@ -720,6 +720,75 @@ const flutterwaveWebhook = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData)
   }
+  if(payload.event=="transfer.completed" && payload.data.status =="SUCCESSFUL"){
+    await models.transaction.update(
+      {
+        status:"success",
+        isRedemmed:true, 
+      },
+      {
+        where:{
+          reference:payload.data.reference
+        }
+      }
+    );
+    responseData.message = "Success";
+    responseData.status = true;
+    responseData.data = undefined;
+    return res.json(responseData)
+  }
+  if(payload.event=="transfer.completed" && payload.data.status =="FAILED"){
+    const transaction = await models.transaction.findOne(
+      {
+        where:{
+          reference:payload.data.reference
+        }
+      }
+    );
+    await models.transaction.update(
+      {
+        status:"Failed",
+        isRedemmed:true
+      },
+      {
+        where:{
+          reference:payload.data.reference
+        }
+      }
+    );
+    const createTransaction = await models.transaction.create(
+      {
+        id:uuid.v4(),
+        userId:transaction.userId,
+        transactionType:"credit",
+        amount:payload.data.amount,
+        time:payload.data.created_at,
+        status:"Success",
+        reference:data.data.transfer_code
+      }
+    );
+    const wallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:transaction.userId,
+        }
+      }
+    )
+    await models.wallet.update(
+      {
+        accountBalance:parseFloat(wallet.accountBalance) + parseFloat(data.data.amount),
+      },
+      {
+        where:{
+          userId:transaction.userId,
+        }
+      }
+    )
+    responseData.message = "Success";
+    responseData.status = true;
+    responseData.data = undefined;
+    return res.json(responseData)
+  }
   responseData.message = "Invalid Payload";
   responseData.status = true;
   responseData.data = undefined;
