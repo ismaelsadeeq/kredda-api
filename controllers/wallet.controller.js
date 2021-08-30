@@ -324,7 +324,8 @@ const webhook =async (req,res)=>{
     if(data.event ==="transfer.success"){
       await models.transaction.update(
         {
-          status:"success" 
+          status:"success",
+          isRedemmed:true, 
         },
         {
           where:{
@@ -341,21 +342,12 @@ const webhook =async (req,res)=>{
     if(data.event ==="transfer.failed"){
       await models.transaction.update(
         {
-          status:"Failed" 
+          status:"Failed",
+          isRedemmed:true
         },
         {
           where:{
             reference:data.data.transfer_code
-          }
-        }
-      );
-      await models.payment.update(
-        {
-          status:"Failed" 
-        },
-        {
-          where:{
-            transferCode:data.data.transfer_code
           }
         }
       );
@@ -403,7 +395,8 @@ const webhook =async (req,res)=>{
       );
       await models.transaction.update(
         {
-          status:"Reversed" 
+          status:"Reversed",
+          isRedemmed:true
         },
         {
           where:{

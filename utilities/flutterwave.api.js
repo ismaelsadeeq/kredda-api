@@ -395,10 +395,125 @@ async function validateAccount(data,flutterwave,responsee){
     return responsee.json(payload);
   });
 }
+async function initiateATransfer(flutterwave,data,responsee){
+  const accountData ={
+    "account_bank": data.bankCode,
+    "account_number": data.accountNumber,
+    "amount":data.amount,
+    "narration": data.narration,
+    "currency": "NGN",
+    "reference":data.reference,
+    "debit_currency": "NGN"
+  }
+  let privateKey;
+  if(flutterwave.privateKey){
+    privateKey = flutterwave.privateKey;
+  }else{
+    privateKey = flutterwave.testPrivateKey
+  }
+  var request = require('request');
+  var options = {
+    'method': 'POST',
+    'url': `https://api.flutterwave.com/v3/transfers`,
+    'headers': {
+      'Authorization': `Bearer ${privateKey}`
+    },
+    'body':accountData,
+    'json': true
+  };
+  request(options, async function (error, response) { 
+    if (error) throw new Error(error);
+    let payload = response.body;
+    console.log(payload)
+    if(payload.status==="success"&& payload.message==="Transfer Queued Successfully"){
+        let date = new Date();
+        date = date.toLocaleString();
+        const createTransaction = await models.transaction.create(
+          {
+            id:uuid.v4(),
+            userId:data.userId,
+            transactionType:"debit",
+            message:"payment",
+            beneficiary:payload.data.id,
+            description:"wallet fund widthrawal",
+            amount:data.amount,
+            time:date,
+            status:"pending",
+            isRedemmed:false,
+            reference:payload.data.reference,
+          }
+        );
+        res.statusCode = 200
+        responseData.status = true;
+        responseData.message = "widthrawal initiated";
+        responseData.data = payload;
+        return responsee.json(responseData)
+    }
+    res.statusCode = 200
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = payload;
+    return responsee.json(responseData)
+  });
+}
+async function validateTransfer(data,flutterwave,responsee){
+  let privateKey;
+  if(flutterwave.privateKey){
+    privateKey = flutterwave.privateKey;
+  }else{
+    privateKey = flutterwave.testPrivateKey
+  }
+  var request = require('request');
+  var options = {
+    'method': 'POST',
+    'url': `https://api.flutterwave.com/v3/transfers/:${payload.id}`,
+    'headers': {
+      'Authorization': `Bearer ${privateKey}`
+    },
+    'json': true
+  };
+  request(options, async function (error, response) { 
+    if (error) throw new Error(error);
+    let payload = response.body;
+    console.log(payload)
+    if(payload.status==="success"&& payload.message==="Transfer fetched"){
+      await models.transaction.update(
+        {
+          status:payload.data.status,
+        },
+        {
+          beneficiary:payload.reference
+        }
+      )
+      res.statusCode = 200
+      responseData.status = true;
+      responseData.message = "completed";
+      responseData.data = payload;
+      return responsee.json(responseData)
+    }
+    if(payload.data && payload.reference){
+      await models.transaction.update(
+        {
+          status:payload.data.status,
+        },
+        {
+          beneficiary:payload.reference
+        }
+      )
+    }
+    res.statusCode = 200
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = payload;
+    return responsee.json(responseData)
+  });
+}
 module.exports = {
   validateBvn,
   verifyPayment,
   initiatePayment,
   validateCharge,
-  validateAccount
+  validateAccount,
+  initiateATransfer,
+  validateTransfer
 }

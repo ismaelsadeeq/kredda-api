@@ -1,6 +1,7 @@
 const options = require('../middlewares/appSetting');
 const models = require('../models');
-const paystackApi = require('../utilities/paystack.api')
+const paystackApi = require('../utilities/paystack.api');
+const helpers = require('../utilities/helpers');
 require('dotenv').config();
 //response
 const responseData = {
@@ -380,10 +381,66 @@ const initiateATransfer = async (req,res)=>{
     
   }
   if(payment.siteName =='flutterwave'){
-    
+    let digits = helpers.generateOTP()
+    let name = user.firstName;
+    let firstDigit = name.substring(0,1);
+    let trxRef = `payment-${digits}${firstDigit}`
+    await models.wallet.update(
+      {
+        accountBalance:parseFloat(wallet.accountBalance) - amountInNaira,
+      },
+      {
+        where:{userId:user.id}
+      }
+    )
+    const payload = {
+      bankCode:bankDetail.bankCode,
+      accountNumber:bankDetail.accountNumber,
+      narration:data.widthrawalReason,
+      trxRef:trxRef,
+      amount:data.amount,
+      userId:user.id
+    }
+    return await flutterwaveApi.initiatePayment(payment,payload,res);
   }
   if(payment.siteName =='monnify'){
     
+  }
+}
+const validatePayment = async (req,res)=>{
+  const reference = req.params.reference;
+  if(!reference){
+    responseData.status = false;
+    responseData.message ="reference is required";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  const payment = options.getPayment();
+  if(!payment){
+    responseData.status = 200;
+    responseData.status = true
+    responseData.message = "payment getway not set";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(payment.siteName =="paystack"){
+    let payload = {
+      reference:reference
+    };
+    return paystackApi.verifyTransfer(payment,payload,res);
+  }
+  if(payment.siteName =="flutterwave"){
+    const transaction = await models.transaction.findOne(
+      {
+        where:{
+          reference:reference
+        }
+      }
+    );
+    let payload = {
+      id:transaction.beneficiary
+    };
+    return paystackApi.verifyTransfer(payment,payload,res);
   }
 }
 module.exports = {
