@@ -7,7 +7,7 @@ router.post('/user/create',
   passport.authenticate('jwt',{session:false}),
   controller.userCreateATicket
 );
-router.post('/admin/reply',
+router.post('/admin/reply/:ticketId',
   passport.authenticate('jwt',{session:false}),
   controller.adminReplyToTicket
 );
@@ -22,10 +22,6 @@ router.get('/reply/:id',
 router.get('/reply',
   passport.authenticate('jwt',{session:false}),
   controller.getTicketReplies
-);
-router.get('/admin/tiket',
-  passport.authenticate('jwt',{session:false}),
-  controller.getTickets
 );
 router.get('/admin/tiket/new',
   passport.authenticate('jwt',{session:false}),
