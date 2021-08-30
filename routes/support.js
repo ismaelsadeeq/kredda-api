@@ -3,6 +3,10 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/support.controller');
 
+router.post('/user/create',
+  passport.authenticate('jwt',{session:false}),
+  controller.userCreateATicket
+);
 router.post('/admin/reply',
   passport.authenticate('jwt',{session:false}),
   controller.adminReplyToTicket

@@ -9,6 +9,9 @@ const responseData = {
 	message: "Completed",
 	data: null
 }
+const userCreateATicket = async (req,res)=>{
+
+}
 const adminReplyToTicket = async (req,res)=>{
 
 }
@@ -34,6 +37,7 @@ const closeTicket = async (req,res)=>{
 
 }
 module.exports = {
+  userCreateATicket,
   adminReplyToTicket,
   userReplyToTicket,
   getTicketReply,
