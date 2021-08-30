@@ -238,7 +238,7 @@ const fundAccount = async (req,res)=>{
     const payload = {
       "email":user.email,
       "id":user.id,
-      "amount":parseFloat(data.amount * 100),
+      "amount":data.amount,
       "value":"Kredda",
       "displayName":user.firstName,
       "variableName":"virtual wallet funding",
