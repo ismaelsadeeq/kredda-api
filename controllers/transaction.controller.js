@@ -2,6 +2,7 @@ const options = require('../middlewares/appSetting');
 const models = require('../models');
 const paystackApi = require('../utilities/paystack.api');
 const flutterwaveApi = require('../utilities/flutterwave.api');
+const monnifyApi = require('../utilities/monnify.api');
 const helpers = require('../utilities/helpers');
 require('dotenv').config();
 //response
@@ -405,7 +406,28 @@ const initiateATransfer = async (req,res)=>{
     return await flutterwaveApi.initiateATransfer(payment,payload,res);
   }
   if(payment.siteName =='monnify'){
-    
+    let digits = helpers.generateOTP()
+    let name = user.firstName;
+    let firstDigit = name.substring(0,1);
+    let trxRef = `payment-${digits}${firstDigit}`
+    await models.wallet.update(
+      {
+        accountBalance:parseFloat(wallet.accountBalance) - amountInNaira,
+      },
+      {
+        where:{userId:user.id}
+      }
+    )
+    const payload = {
+      name:`${bankDetail.firstName || user.firstName} ${bankDetail.lastName || user.lastName}`,
+      bankCode:bankDetail.bankCode,
+      accountNumber:bankDetail.accountNumber,
+      narration:data.widthrawalReason,
+      trxRef:trxRef,
+      amount:data.amount,
+      userId:user.id
+    }
+    return await monnifyApi.initiateATransfer(payload,payment,res);
   }
 }
 const validatePayment = async (req,res)=>{

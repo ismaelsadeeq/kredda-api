@@ -185,7 +185,87 @@ async function validatePayment(payload,monnify,res){
     return res.json(responseData)
   });
 }
+async function initiateATransfer(payload,monnify,res){
+  let apiKey,privateKey;
+  if(monnify.privateKey){
+    apiKey = monnify.publicKey
+    privateKey = monnify.privateKey;
+  }else{
+    apiKey = monnify.testPublicKey;
+    privateKey = monnify.testPrivateKey;
+  }
+  let sourceAccountNumber = monnify.accountNumber;
+  const authKey = Buffer.from(apiKey+":"+privateKey).toString('base64');
+  var request = require('request');
+  var options = {
+    'method': 'POST',
+    'body':{
+      'amount':payload.amount,
+      'reference':payload.trxRef,
+      'narration':payload.narration,
+      'destinationBankCode':payload.bankCode,
+      'destinationAccountNumber':payload.accountNumber,
+      'currency':'NGN',
+      'sourceAccountNumber':sourceAccountNumber,
+      'destinationAccountName':payload.name
+    },
+    'url': `https://sandbox.monnify.com/api/v2/disbursements/initiate-transfer`,
+    'headers': {
+      'Authorization': `Basic ${authKey}`
+    }
+  };
+  request(options, async function (error, data) { 
+    if (error) throw new Error(error);
+    let response = data.body;
+    response = JSON.parse(response)
+    let date = new Date();
+    date = date.toLocaleString();
+    if(response.responseMessage == "Transaction successful"){
+      const createTransaction = await models.transaction.create(
+        {
+          id:uuid.v4(),
+          userId:payload.userId,
+          transactionType:"debit",
+          message:"payment",
+          beneficiary:"self",
+          description:"wallet fund widthrawal",
+          amount:payload.amount,
+          time:date,
+          status:"pending",
+          isRedemmed:false,
+          reference:payload.trxRef,
+        }
+      );
+      res.statusCode = 200
+      responseData.status = true;
+      responseData.message = "widthrawal initiated";
+      responseData.data = response;
+      return res.json(responseData)
+    }
+    const createTransaction = await models.transaction.create(
+      {
+        id:uuid.v4(),
+        userId:data.userId,
+        transactionType:"debit",
+        message:"payment",
+        beneficiary:"self",
+        description:"wallet fund widthrawal",
+        amount:payload.amount,
+        time:date,
+        status:"failed",
+        isRedemmed:false,
+        reference:payload.trxRef,
+      }
+    );
+    res.statusCode = 200
+    responseData.status = true;
+    responseData.message = "widthrawal failed";
+    responseData.data = response;
+    return res.json(responseData)
+  });
+}
 module.exports = {
   validateBvn,
-  validatePayment
+  validatePayment,
+  initiateATransfer,
 }
