@@ -756,6 +756,7 @@ const flutterwaveWebhook = async (req,res)=>{
         }
       }
     );
+    let reference = helpers.generateOTP()+"renew" ;
     const createTransaction = await models.transaction.create(
       {
         id:uuid.v4(),
@@ -764,19 +765,19 @@ const flutterwaveWebhook = async (req,res)=>{
         amount:payload.data.amount,
         time:payload.data.created_at,
         status:"Success",
-        reference:data.data.transfer_code
+        reference:reference
       }
     );
     const wallet = await models.wallet.findOne(
       {
         where:{
-          userId:transaction.userId,
+          userId:transaction.userId
         }
       }
     )
     await models.wallet.update(
       {
-        accountBalance:parseFloat(wallet.accountBalance) + parseFloat(data.data.amount),
+        accountBalance:parseFloat(wallet.accountBalance) + parseFloat(payload.data.amount),
       },
       {
         where:{
