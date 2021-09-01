@@ -264,8 +264,59 @@ async function initiateATransfer(payload,monnify,res){
     return res.json(responseData)
   });
 }
+async function getTransfer(payload,monnify,res){
+  let apiKey,privateKey;
+  if(monnify.privateKey){
+    apiKey = monnify.publicKey
+    privateKey = monnify.privateKey;
+  }else{
+    apiKey = monnify.testPublicKey;
+    privateKey = monnify.testPrivateKey;
+  }
+  const authKey = Buffer.from(apiKey+":"+privateKey).toString('base64');
+  let reference = payload.reference
+  var request = require('request');
+  var options = {
+    'method': 'GET',
+    'url': `https://sandbox.monnify.com/api/v2/disbursements/single/summary?reference=${reference}`,
+    'headers': {
+      'Authorization': `Basic ${authKey}`
+    }
+  };
+  request(options, async function (error, data) { 
+    if (error) throw new Error(error);
+    let response = data.body;
+    response = JSON.parse(response)
+    console.log(response);
+    if(response.requestSuccessful==true && response.responseMessage=="success"){
+      if(response.responseBody.status =="SUCCESS"){
+        await models.transaction.update(
+          {
+            status:"success",
+          },
+          {
+            reference:response.responseBody.reference
+          }
+        );
+        responseData.status = true;
+        responseData.message = "completed";
+        responseData.data = response;
+        return respond.json(responseData)
+      }
+    }
+    await models.transaction.update(
+      {
+        status:response.data.status,
+      },
+      {
+        beneficiary:payload.reference
+      }
+    )
+  });
+}
 module.exports = {
   validateBvn,
   validatePayment,
   initiateATransfer,
+  getTransfer
 }

@@ -1083,10 +1083,11 @@ async function verifyTransfer(paystack,payload,respond){
               status:"success",
             },
             {
-              beneficiary:payload.reference
+              where:{
+                beneficiary:payload.reference
+              }
             }
           )
-
           responseData.status = true;
           responseData.message = "completed";
           responseData.data = response;
@@ -1097,10 +1098,11 @@ async function verifyTransfer(paystack,payload,respond){
             status:response.data.status,
           },
           {
-            beneficiary:payload.reference
+            where:{
+              beneficiary:payload.reference
+            }
           }
         )
-
         responseData.status = true;
         responseData.message = "completed";
         responseData.data = response;

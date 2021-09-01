@@ -482,7 +482,10 @@ async function validateTransfer(flutterwave,data,responsee){
           status:payload.data.status,
         },
         {
-          beneficiary:payload.reference
+          where:
+          {
+            reference:payload.data.reference
+          }
         }
       )
       responsee.statusCode = 200
@@ -497,7 +500,10 @@ async function validateTransfer(flutterwave,data,responsee){
           status:payload.data.status,
         },
         {
-          beneficiary:payload.reference
+          where:
+          {
+            reference:payload.data.reference
+          }
         }
       )
     }
