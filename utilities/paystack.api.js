@@ -1032,13 +1032,11 @@ async function initiateATransfer(paystack,payload,userId,respond){
             reference:response.data.transfer_code,
           }
         );
-        res.statusCode = 200
         responseData.status = true;
         responseData.message = "widthrawal initiated";
         responseData.data = response;
         return respond.json(responseData)
       }
-      res.statusCode = 200
       responseData.status = true;
       responseData.message = "something went wrong";
       responseData.data = response;
@@ -1088,7 +1086,7 @@ async function verifyTransfer(paystack,payload,respond){
               beneficiary:payload.reference
             }
           )
-          res.statusCode = 200
+
           responseData.status = true;
           responseData.message = "completed";
           responseData.data = response;
@@ -1102,13 +1100,12 @@ async function verifyTransfer(paystack,payload,respond){
             beneficiary:payload.reference
           }
         )
-        res.statusCode = 200
+
         responseData.status = true;
         responseData.message = "completed";
         responseData.data = response;
         return respond.json(responseData)
       }
-      res.statusCode = 200
       responseData.status = true;
       responseData.message = "something went wrong";
       responseData.data = response;

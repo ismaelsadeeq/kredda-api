@@ -1,6 +1,7 @@
 const options = require('../middlewares/appSetting');
 const models = require('../models');
 const paystackApi = require('../utilities/paystack.api');
+const flutterwaveApi = require('../utilities/flutterwave.api');
 const helpers = require('../utilities/helpers');
 require('dotenv').config();
 //response
@@ -401,7 +402,7 @@ const initiateATransfer = async (req,res)=>{
       amount:data.amount,
       userId:user.id
     }
-    return await flutterwaveApi.initiatePayment(payment,payload,res);
+    return await flutterwaveApi.initiateATransfer(payment,payload,res);
   }
   if(payment.siteName =='monnify'){
     

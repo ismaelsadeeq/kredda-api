@@ -443,13 +443,13 @@ async function initiateATransfer(flutterwave,data,responsee){
             reference:payload.data.reference,
           }
         );
-        res.statusCode = 200
+        responsee.statusCode = 200
         responseData.status = true;
         responseData.message = "widthrawal initiated";
         responseData.data = payload;
         return responsee.json(responseData)
     }
-    res.statusCode = 200
+    responsee.statusCode = 200
     responseData.status = false;
     responseData.message = "something went wrong";
     responseData.data = payload;
@@ -485,7 +485,7 @@ async function validateTransfer(flutterwave,data,responsee){
           beneficiary:payload.reference
         }
       )
-      res.statusCode = 200
+      responsee.statusCode = 200
       responseData.status = true;
       responseData.message = "completed";
       responseData.data = payload;
@@ -501,7 +501,7 @@ async function validateTransfer(flutterwave,data,responsee){
         }
       )
     }
-    res.statusCode = 200
+    responsee.statusCode = 200
     responseData.status = false;
     responseData.message = "something went wrong";
     responseData.data = payload;
