@@ -295,23 +295,37 @@ async function getTransfer(payload,monnify,res){
             status:"success",
           },
           {
-            reference:response.responseBody.reference
+            where:
+            {
+              reference:response.responseBody.reference
+            }
           }
         );
         responseData.status = true;
         responseData.message = "completed";
         responseData.data = response;
-        return respond.json(responseData)
+        return res.json(responseData)
       }
+      await models.transaction.update(
+        {
+          status:response.data.status,
+        },
+        {
+          where:
+          {
+            reference:response.responseBody.reference
+          }
+        }
+      )
+      responseData.status = true;
+      responseData.message = "completed";
+      responseData.data = response;
+      return res.json(responseData)
     }
-    await models.transaction.update(
-      {
-        status:response.data.status,
-      },
-      {
-        beneficiary:payload.reference
-      }
-    )
+    responseData.status = true;
+    responseData.message = "something went wrong";
+    responseData.data = response;
+    return res.json(responseData)
   });
 }
 module.exports = {
