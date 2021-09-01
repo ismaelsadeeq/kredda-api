@@ -943,57 +943,57 @@ const monnifyWebhook = async (req,res)=>{
     responseData.status = true;
     responseData.data = undefined;
     return res.json(responseData);
-    }
-    if(payload.paymentStatus === "FAILED" && payload.paymentMethod === "CARD"){
-      const transaction = await models.transaction.findOne(
+  }
+  if(payload.paymentStatus === "FAILED" && payload.paymentMethod === "CARD"){
+    const transaction = await models.transaction.findOne(
+      {
+        where:{
+          reference:trxRef
+        }
+      }
+    );
+    const user = await models.user.findOne(
+      {
+        where:{
+          email:payload.customer.email
+        }
+      }
+    );
+    if(transaction){
+      await models.transaction.update(
+        {
+          status:"failed",
+          isRedemmed:false
+        },
         {
           where:{
             reference:trxRef
           }
         }
       );
-      const user = await models.user.findOne(
-        {
-          where:{
-            email:payload.customer.email
-          }
-        }
-      );
-      if(transaction){
-        await models.transaction.update(
-          {
-            status:"failed",
-            isRedemmed:false
-          },
-          {
-            where:{
-              reference:trxRef
-            }
-          }
-        );
-        res.statusCode = 200;
-        responseData.message = "Success";
-        responseData.status = true;
-        responseData.data = undefined;
-        return res.json(responseData)
+      res.statusCode = 200;
+      responseData.message = "Success";
+      responseData.status = true;
+      responseData.data = undefined;
+      return res.json(responseData)
+    }
+    let time = new Date();
+    time = time.toLocaleString()
+    await models.transaction.create(
+      {
+        id:uuid.v4(),
+        userId:user.id,
+        message:"funding of wallet",
+        reference:trxRef,
+        transactionType:"debit",
+        beneficiary:"self",
+        isRedemmed:false,
+        amount:payload.amountPaid,
+        description:user.firstName + " funding his/her wallet to perform transaction",
+        status:"failed",
+        time: time
       }
-      let time = new Date();
-      time = time.toLocaleString()
-      await models.transaction.create(
-        {
-          id:uuid.v4(),
-          userId:user.id,
-          message:"funding of wallet",
-          reference:trxRef,
-          transactionType:"debit",
-          beneficiary:"self",
-          isRedemmed:false,
-          amount:payload.amountPaid,
-          description:user.firstName + " funding his/her wallet to perform transaction",
-          status:"failed",
-          time: time
-        }
-      );
+    );
     res.statusCode = 200;
     responseData.message = "Success";
     responseData.status = true;
