@@ -1,6 +1,7 @@
 const models = require('../models');
 const uuid = require('uuid');
 const baxiApi = require('../utilities/baxi.api');
+const helpers = require('../middlewares/appSetting')
 require('dotenv').config();
 //response
 const responseData = {
@@ -24,7 +25,8 @@ const buyAirtime = async (user,trxRef,time,service,phoneNumber,amount,type,plan,
     }
   );
   let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
+  let predifinedDiscount = service.discount;
+  let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
@@ -105,7 +107,8 @@ const buyData = async (user,trxRef,time,service,phoneNumber,amount,type,code,res
     }
   );
   let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
+  let predifinedDiscount = service.discount;
+  let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
@@ -186,7 +189,8 @@ const buyElectricity = async (user,trxRef,time,service,phoneNumber,amount,code,m
     }
   );
   let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
+  let predifinedDiscount = service.discount;
+  let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
@@ -266,7 +270,8 @@ const buyWaecPin = async (user,trxRef,time,service,pinValue,noOfPins,type,amount
     }
   );
   let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
+  let predifinedDiscount = service.discount;
+  let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
@@ -347,7 +352,8 @@ const buyCable = async (user,trxRef,time,service,amount,cardNo,productMonthsPaid
     }
   );
   let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
+  let predifinedDiscount = service.discount;
+  let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
