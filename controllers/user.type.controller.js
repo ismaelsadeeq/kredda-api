@@ -34,8 +34,7 @@ const createUserCategory = async (req,res)=>{
     {
       id:uuid.v4(),
       name:data.name,
-      discountRate:data.discountRate
-      serviceCharge:data.serviceCharge,
+      discountRate:data.discountRate,
       period:data.period,
       fee:data.fee
     }
@@ -81,8 +80,7 @@ const editUserCategory = async (req,res)=>{
   const updateUserCategory = await models.userCategory.update(
     {
       name:data.name,
-      discountRate:data.discountRate
-      serviceCharge:data.serviceCharge,
+      discountRate:data.discountRate,
       period:data.period,
       fee:data.fee
     },
@@ -122,7 +120,7 @@ const getUserCategories = async (req,res)=>{
   }
   responseData.status = true;
   responseData.message = "completed";
-  responseData.data = serviceCategories;
+  responseData.data = userCategories;
   return res.json(responseData);
 }
 const deleteUserCategory = async (req,res)=>{
@@ -256,7 +254,6 @@ const partnerWithCategory = async (req,res)=>{
   let useDefault = data.useDefault;
   let creditCardId = data.creditCardId;
   const payment = await options.getPayment();
-  let creditCardId = data.creditCardId;
   if(useDefault){
     creditCard = await models.creditCard.findOne(
       {

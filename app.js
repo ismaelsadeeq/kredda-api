@@ -60,7 +60,7 @@ app.use('/api/v1/account', accountRouter);
 app.use('/api/v1/bank', bankRouter);
 app.use('/api/v1/transaction', transactionRouter);
 app.use('/api/v1/support',supportRouter);
-app.use('/api/v1/support',userTypeRouter)
+app.use('/api/v1/parnership',userTypeRouter)
 
 
 cron.schedule('0 1 * * *', () => { //jobs will run after 1 am every day server is running
