@@ -108,7 +108,8 @@ const walletDatapayment = async (user,trxRef,time,service,phoneNumber,package,bu
     }
   );
   let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
+  let predifinedDiscount = service.discount;
+  let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
@@ -189,8 +190,8 @@ const walletElectricityPayment = async (user,trxRef,time,service,phoneNumber,met
       }
     }
   );
-  let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
+  let predifinedDiscount = service.discount;
+  let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
@@ -274,7 +275,8 @@ const waecPinPurchase = async (user,trxRef,time,service,amount,numberOfPin,res)=
     }
   );
   let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
+  let predifinedDiscount = service.discount;
+  let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
@@ -353,7 +355,8 @@ const jambPinPurchase = async (user,trxRef,time,service,type,amount,profileCode,
     }
   );
   let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
+  let predifinedDiscount = service.discount;
+  let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
@@ -433,7 +436,8 @@ const dstvPurchase = async (user,trxRef,time,service,amount,cardNo,customerName,
     }
   );
   let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
+  let predifinedDiscount = service.discount;
+  let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
@@ -516,7 +520,8 @@ const dstvPurchaseWithAddOn = async (user,trxRef,time,service,amount,cardNo,cust
     }
   );
   let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
+  let predifinedDiscount = service.discount;
+  let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
@@ -602,7 +607,8 @@ const startimesPurchase = async (user,trxRef,time,service,amount,cardNo,customer
     }
   );
   let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
+  let predifinedDiscount = service.discount;
+  let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
@@ -683,7 +689,8 @@ const goTvPurchase = async (user,trxRef,time,service,amount,cardNo,customerName,
     }
   );
   let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
+  let predifinedDiscount = service.discount;
+  let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
