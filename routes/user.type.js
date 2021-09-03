@@ -8,5 +8,28 @@ router.get('/',
   controller.
 );
 
+router.post('/',
+  passport.authenticate('jwt',{session:false}),
+  controller.createUserCategory
+);
+
+router.put('/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.editUserCategory
+);
+
+router.get('/',
+  passport.authenticate('jwt',{session:false}),
+  controller.getUserCategories
+);
+
+router.delete('/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.
+);
+router.get('/partner/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.partnerWithCategory
+);
 
 module.exports = router;
