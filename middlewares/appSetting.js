@@ -35,6 +35,7 @@ const getDiscount = async (userId,predefinedDiscount)=>{
   }
   let rate = parseFloat(discountRate) / 100 ;
   let discount = parseFloat(predefinedDiscount) * rate;
+  console.log(discount);
   return discount
 }
 module.exports = {
