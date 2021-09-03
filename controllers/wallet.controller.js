@@ -1000,7 +1000,79 @@ const monnifyWebhook = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData)
   }
-  // if(payload.)
+  if(payload.eventType =="SUCCESSFUL_DISBURSEMENT" && payload.eventData.status =="SUCCESS"){
+    let trxReference = payload.eventData.reference;
+    await models.transaction.update(
+      {
+        status:"success",
+        isRedemmed:true, 
+      },
+      {
+        where:{
+          reference:trxReference
+        }
+      }
+    );
+    responseData.message = "Success";
+    responseData.status = true;
+    responseData.data = undefined;
+    return res.json(responseData)
+  }
+  if(payload.eventType =="FAILED_DISBURSEMENT" && payload.eventData.status =="FAILED"){
+    let trxReference = payload.eventData.reference;
+    const transaction = await models.transaction.findOne(
+      {
+        where:{
+          reference:trxReference
+        }
+      }
+    );
+    await models.transaction.update(
+      {
+        status:"Failed",
+        isRedemmed:true
+      },
+      {
+        where:{
+          reference:trxReference
+        }
+      }
+    );
+    let reference = helpers.generateOTP()+"renew";
+    const createTransaction = await models.transaction.create(
+      {
+        id:uuid.v4(),
+        userId:transaction.userId,
+        transactionType:"credit",
+        amount:payload.eventData.amount,
+        time:payload.eventData.completedOn,
+        status:"Success",
+        reference:reference
+      }
+    );
+    const wallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:transaction.userId
+        }
+      }
+    );
+    await models.wallet.update(
+      {
+        accountBalance:parseFloat(wallet.accountBalance) + parseFloat(payload.eventData.amount),
+      },
+      {
+        where:{
+          userId:transaction.userId,
+        }
+      }
+    )
+    responseData.message = "Success";
+    responseData.status = true;
+    responseData.data = undefined;
+    return res.json(responseData)
+  }
+
   responseData.message = "Invalid Payload";
   responseData.status = true;
   responseData.data = undefined;
