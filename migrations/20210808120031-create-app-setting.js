@@ -34,6 +34,9 @@ module.exports = {
       isActive: {
         type: Sequelize.BOOLEAN
       },
+      accountNumber: {
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
