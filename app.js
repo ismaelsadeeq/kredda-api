@@ -66,6 +66,7 @@ app.use('/api/v1/support',userTypeRouter)
 cron.schedule('0 1 * * *', () => { //jobs will run after 1 am every day server is running
   helpers.checkLoans()
   helpers.checkInvestment()
+  helper.checkUserTypes();
 });
 
 // catch 404 and forward to error handler

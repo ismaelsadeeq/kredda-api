@@ -110,9 +110,28 @@ const checkInvestment = async (req,res)=>{
     }
   }
 }
+const checkUserTypes = async()=>{
+  let currentDate = new Date();
+  const users = await models.userType.findAll();
+  if(users){
+    for (let i = 0; i < users.length; i++) {
+      let maximumDate = users[i].dueDate;
+      if(currentDate>maximumDate){
+        await models.userType.destroy(
+          {
+            where:{
+              id:users[i].id
+            }
+          }
+        );
+      }
+    }
+  }
+}
 module.exports ={
   generateOTP,
   getDifferenceInDays,
   checkLoans,
-  checkInvestment
+  checkInvestment,
+  checkUserTypes
 }
