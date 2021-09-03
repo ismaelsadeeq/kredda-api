@@ -1000,6 +1000,13 @@ const monnifyWebhook = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData)
   }
+  responseData.message = "Invalid Payload";
+  responseData.status = true;
+  responseData.data = undefined;
+  return res.json(responseData);
+}
+const monnifyEventWebhook = async (req,res)=>{
+  const payload = req.body;
   if(payload.eventType =="SUCCESSFUL_DISBURSEMENT" && payload.eventData.status =="SUCCESS"){
     let trxReference = payload.eventData.reference;
     await models.transaction.update(
@@ -1072,16 +1079,11 @@ const monnifyWebhook = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData)
   }
-
-  responseData.message = "Invalid Payload";
-  responseData.status = true;
-  responseData.data = undefined;
-  return res.json(responseData);
 }
-
 module.exports = {
   getWalletBalance,
   webhook,
   flutterwaveWebhook,
-  monnifyWebhook
+  monnifyWebhook,
+  monnifyEventWebhook
 }

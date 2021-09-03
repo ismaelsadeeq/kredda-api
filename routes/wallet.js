@@ -13,6 +13,9 @@ router.post('/paystack-webhook',
 router.post('/flutterwave-webhook',
   controller.flutterwaveWebhook
 );
+router.post('/event/monnify-webhook',
+  controller.monnifyEventWebhook
+);
 router.post('/monnify-webhook',
   controller.monnifyWebhook
 );
