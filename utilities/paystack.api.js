@@ -3,13 +3,11 @@ var request = require('request');
 require('dotenv').config();
 const uuid = require('uuid');
 const converterKey = process.env.FREECONVERTER;
-//New Implementation
 const responseData = {
 	status: true,
 	message: "Completed",
 	data: null
 }
-
 
 async function validateBvn(payload,paystack){
   let privateKey;
