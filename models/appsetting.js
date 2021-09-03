@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     currency: DataTypes.STRING,
     purpose: DataTypes.STRING,
     isActive: DataTypes.BOOLEAN,
-    accountNumber:DataTypes.BOOLEAN,
+    accountNumber:DataTypes.STRING,
   }, {
     sequelize,
     paranoid:true,

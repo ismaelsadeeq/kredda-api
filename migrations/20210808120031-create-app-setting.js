@@ -35,7 +35,7 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       accountNumber: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
