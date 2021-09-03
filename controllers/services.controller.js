@@ -85,7 +85,8 @@ const shagoBuyAirtime = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -213,7 +214,8 @@ const shagoDataPurchase = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -344,7 +346,8 @@ const shagoPurchaseElectricity = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -451,7 +454,8 @@ const shagoWaecPinPurchase = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -565,7 +569,8 @@ const shagoJambPurchase = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -690,7 +695,8 @@ const shagoPurchaseDstv = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -793,7 +799,8 @@ const shagoPurchaseDstvWithAddOn = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -900,7 +907,8 @@ const shagoPurchaseStartimes = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -1001,7 +1009,8 @@ const shagoPurchaseGoTv = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -1119,7 +1128,8 @@ const baxiPurchaseAirtime = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -1243,7 +1253,8 @@ const baxiPurchaseData = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -1357,7 +1368,8 @@ const baxiPurchaseElectricity = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -1469,7 +1481,8 @@ const baxiPurchasePin = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -1590,7 +1603,8 @@ const baxiPurchaseCable = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -1706,7 +1720,8 @@ const mAirtimeMtnVtuTopUp = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -1802,7 +1817,8 @@ const mAirtimeAirtimeTopUp = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -1911,7 +1927,8 @@ const mAirtimeRechargeInternational = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(data.amountInNaira) + parseFloat(serviceCharge); 
     if(discount){
@@ -2012,7 +2029,8 @@ const mAirtimeMtnDataGifting = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -2112,7 +2130,8 @@ const mAirtimeMtnDataShare = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -2233,7 +2252,8 @@ const mAirtimeDataTopUp = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -2346,7 +2366,8 @@ const mAirtimeElectricityPurchase = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -2441,7 +2462,8 @@ const mAirtimeWaecPurchase = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = service.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -2534,7 +2556,8 @@ const mAirtimeNecoPurchase = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = service.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -2658,7 +2681,8 @@ const mAirtimeRechargeGoTv = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -2762,7 +2786,8 @@ const mAirtimeRechargeDstv = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
@@ -2865,7 +2890,8 @@ const mAirtimeRechargeStartimes = async (req,res)=>{
       }
     );
     let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
+    let predifinedDiscount = service.discount;
+    let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = data.amount;
     let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
     if(discount){
