@@ -13,7 +13,8 @@ module.exports = (sequelize, DataTypes) => {
     privateKey: DataTypes.STRING,
     currency: DataTypes.STRING,
     purpose: DataTypes.STRING,
-    isActive: DataTypes.BOOLEAN
+    isActive: DataTypes.BOOLEAN,
+    accountNumber:DataTypes.BOOLEAN,
   }, {
     sequelize,
     paranoid:true,
