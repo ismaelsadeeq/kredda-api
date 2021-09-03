@@ -275,15 +275,6 @@ const partnerWithCategory = async (req,res)=>{
     )
   }
   if(payment.siteName =='paystack'){
-    const serviceCategory = await models.serviceCategory.findOne(
-      {
-        where:{
-          id:service.serviceCategoryId
-        }
-      }
-    );
-    let serviceCharge = serviceCategory.serviceCharge;
-    let discount = service.discount;
     let amount = category.fee;
     let beneficiary = {
       category:cetegory.id,
@@ -306,10 +297,16 @@ const partnerWithCategory = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await shagoHelpers.walletpayment(user,trxRef,time,service,data.phoneNumber,data.amount,res)
+    responseData.status = 200;
+    responseData.message = "gateway not supported";
+    responseData.data = undefined
+    return res.json(responseData);
   }
   if(payment.siteName =='monnify'){
-    return await shagoHelpers.walletpayment(user,trxRef,time,service,data.phoneNumber,data.amount,res)
+    responseData.status = 200;
+    responseData.message = "gateway not supported";
+    responseData.data = undefined
+    return res.json(responseData);
   }
 }
 module.exports = {

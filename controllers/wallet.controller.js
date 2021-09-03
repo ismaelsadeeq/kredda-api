@@ -106,6 +106,36 @@ const updateInvestment = async (transaction)=>{
     }
   );
 }
+const partnership = async (transaction,res)=>{
+  let beneficiary = JSON.parse(transaction.beneficiary);
+  const category = await models.userCategory.findOne(
+    {
+      where:{
+        id:beneficiary.category
+      }
+    }
+  );
+  Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+  };
+  let date = new Date();
+  date = date.addDays(parseFloat(category.period));
+  const userType = await models.userType.create(
+    {
+      id:uuid.v4(),
+      userId:user.id,
+      userCategoryId:category.id,
+      dueDate:date
+    }
+  );
+  res.statusCode = 200;
+  responseData.message = "Success";
+  responseData.status = true;
+  responseData.data = undefined;
+  return res.json(responseData)
+}
 
 const webhook =async (req,res)=>{
   //validate event
@@ -212,6 +242,10 @@ const webhook =async (req,res)=>{
         if(transaction.message =="mtn vtu airtime purchase" || transaction.message =="airtime purchase" || transaction.message =="foreign airtime purchase"){
           res.statusCode = 200;
           return await walletHelpers.airtimePurchase(transaction,res);
+        }
+        if(transaction.message =="parnership"){
+          res.statusCode = 200;
+          return await parnership(transaction,res);
         }
         const otherAccount = await models.otherAccount.findOne(
           {
