@@ -1078,6 +1078,7 @@ const monnifyWebhook = async (req,res)=>{
   responseData.data = undefined;
   return res.json(responseData);
 }
+
 module.exports = {
   getWalletBalance,
   webhook,

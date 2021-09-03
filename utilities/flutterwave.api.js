@@ -465,8 +465,8 @@ async function validateTransfer(flutterwave,data,responsee){
   }
   var request = require('request');
   var options = {
-    'method': 'POST',
-    'url': `https://api.flutterwave.com/v3/transfers/:${data.id}`,
+    'method': 'GET',
+    'url': `https://api.flutterwave.com/v3/transfers/${data.id}`,
     'headers': {
       'Authorization': `Bearer ${privateKey}`
     },

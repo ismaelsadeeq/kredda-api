@@ -49,7 +49,8 @@ const createSetting = async (req,res)=>{
       privateKey:data.privateKey,
       currency:data.currency || "NGN",
       purpose:data.purpose,
-      isActive:false
+      isActive:false,
+      accountNumber:data.accountNumber
     }
   );
   if(createSetting){
@@ -85,7 +86,8 @@ const editSetting = async (req,res)=>{
       publicKey:data.publicKey,
       privateKey:data.privateKey,
       currency:data.currency || "NGN",
-      purpose:data.purpose
+      purpose:data.purpose,
+      accountNumber:data.accountNumber
     },
     {
       where:{

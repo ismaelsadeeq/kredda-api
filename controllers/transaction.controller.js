@@ -438,7 +438,7 @@ const validatePayment = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData);
   }
-  const payment = options.getPayment();
+  const payment = await options.getPayment();
   if(!payment){
     responseData.status = 200;
     responseData.status = true
@@ -464,6 +464,12 @@ const validatePayment = async (req,res)=>{
       id:transaction.beneficiary
     };
     return flutterwaveApi.validateTransfer(payment,payload,res);
+  }
+  if(payment.siteName =="monnify"){
+    let payload = {
+      reference:reference
+    };
+    return await monnifyApi.getTransfer(payload,payment,res);
   }
 }
 module.exports = {

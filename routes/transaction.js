@@ -3,6 +3,10 @@ const passport = require('passport');
 var router = express.Router();
 const controller = require('../controllers/transaction.controller');
 
+router.get('/verify-widthrawal/:reference',
+  passport.authenticate('jwt',{session:false}),
+  controller.validatePayment
+);
 router.post('/paystack/create-recipient/:bankId',
   passport.authenticate('jwt',{session:false}),
   controller.createTransferRecipient

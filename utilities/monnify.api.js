@@ -198,6 +198,10 @@ async function initiateATransfer(payload,monnify,res){
   const authKey = Buffer.from(apiKey+":"+privateKey).toString('base64');
   var request = require('request');
   var options = {
+    'url': `https://sandbox.monnify.com/api/v2/disbursements/initiate-transfer`,
+    'headers': {
+      'Authorization': `Basic ${authKey}`
+    },
     'method': 'POST',
     'body':{
       'amount':payload.amount,
@@ -209,15 +213,12 @@ async function initiateATransfer(payload,monnify,res){
       'sourceAccountNumber':sourceAccountNumber,
       'destinationAccountName':payload.name
     },
-    'url': `https://sandbox.monnify.com/api/v2/disbursements/initiate-transfer`,
-    'headers': {
-      'Authorization': `Basic ${authKey}`
-    }
+    json:true
   };
   request(options, async function (error, data) { 
     if (error) throw new Error(error);
     let response = data.body;
-    response = JSON.parse(response)
+    console.log(response);
     let date = new Date();
     date = date.toLocaleString();
     if(response.responseMessage == "Transaction successful"){
@@ -245,7 +246,7 @@ async function initiateATransfer(payload,monnify,res){
     const createTransaction = await models.transaction.create(
       {
         id:uuid.v4(),
-        userId:data.userId,
+        userId:payload.userId,
         transactionType:"debit",
         message:"payment",
         beneficiary:"self",
