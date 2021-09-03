@@ -40,6 +40,8 @@ const createBankDetail = async (req,res)=>{
       {
         id:uuid.v4(),
         userId:user.id,
+        firstName: data.firstName,
+        lastName: data.lastName,
         bankName:data.bankName,
         bankCode:data.bankCode,
         accountNumber:data.accountNumber,
@@ -48,7 +50,7 @@ const createBankDetail = async (req,res)=>{
     );
     if(payment.siteName =='paystack'){
       let payload = {
-        name:user.firstName + ' '+user.lastName,
+        name:`${data.firstName || user.firstName} ${data.lastName || user.lastName}`,
         accountNumber:data.accountNumber,
         bankCode:data.bankCode
       } 
@@ -56,7 +58,6 @@ const createBankDetail = async (req,res)=>{
     }
     if(payment.siteName =='flutterwave'){
       let payload = {
-        name:user.firstName + ' '+user.lastName,
         accountNumber:data.accountNumber,
         bankCode:data.bankCode
       }
@@ -102,6 +103,8 @@ const updateBankDetail = async (req,res)=>{
   if(!bankDetail.isAccountValid){
     await models.bank.update(
       {
+        firstName: data.firstName,
+        lastName: data.lastName,
         userId:user.id,
         bankCode:data.bankCode,
         accountNumber:data.accountNumber,
@@ -117,7 +120,7 @@ const updateBankDetail = async (req,res)=>{
     if(payment.siteName =='paystack'){
       let name  = data.firstName + " "+ data.lastName;
       let payload = {
-        name: name || user.firstName + ' '+user.lastName,
+        name:`${data.firstName || user.firstName} ${data.lastName || user.lastName}`,
         accountNumber:data.accountNumber,
         bankCode:data.bankCode
       }
