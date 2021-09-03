@@ -107,6 +107,17 @@ const updateInvestment = async (transaction)=>{
   );
 }
 const partnership = async (transaction,res)=>{
+  await transaction.update(
+    {
+      status:"successful",
+      isRedemmed:true,
+    },
+    {
+      where:{
+        reference:transaction.reference
+      }
+    }
+  );
   let beneficiary = JSON.parse(transaction.beneficiary);
   const category = await models.userCategory.findOne(
     {
@@ -125,7 +136,7 @@ const partnership = async (transaction,res)=>{
   const userType = await models.userType.create(
     {
       id:uuid.v4(),
-      userId:user.id,
+      userId:beneficiary.userId,
       userCategoryId:category.id,
       dueDate:date
     }
@@ -243,9 +254,9 @@ const webhook =async (req,res)=>{
           res.statusCode = 200;
           return await walletHelpers.airtimePurchase(transaction,res);
         }
-        if(transaction.message =="parnership"){
+        if(transaction.message =="partnership"){
           res.statusCode = 200;
-          return await parnership(transaction,res);
+          return await partnership(transaction,res);
         }
         const otherAccount = await models.otherAccount.findOne(
           {

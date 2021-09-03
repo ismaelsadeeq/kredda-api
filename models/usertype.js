@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   }
   userType.init({
-    dueDate: DataTypes.STRING
+    dueDate: DataTypes.DATE
   }, {
     sequelize,
     paranoid:true,

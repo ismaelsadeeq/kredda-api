@@ -2,6 +2,7 @@ const models = require('../models');
 const helpers = require('../utilities/helpers');
 const uuid = require('uuid');
 const options = require('../middlewares/appSetting');
+const paystackApi = require('../utilities/paystack.api')
 require('dotenv').config();
 //response
 const responseData = {
@@ -155,12 +156,26 @@ const deleteUserCategory = async (req,res)=>{
   return res.json(responseData);
 }
 const partnerWithCategory = async (req,res)=>{
+  const data = req.body;
   const categoryId = req.params.id;
   const user = req.user;
   let digits = helpers.generateOTP()
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
-  let trxRef = `PARTNER-${digits}${firstDigit}`
+  let trxRef = `PARTNER-${digits}${firstDigit}`;
+  const userType = await models.userType.findOne(
+    {
+      where:{
+        userId:user.id
+      }
+    }
+  );
+  if(userType){
+    responseData.status = false;
+    responseData.message = "user has already partner";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   const category = await models.userCategory.findOne(
     {
       where:{
@@ -218,6 +233,7 @@ const partnerWithCategory = async (req,res)=>{
     );
     const transaction = await models.transaction.create(
       {
+        id:uuid.v4(),
         transactionType:"debit",
         message:"partnership ",
         beneficiary:"self",
@@ -247,7 +263,7 @@ const partnerWithCategory = async (req,res)=>{
     );
     responseData.status = true;
     responseData.message = "parnership successful";
-    responseData.data = undefined;
+    responseData.data = userType;
     return res.json(responseData);
   }
   let creditCard;
@@ -274,7 +290,7 @@ const partnerWithCategory = async (req,res)=>{
   if(payment.siteName =='paystack'){
     let amount = category.fee;
     let beneficiary = {
-      category:cetegory.id,
+      category:category.id,
       userId:user.id,
     }
     beneficiary = JSON.stringify(beneficiary);
@@ -284,7 +300,7 @@ const partnerWithCategory = async (req,res)=>{
       authorizationCode:creditCard.authCode,
       userId:user.id,
       firstName:user.firstName,
-      message:"parnership",
+      message:"partnership",
       beneficiary:beneficiary
     }
     await paystackApi.chargeAuthorization(payload,payment)
