@@ -1,6 +1,7 @@
 const models = require('../models');
 const uuid = require('uuid');
 const shagoApi = require('../utilities/shago.api');
+const helpers = require('../middlewares/appSetting')
 require('dotenv').config();
 //response
 const responseData = {
@@ -26,7 +27,8 @@ const walletpayment = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
     }
   );
   let serviceCharge = serviceCategory.serviceCharge;
-  let discount = service.discount;
+  let predifinedDiscount = service.discount;
+  let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
