@@ -406,6 +406,53 @@ const getAllUserInvestments = async (req,res)=>{
   responseData.data = investments;
   return res.json(responseData);
 }
+const getAllInvestments = async (req,res)=>{
+  let pageLimit = parseInt(req.query.pageLimit);
+  let currentPage = parseInt(req.query.currentPage);
+  let	skip = currentPage * pageLimit;
+  const investments = await models.investment.findAll(
+    {
+      order:[['createdAt','DESC']],
+      offset:skip,
+      limit:pageLimit
+    }
+  );
+  if(!investments){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = investments;
+  return res.json(responseData);
+}
+const getAllPlanInvestments = async (req,res)=>{
+  let pageLimit = parseInt(req.query.pageLimit);
+  let currentPage = parseInt(req.query.currentPage);
+  let	skip = currentPage * pageLimit;
+  const investments = await models.investment.findAll(
+    {
+      order:[['createdAt','DESC']],
+      offset:skip,
+      limit:pageLimit,
+      where:{
+        investmentCategoryId:req.params.planId
+      }
+    }
+  );
+  if(!investments){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = investments;
+  return res.json(responseData);
+}
 const getInvestment = async (req,res)=>{
   const investments = await models.investment.findOne(
     {
@@ -433,5 +480,7 @@ module.exports = {
   deleteInvestmentPlan,
   invest,
   getInvestment,
-  getAllUserInvestments
+  getAllUserInvestments,
+  getAllPlanInvestments,
+  getAllInvestments
 }

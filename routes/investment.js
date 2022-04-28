@@ -23,6 +23,14 @@ router.get('/user/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getInvestment
 );
+router.get('/user-all/:planId',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllPlanInvestments
+);
+router.get('/user-all',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllInvestments
+);
 router.get('/user',
   passport.authenticate('jwt',{session:false}),
   controller.getAllUserInvestments
