@@ -9,7 +9,7 @@ const helpers = require('../utilities/helpers');
 const multer = require('multer');
 const multerConfig = require('../config/multer');
 require('dotenv').config();
-
+const link = process.env.LINK;
 //response
 const responseData = {
 	status: true,
@@ -71,7 +71,7 @@ const createSuperAdmin = async (req,res) =>{
   const htmlPart = `<div>
   <h3> Hello ${names}</h3
   <p>${msg}</p>
-
+  <a href=${link}>Click this link to continue</a>
   <footer></footer>
   <p>This is a noreply email from Kredda.com</p>
 </div>`
@@ -143,7 +143,7 @@ const createAdmin = async (req,res) =>{
   const htmlPart = `<div>
   <h3> Hello ${names}</h3
   <p>${msg}</p>
-
+  <a href=${link}>Click this link to continue</a>
   <footer></footer>
   <p>This is a noreply email from Kredda.com</p>
 </div>`
@@ -158,7 +158,7 @@ const createAdmin = async (req,res) =>{
   await models.otpCode.create({id:uuid.v4(),code:val,adminId:admin.id});
   sendEmail(data)
   responseData.status = true
-  responseData.message = "Account created use the code sent the email provided to verify and set ppassword";
+  responseData.message = "Account created use the code sent the email provided to verify and set password";
   responseData.data = undefined;
   return res.json(responseData);
 
