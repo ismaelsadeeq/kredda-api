@@ -9,7 +9,6 @@ const helpers = require('../utilities/helpers');
 const multer = require('multer');
 const multerConfig = require('../config/multer');
 require('dotenv').config();
-const link = process.env.LINK;
 //response
 const responseData = {
 	status: true,
@@ -46,6 +45,9 @@ const createSuperAdmin = async (req,res) =>{
   } 
   else
   {
+    const saltRounds = 10;
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hash = bcrypt.hashSync("password",salt)
     admin = await models.admin.create(
       {
         id:uuid.v4(),
@@ -54,7 +56,8 @@ const createSuperAdmin = async (req,res) =>{
         email:data.email,
         phoneNumber:data.phoneNumber,
         isSuperAdmin:true,
-        permission:"1"
+        permission:"1",
+        password:hash
       }
     );
   }
@@ -65,28 +68,23 @@ const createSuperAdmin = async (req,res) =>{
     return res.json(responseData);
   }
   //generate otp and send email
-  let val = helpers.generateOTP();
   let names = data.firstName;
-  const msg = "Welcome "+names+", use the code "+ val+" to verify your email and create your Kredda Password";
+  const msg = "Welcome "+names+" use \"password\" as your default password to login to your Kredda Account";
   const htmlPart = `<div>
-  <h3> Hello ${names}</h3
-  <p>${msg}</p>
-  <a href=${link}>Click this link to continue</a>
-  <footer></footer>
-  <p>This is a noreply email from Kredda.com</p>
-</div>`
+    <h3> Hello ${names}</h3
+    <p>${msg}</p>
+    <footer></footer>
+    <p>This is a noreply email from Kredda.com</p>
+  </div>`
   data.variables = {
     "names":names,
-    "code": val,
     "summary": msg,
     "html":htmlPart,
     "body":msg
   }
-  data.val = val
-  await models.otpCode.create({id:uuid.v4(),code:val,adminId:admin.id});
   sendEmail(data)
   responseData.status = true
-  responseData.message = "Account created use the code sent the email provided to verify and set ppassword";
+  responseData.message = "Welcome "+names+" use \"password\" as your default password to login to your Kredda Account";
   return res.json(responseData);
 
 }
@@ -118,6 +116,9 @@ const createAdmin = async (req,res) =>{
   } 
   else
   {
+    const saltRounds = 10;
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hash = bcrypt.hashSync("password",salt)
     admin = await models.admin.create(
       {
         id:uuid.v4(),
@@ -126,7 +127,8 @@ const createAdmin = async (req,res) =>{
         email:data.email,
         phoneNumber:data.phoneNumber,
         isSuperAdmin:false,
-        permission:"1"
+        permission:"1",
+        password:hash
       }
     );
   }
@@ -136,29 +138,24 @@ const createAdmin = async (req,res) =>{
     responseData.data = undefined;
     return res.json(responseData);
   }
-  //generate otp and send email
-  let val = helpers.generateOTP();
   let names = data.firstName;
-  const msg = "Welcome "+names+", use the code "+ val+" to verify your email and create your Kredda Password";
+  const msg = "Welcome "+names+" use \"password\" as your default password to login";
   const htmlPart = `<div>
   <h3> Hello ${names}</h3
   <p>${msg}</p>
-  <a href=${link}>Click this link to continue</a>
   <footer></footer>
   <p>This is a noreply email from Kredda.com</p>
 </div>`
   data.variables = {
     "names":names,
-    "code": val,
     "summary": msg,
     "html":htmlPart,
     "body":msg
   }
   data.val = val
-  await models.otpCode.create({id:uuid.v4(),code:val,adminId:admin.id});
   sendEmail(data)
   responseData.status = true
-  responseData.message = "Account created use the code sent the email provided to verify and set password";
+  responseData.message = "Account created use \"password\" as your default password to login";
   responseData.data = undefined;
   return res.json(responseData);
 
