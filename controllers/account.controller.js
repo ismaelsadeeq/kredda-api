@@ -211,7 +211,6 @@ const createAccount = async (req,res)=>{
   return res.json(responseData);
 }
 const fundAccount = async (req,res)=>{
-  const user = req.user;
   const id = req.params.id;
   const trueAccount = await models.otherAccount.findOne(
     {
