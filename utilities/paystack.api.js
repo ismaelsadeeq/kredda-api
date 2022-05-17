@@ -69,7 +69,7 @@ async function chargeAuthorization(payload,paystack){
     privateKey = paystack.testPrivateKey
   }
   const https = require('https')
-  const amount = parseFloat(payload.amount) * 100
+  const amount = parseInt(payload.amount) * 100
   const params = JSON.stringify({
     "email": payload.email,
     "amount": amount,
@@ -205,15 +205,15 @@ async function verifyPayment(payload,paystack,respond){
                   let payload = resp.body;
                   payload =  JSON.parse(payload);
                   console.log(payload);
-                  let amount = payload[`NGN_${accountType.currencyCode}`] * (parseFloat(data.data.amount) /100)
+                  let amount = parseInt(payload[`NGN_${accountType.currencyCode}`] * (parseFloat(data.data.amount) /100))
                   if(accountType.serviceFee){
-                    let serviceFee  =  payload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee);
+                    let serviceFee  =  parseInt(payload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee));
                     amount =  amount - serviceFee;
                   }
                   await models.otherAccount.update(
                     {
                       status:0,
-                      accountBalance:parseFloat(otherAccount.accountBalance) + amount
+                      accountBalance:parseInt(otherAccount.accountBalance) + amount
                     },
                     {
                       where:{
@@ -223,7 +223,7 @@ async function verifyPayment(payload,paystack,respond){
                   )
                 });
               } else {
-                const balance = parseFloat(wallet.accountBalance) + (parseFloat(response.data.amount) /100);
+                const balance = parseInt(wallet.accountBalance) + (parseInt(response.data.amount) /100);
                 await models.wallet.update(
                   {
                     accountBalance:balance
