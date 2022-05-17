@@ -28,6 +28,8 @@ const updateAccount = async (req,res)=>{
       gender:data.gender,
       email:data.email,
       city:data.city,
+      countryCode:data.countryCode,
+      phoneNumber:data.countryCode,
       referralCode:referralCode,
       birthday:data.dob
     },
@@ -37,7 +39,6 @@ const updateAccount = async (req,res)=>{
       }
     }
   );
-  console.log(data.dob)
   const kyc = await models.kyc.findOne(
     {
       where:{

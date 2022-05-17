@@ -307,7 +307,7 @@ const initiateATransfer = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData);
   }
-  let amountInNaira = parseFloat(data.amount);
+  let amountInNaira = parseInt(data.amount);
   if(amountInNaira < 0 ){
     responseData.status = true;
     responseData.message = "Cannot withdraw negative amount";
@@ -321,8 +321,8 @@ const initiateATransfer = async (req,res)=>{
       }
     }
   );
-  let walletBalance = parseFloat(wallet.accountBalance);
-  if(walletBalance < parseFloat(data.amount)){
+  let walletBalance = parseInt(wallet.accountBalance);
+  if(walletBalance < parseInt(data.amount)){
     responseData.status = 200;
     responseData.status = false
     responseData.message = "insufficient funds";
@@ -360,7 +360,7 @@ const initiateATransfer = async (req,res)=>{
     }
     await models.wallet.update(
       {
-        accountBalance:parseFloat(wallet.accountBalance) - amountInNaira,
+        accountBalance:parseInt(wallet.accountBalance) - amountInNaira,
       },
       {
         where:{userId:user.id}
@@ -389,7 +389,7 @@ const initiateATransfer = async (req,res)=>{
     let trxRef = `payment-${digits}${firstDigit}`
     await models.wallet.update(
       {
-        accountBalance:parseFloat(wallet.accountBalance) - amountInNaira,
+        accountBalance:parseInt(wallet.accountBalance) - amountInNaira,
       },
       {
         where:{userId:user.id}
@@ -412,7 +412,7 @@ const initiateATransfer = async (req,res)=>{
     let trxRef = `payment-${digits}${firstDigit}`
     await models.wallet.update(
       {
-        accountBalance:parseFloat(wallet.accountBalance) - amountInNaira,
+        accountBalance:parseInt(wallet.accountBalance) - amountInNaira,
       },
       {
         where:{userId:user.id}

@@ -37,7 +37,7 @@ const createUserCategory = async (req,res)=>{
       name:data.name,
       discountRate:data.discountRate,
       period:data.period,
-      fee:data.fee
+      fee:parseInt(data.fee)
     }
   );
   if(!createUserCategory){
@@ -199,8 +199,8 @@ const partnerWithCategory = async (req,res)=>{
         }
       }
     );
-    let fee = parseFloat(category.fee);
-    let walletBalance = parseFloat(wallet.accountBalance);
+    let fee = parseInt(category.fee);
+    let walletBalance = parseInt(wallet.accountBalance);
     if(walletBalance < fee){
       const transaction = await models.transaction.create(
         {
@@ -252,7 +252,7 @@ const partnerWithCategory = async (req,res)=>{
       return date;
     };
     let date = new Date();
-    date = date.addDays(parseFloat(category.period));
+    date = date.addDays(parseInt(category.period));
     const userType = await models.userType.create(
       {
         id:uuid.v4(),
@@ -288,7 +288,7 @@ const partnerWithCategory = async (req,res)=>{
     )
   }
   if(payment.siteName =='paystack'){
-    let amount = category.fee;
+    let amount = parseInt(category.fee);
     let beneficiary = {
       category:category.id,
       userId:user.id,
