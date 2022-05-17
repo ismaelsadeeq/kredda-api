@@ -29,12 +29,12 @@ const walletpayment = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
   }
   let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
+  let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
     const transaction = await models.transaction.create(
       {
@@ -110,12 +110,12 @@ const walletDatapayment = async (user,trxRef,time,service,phoneNumber,package,bu
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
   }
   let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
+  let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
     const transaction = await models.transaction.create(
       {
@@ -192,12 +192,12 @@ const walletElectricityPayment = async (user,trxRef,time,service,phoneNumber,met
   );
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
   }
   let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
+  let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
     const transaction = await models.transaction.create(
       {
@@ -277,12 +277,12 @@ const waecPinPurchase = async (user,trxRef,time,service,amount,numberOfPin,res)=
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
   }
   let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
+  let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
     const transaction = await models.transaction.create(
       {
@@ -357,12 +357,12 @@ const jambPinPurchase = async (user,trxRef,time,service,type,amount,profileCode,
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
   }
   let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
+  let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
     const transaction = await models.transaction.create(
       {
@@ -438,12 +438,12 @@ const dstvPurchase = async (user,trxRef,time,service,amount,cardNo,customerName,
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
   }
   let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
+  let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
     const transaction = await models.transaction.create(
       {
@@ -522,12 +522,12 @@ const dstvPurchaseWithAddOn = async (user,trxRef,time,service,amount,cardNo,cust
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
   }
   let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
+  let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
     const transaction = await models.transaction.create(
       {
@@ -609,12 +609,12 @@ const startimesPurchase = async (user,trxRef,time,service,amount,cardNo,customer
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
   }
   let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
+  let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
     const transaction = await models.transaction.create(
       {
@@ -691,12 +691,12 @@ const goTvPurchase = async (user,trxRef,time,service,amount,cardNo,customerName,
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
   if(discount){
     totalAmount = totalAmount  - discount;
   }
   let profit = totalAmount - amount;
-  let walletBalance = parseFloat(wallet.accountBalance);
+  let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
     const transaction = await models.transaction.create(
       {
