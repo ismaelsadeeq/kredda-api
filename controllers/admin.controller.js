@@ -8,8 +8,12 @@ const mailer = require('../utilities/mailjet');
 const helpers = require('../utilities/helpers');
 const multer = require('multer');
 const multerConfig = require('../config/multer');
+
+// imports
+// ---------------------------------------------------------------------------------------------//
+
 require('dotenv').config();
-//response
+//response global variable
 const responseData = {
 	status: true,
 	message: "Completed",
@@ -54,6 +58,7 @@ const createSuperAdmin = async (req,res) =>{
         firstName:data.firstName,
         lastName:data.lastName,
         email:data.email,
+        countryCode:data.countryCode,
         phoneNumber:data.phoneNumber,
         isSuperAdmin:true,
         permission:"1",
@@ -125,6 +130,7 @@ const createAdmin = async (req,res) =>{
         firstName:data.firstName,
         lastName:data.lastName,
         email:data.email,
+        countryCode:data.countryCode,
         phoneNumber:data.phoneNumber,
         isSuperAdmin:false,
         permission:"1",
@@ -211,7 +217,7 @@ const getAdmin = async  (req,res)=>{
       where:{
         id:user.id
       },
-      attributes:['id','firstName','lastName','phoneNumber','email','isVerified','profilePicture']
+      attributes:['id','firstName','lastName','  countryCode','phoneNumber','email','isVerified','profilePicture']
     }
   );
   if(admin){
@@ -233,6 +239,7 @@ const editAdmin = async (req,res)=>{
     {
       firstName:data.firstName,
       lastName:data.lastName,
+      countryCode:data.countryCode,
       phoneNumber:data.phoneNumber,
     },
     {
@@ -290,6 +297,23 @@ const deleteAdmin = async (req,res)=>{
   responseData.message = "deleted";
   return res.json(responseData);
 }
+const restoreAdmin = async (req,res)=>{
+  const user = req.user;
+  const deleteAdmin = await models.admin.update(
+    {
+      deletedAt:null
+    },
+    {
+      where:{
+        id:user.id
+      }
+    }
+  );
+  responseData.status = true;
+  responseData.message = "deleted";
+  return res.json(responseData);
+}
+
 
 const verifyEmail = async (req,res)=>{
   const data = req.body;
@@ -567,5 +591,6 @@ module.exports = {
   resetPassword,
   changePassword,
   editProfilePicture,
-  editAdminPrioriy
+  editAdminPrioriy,
+  restoreAdmin
 }
