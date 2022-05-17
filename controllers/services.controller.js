@@ -52,8 +52,7 @@ const shagoBuyAirtime = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    console.log(data.phoneNumber)
-    return await shagoHelpers.walletpayment(user,trxRef,time,service,data.phoneNumber,data.amount,res);
+    return await shagoHelpers.walletpayment(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -87,8 +86,8 @@ const shagoBuyAirtime = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -115,10 +114,10 @@ const shagoBuyAirtime = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await shagoHelpers.walletpayment(user,trxRef,time,service,data.phoneNumber,data.amount,res)
+    return await shagoHelpers.walletpayment(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),res)
   }
   if(payment.siteName =='monnify'){
-    return await shagoHelpers.walletpayment(user,trxRef,time,service,data.phoneNumber,data.amount,res)
+    return await shagoHelpers.walletpayment(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),res)
   }
 
 }
@@ -174,7 +173,6 @@ const shagoDataPurchase = async (req,res)=>{
 
   let time = new Date();
   time = time.toLocaleString();
-  console.log(data)
   if(!data.phoneNumber || !data.amount || !data.allowance || !data.code){
     responseData.status = false;
     responseData.message = "data not complete";
@@ -216,8 +214,8 @@ const shagoDataPurchase = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount =parseInt(amount) +parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -314,7 +312,7 @@ const shagoPurchaseElectricity = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await shagoHelpers.walletElectricityPayment(user,trxRef,time,service,data.phoneNumber,data.meterNo,data.disco,data.type,data.name,data.address,data.amount,res);
+    return await shagoHelpers.walletElectricityPayment(user,trxRef,time,service,data.phoneNumber,data.meterNo,data.disco,data.type,data.name,data.address,parseInt(data.amount),res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -348,8 +346,8 @@ const shagoPurchaseElectricity = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount =parseInt(amount) +parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -381,10 +379,10 @@ const shagoPurchaseElectricity = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-     return await shagoHelpers.walletElectricityPayment(user,trxRef,time,service,data.phoneNumber,data.meterNo,data.disco,data.type,data.name,data.address,data.amount,res);
+     return await shagoHelpers.walletElectricityPayment(user,trxRef,time,service,data.phoneNumber,data.meterNo,data.disco,data.type,data.name,data.address,parseInt(data.amount),res);
   }
   if(payment.siteName =='monnify'){
-     return await shagoHelpers.walletElectricityPayment(user,trxRef,time,service,data.phoneNumber,data.meterNo,data.disco,data.type,data.name,data.address,data.amount,res);
+     return await shagoHelpers.walletElectricityPayment(user,trxRef,time,service,data.phoneNumber,data.meterNo,data.disco,data.type,data.name,data.address,parseInt(data.amount),res);
   }
 }
 const shagoWaecPinLookup = async (req,res)=>{
@@ -422,7 +420,7 @@ const shagoWaecPinPurchase = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await shagoHelpers.waecPinPurchase(user,trxRef,time,service,data.amount,data.numberOfPin,res);
+    return await shagoHelpers.waecPinPurchase(user,trxRef,time,service,parseInt(data.amount),data.numberOfPin,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -456,8 +454,8 @@ const shagoWaecPinPurchase = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -484,10 +482,10 @@ const shagoWaecPinPurchase = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-     return await shagoHelpers.waecPinPurchase(user,trxRef,time,service,data.amount,data.numberOfPin,res);
+     return await shagoHelpers.waecPinPurchase(user,trxRef,time,service,parseInt(data.amount),data.numberOfPin,res);
   }
   if(payment.siteName =='monnify'){
-     return await shagoHelpers.waecPinPurchase(user,trxRef,time,service,data.amount,data.numberOfPin,res);
+     return await shagoHelpers.waecPinPurchase(user,trxRef,time,service,parseInt(data.amount),data.numberOfPin,res);
   }
 }
 const shagoJambLookUp = async (req,res)=>{
@@ -537,7 +535,7 @@ const shagoJambPurchase = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await shagoHelpers.jambPinPurchase(user,trxRef,time,service,data.type,data.amount,data.profileCode,res);
+    return await shagoHelpers.jambPinPurchase(user,trxRef,time,service,data.type,parseInt(data.amount),data.profileCode,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -571,8 +569,8 @@ const shagoJambPurchase = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -600,10 +598,10 @@ const shagoJambPurchase = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await shagoHelpers.jambPinPurchase(user,trxRef,time,service,data.type,data.amount,data.profileCode,res);
+    return await shagoHelpers.jambPinPurchase(user,trxRef,time,service,data.type,parseInt(data.amount),data.profileCode,res);
   }
   if(payment.siteName =='monnify'){
-    return await shagoHelpers.jambPinPurchase(user,trxRef,time,service,data.type,data.amount,data.profileCode,res);
+    return await shagoHelpers.jambPinPurchase(user,trxRef,time,service,data.type,parseInt(data.amount),data.profileCode,res);
   }
 }
 const shagoCableLookup = async (req,res)=>{
@@ -663,7 +661,7 @@ const shagoPurchaseDstv = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -697,8 +695,8 @@ const shagoPurchaseDstv = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -729,10 +727,10 @@ const shagoPurchaseDstv = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
   if(payment.siteName =='monnify'){
-    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+    return await shagoHelpers.dstvPurchase(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
 }
 const shagoPurchaseDstvWithAddOn = async (req,res)=>{
@@ -767,7 +765,7 @@ const shagoPurchaseDstvWithAddOn = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await shagoHelpers.dstvPurchaseWithAddOn(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,data.addOnCode,data.addOnProductName,data.addOnAmount,res);
+    return await shagoHelpers.dstvPurchaseWithAddOn(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,data.addOnCode,data.addOnProductName,data.addOnAmount,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -801,8 +799,8 @@ const shagoPurchaseDstvWithAddOn = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -837,10 +835,10 @@ const shagoPurchaseDstvWithAddOn = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await shagoHelpers.dstvPurchaseWithAddOn(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,data.addOnCode,data.addOnProductName,data.addOnAmount,res);
+    return await shagoHelpers.dstvPurchaseWithAddOn(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,data.addOnCode,data.addOnProductName,data.addOnAmount,res);
   }
   if(payment.siteName =='monnify'){
-    return await shagoHelpers.dstvPurchaseWithAddOn(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,data.addOnCode,data.addOnProductName,data.addOnAmount,res);
+    return await shagoHelpers.dstvPurchaseWithAddOn(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,data.addOnCode,data.addOnProductName,data.addOnAmount,res);
   }
 }
 const shagoPurchaseStartimes = async (req,res)=>{
@@ -875,7 +873,7 @@ const shagoPurchaseStartimes = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,res);
+    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.packageName,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -909,8 +907,8 @@ const shagoPurchaseStartimes = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -939,10 +937,10 @@ const shagoPurchaseStartimes = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,res);
+    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.packageName,res);
   }
   if(payment.siteName =='monnify'){
-    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,res);
+    return await shagoHelpers.startimesPurchase(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.packageName,res);
   }
 }
 const shagoPurchaseGoTv = async (req,res)=>{
@@ -977,7 +975,7 @@ const shagoPurchaseGoTv = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await shagoHelpers.goTvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+    return await shagoHelpers.goTvPurchase(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -1011,8 +1009,8 @@ const shagoPurchaseGoTv = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1043,10 +1041,10 @@ const shagoPurchaseGoTv = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await shagoHelpers.goTvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+    return await shagoHelpers.goTvPurchase(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
   if(payment.siteName =='monnify'){
-    return await shagoHelpers.goTvPurchase(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
+    return await shagoHelpers.goTvPurchase(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.packageName,data.packageCode,data.period,res);
   }
 }
 const shagoVerifyTransaction = async (req,res)=>{
@@ -1096,7 +1094,7 @@ const baxiPurchaseAirtime = async (req,res)=>{
   }
   let type = service.name.toLowerCase();
   if(data.useWallet){
-    return await baxiHelpers.buyAirtime(user,trxRef,time,service,data.phoneNumber,data.amount,type,data.plan,res);
+    return await baxiHelpers.buyAirtime(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),type,data.plan,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -1130,8 +1128,8 @@ const baxiPurchaseAirtime = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1160,10 +1158,10 @@ const baxiPurchaseAirtime = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await baxiHelpers.buyAirtime(user,trxRef,time,service,data.phoneNumber,data.amount,type,data.plan,res)
+    return await baxiHelpers.buyAirtime(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),type,data.plan,res)
   }
   if(payment.siteName =='monnify'){
-    return await baxiHelpers.buyAirtime(user,trxRef,time,service,data.phoneNumber,data.amount,type,data.plan,res)
+    return await baxiHelpers.buyAirtime(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),type,data.plan,res)
   }
 }
 const baxiGetDataBundle = async (req,res)=>{
@@ -1221,7 +1219,7 @@ const baxiPurchaseData = async (req,res)=>{
   }
   let type = service.name.toLowerCase();
   if(data.useWallet){
-    return await baxiHelpers.buyData(user,trxRef,time,service,data.phoneNumber,data.amount,type,data.code,res);
+    return await baxiHelpers.buyData(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),type,data.code,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -1255,8 +1253,8 @@ const baxiPurchaseData = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1285,10 +1283,10 @@ const baxiPurchaseData = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await baxiHelpers.buyData(user,trxRef,time,service,data.phoneNumber,data.amount,type,data.code,res)
+    return await baxiHelpers.buyData(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),type,data.code,res)
   }
   if(payment.siteName =='monnify'){
-    return await baxiHelpers.buyData(user,trxRef,time,service,data.phoneNumber,data.amount,type,data.code,res)
+    return await baxiHelpers.buyData(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),type,data.code,res)
   }
 }
 const baxiGetDisco = async (req,res)=>{
@@ -1336,7 +1334,7 @@ const baxiPurchaseElectricity = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await baxiHelpers.buyElectricity(user,trxRef,time,service,data.phoneNumber,data.amount,data.code,data.meterNo,res);
+    return await baxiHelpers.buyElectricity(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),data.code,data.meterNo,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -1370,8 +1368,8 @@ const baxiPurchaseElectricity = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1400,10 +1398,10 @@ const baxiPurchaseElectricity = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await baxiHelpers.buyElectricity(user,trxRef,time,service,data.phoneNumber,data.amount,data.code,data.meterNo,res);
+    return await baxiHelpers.buyElectricity(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),data.code,data.meterNo,res);
   }
   if(payment.siteName =='monnify'){
-    return await baxiHelpers.buyElectricity(user,trxRef,time,service,data.phoneNumber,data.amount,data.code,data.meterNo,res);
+    return await baxiHelpers.buyElectricity(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),data.code,data.meterNo,res);
   }
 }
 const baxiGetPinBundle = async (req,res)=>{
@@ -1449,7 +1447,7 @@ const baxiPurchasePin = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await baxiHelpers.buyWaecPin(user,trxRef,time,service,data.pinValue, data.noOfPins,data.type,data.amount,res);
+    return await baxiHelpers.buyWaecPin(user,trxRef,time,service,data.pinValue, data.noOfPins,data.type,parseInt(data.amount),res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -1483,8 +1481,8 @@ const baxiPurchasePin = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1513,10 +1511,10 @@ const baxiPurchasePin = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await baxiHelpers.buyWaecPin(user,trxRef,time,service,data.pinValue, data.noOfPins,data.type,data.amount,res);
+    return await baxiHelpers.buyWaecPin(user,trxRef,time,service,data.pinValue, data.noOfPins,data.type,parseInt(data.amount),res);
   }
   if(payment.siteName =='monnify'){
-    return await baxiHelpers.buyWaecPin(user,trxRef,time,service,data.pinValue, data.noOfPins,data.type,data.amount,res);
+    return await baxiHelpers.buyWaecPin(user,trxRef,time,service,data.pinValue, data.noOfPins,data.type,parseInt(data.amount),res);
   }
 }
 const baxiCableLookUp = async (req,res)=>{
@@ -1571,7 +1569,7 @@ const baxiPurchaseCable = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await baxiHelpers.buyCable(user,trxRef,time,service,data.amount,data.cardNo,data.productMonthsPaidFor,data.productCode,data.serviceType,data.addonMonthsPaidFor,data.addonCode,res);
+    return await baxiHelpers.buyCable(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.productMonthsPaidFor,data.productCode,data.serviceType,data.addonMonthsPaidFor,data.addonCode,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -1605,8 +1603,8 @@ const baxiPurchaseCable = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1638,10 +1636,10 @@ const baxiPurchaseCable = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await baxiHelpers.buyCable(user,trxRef,time,service,data.amount,data.cardNo,data.productMonthsPaidFor,data.productCode,data.serviceType,data.addonMonthsPaidFor,data.addonCode,res);
+    return await baxiHelpers.buyCable(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.productMonthsPaidFor,data.productCode,data.serviceType,data.addonMonthsPaidFor,data.addonCode,res);
   }
   if(payment.siteName =='monnify'){
-    return await baxiHelpers.buyCable(user,trxRef,time,service,data.amount,data.cardNo,data.productMonthsPaidFor,data.productCode,data.serviceType,data.addonMonthsPaidFor,data.addonCode,res);
+    return await baxiHelpers.buyCable(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.productMonthsPaidFor,data.productCode,data.serviceType,data.addonMonthsPaidFor,data.addonCode,res);
   }
 }
 const baxiVerifyTransaction = async (req,res)=>{
@@ -1687,8 +1685,7 @@ const mAirtimeMtnVtuTopUp = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    console.log(data.phoneNumber)
-    return await mAirtimeHelpers.mtnVTUTopUp(user,trxRef,time,service,data.phoneNumber,data.amount,res);
+    return await mAirtimeHelpers.mtnVTUTopUp(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -1722,8 +1719,8 @@ const mAirtimeMtnVtuTopUp = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1750,10 +1747,10 @@ const mAirtimeMtnVtuTopUp = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await mAirtimeHelpers.mtnVTUTopUp(user,trxRef,time,service,data.phoneNumber,data.amount,res)
+    return await mAirtimeHelpers.mtnVTUTopUp(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),res)
   }
   if(payment.siteName =='monnify'){
-    return await mAirtimeHelpers.mtnVTUTopUp(user,trxRef,time,service,data.phoneNumber,data.amount,res)
+    return await mAirtimeHelpers.mtnVTUTopUp(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),res)
   }
 }
 const mAirtimeAirtimeTopUp = async (req,res)=>{
@@ -1785,7 +1782,7 @@ const mAirtimeAirtimeTopUp = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await mAirtimeHelpers.airtimePurchase(user,trxRef,time,service,data.phoneNumber,data.amount,res);
+    return await mAirtimeHelpers.airtimePurchase(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -1819,8 +1816,8 @@ const mAirtimeAirtimeTopUp = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1847,10 +1844,10 @@ const mAirtimeAirtimeTopUp = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await mAirtimeHelpers.mtnVTUTopUp(user,trxRef,time,service,data.phoneNumber,data.amount,res)
+    return await mAirtimeHelpers.mtnVTUTopUp(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),res)
   }
   if(payment.siteName =='monnify'){
-    return await mAirtimeHelpers.mtnVTUTopUp(user,trxRef,time,service,data.phoneNumber,data.amount,res)
+    return await mAirtimeHelpers.mtnVTUTopUp(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),res)
   }
 }
 const mAirtimeVerifyInternationalNumber = async (req,res)=>{
@@ -1895,7 +1892,7 @@ const mAirtimeRechargeInternational = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await mAirtimeHelpers.foreignAirtimePurchase(user,trxRef,time,service,data.phoneNumber,data.amount,data.amountInNaira,data.product,data.country,res);
+    return await mAirtimeHelpers.foreignAirtimePurchase(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),parseInt(data.amountInNaira),data.product,data.country,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -1929,8 +1926,8 @@ const mAirtimeRechargeInternational = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(data.amountInNaira) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(data.amountInNaira) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1959,10 +1956,10 @@ const mAirtimeRechargeInternational = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await mAirtimeHelpers.foreignAirtimePurchase(user,trxRef,time,service,data.phoneNumber,data.amount,data.amountInNaira,data.product,data.country,res)
+    return await mAirtimeHelpers.foreignAirtimePurchase(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),data.amountInNaira,data.product,data.country,res)
   }
   if(payment.siteName =='monnify'){
-    return await mAirtimeHelpers.foreignAirtimePurchase(user,trxRef,time,service,data.phoneNumber,data.amount,data.amountInNaira,data.product,data.country,res)
+    return await mAirtimeHelpers.foreignAirtimePurchase(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),data.amountInNaira,data.product,data.country,res)
   }
 }
 const mAirtimeMtnDataGifting = async (req,res)=>{
@@ -1997,7 +1994,7 @@ const mAirtimeMtnDataGifting = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await mAirtimeHelpers.mtnDataGifting(user,trxRef,time,service,data.phoneNumber,data.amount,data.size,res);
+    return await mAirtimeHelpers.mtnDataGifting(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),data.size,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -2031,8 +2028,8 @@ const mAirtimeMtnDataGifting = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2060,10 +2057,10 @@ const mAirtimeMtnDataGifting = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-     return await mAirtimeHelpers.mtnDataGifting(user,trxRef,time,service,data.phoneNumber,data.amount,data.size,res);
+     return await mAirtimeHelpers.mtnDataGifting(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),data.size,res);
   }
   if(payment.siteName =='monnify'){
-     return await mAirtimeHelpers.mtnDataGifting(user,trxRef,time,service,data.phoneNumber,data.amount,data.size,res);
+     return await mAirtimeHelpers.mtnDataGifting(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),data.size,res);
   }
 }
 const mAirtimeMtnDataShare = async (req,res)=>{
@@ -2098,7 +2095,7 @@ const mAirtimeMtnDataShare = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await mAirtimeHelpers.mtnDataShare(user,trxRef,time,service,data.phoneNumber,data.amount,data.size,res);
+    return await mAirtimeHelpers.mtnDataShare(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),data.size,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -2132,8 +2129,8 @@ const mAirtimeMtnDataShare = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2161,10 +2158,10 @@ const mAirtimeMtnDataShare = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-     return await mAirtimeHelpers.mtnDataShare(user,trxRef,time,service,data.phoneNumber,data.amount,data.size,res);
+     return await mAirtimeHelpers.mtnDataShare(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),data.size,res);
   }
   if(payment.siteName =='monnify'){
-     return await mAirtimeHelpers.mtnDataShare(user,trxRef,time,service,data.phoneNumber,data.amount,data.size,res);
+     return await mAirtimeHelpers.mtnDataShare(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),data.size,res);
   }
 }
 const mAirtimeGetDataPricing = async (req,res)=>{
@@ -2220,7 +2217,7 @@ const mAirtimeDataTopUp = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await mAirtimeHelpers.dataTopUp(user,trxRef,time,service,data.phoneNumber,data.amount,res);
+    return await mAirtimeHelpers.dataTopUp(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -2254,8 +2251,8 @@ const mAirtimeDataTopUp = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2282,10 +2279,10 @@ const mAirtimeDataTopUp = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-     return await mAirtimeHelpers.dataTopUp(user,trxRef,time,service,data.phoneNumber,data.amount,res);
+     return await mAirtimeHelpers.dataTopUp(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),res);
   }
   if(payment.siteName =='monnify'){
-     return await mAirtimeHelpers.dataTopUp(user,trxRef,time,service,data.phoneNumber,data.amount,res);
+     return await mAirtimeHelpers.dataTopUp(user,trxRef,time,service,data.phoneNumber,parseInt(data.amount),res);
   }
 }
 const mAirtimeGetDiscos = async (req,res)=>{
@@ -2334,7 +2331,7 @@ const mAirtimeElectricityPurchase = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await mAirtimeHelpers.purchaseElectricity(user,trxRef,time,service,data.amount,serviceId,data.meterNo,data.type,res);
+    return await mAirtimeHelpers.purchaseElectricity(user,trxRef,time,service,parseInt(data.amount),serviceId,data.meterNo,data.type,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -2368,8 +2365,8 @@ const mAirtimeElectricityPurchase = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2398,10 +2395,10 @@ const mAirtimeElectricityPurchase = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-      return await mAirtimeHelpers.purchaseElectricity(user,trxRef,time,service,data.amount,serviceId,data.meterNo,data.type,res);
+      return await mAirtimeHelpers.purchaseElectricity(user,trxRef,time,service,parseInt(data.amount),serviceId,data.meterNo,data.type,res);
   }
   if(payment.siteName =='monnify'){
-      return await mAirtimeHelpers.purchaseElectricity(user,trxRef,time,service,data.amount,serviceId,data.meterNo,data.type,res);
+      return await mAirtimeHelpers.purchaseElectricity(user,trxRef,time,service,parseInt(data.amount),serviceId,data.meterNo,data.type,res);
   }
 }
 const mAirtimeWaecPurchase = async (req,res)=>{
@@ -2465,7 +2462,7 @@ const mAirtimeWaecPurchase = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = service.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2559,7 +2556,7 @@ const mAirtimeNecoPurchase = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = service.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2649,7 +2646,7 @@ const mAirtimeRechargeGoTv = async (req,res)=>{
   }
   let type ="gotv";
   if(data.useWallet){
-    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -2683,8 +2680,8 @@ const mAirtimeRechargeGoTv = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2716,10 +2713,10 @@ const mAirtimeRechargeGoTv = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
   }
   if(payment.siteName =='monnify'){
-    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
   }
 }
 const mAirtimeRechargeDstv = async (req,res)=>{
@@ -2754,7 +2751,7 @@ const mAirtimeRechargeDstv = async (req,res)=>{
   }
   let type = "dstv";
   if(data.useWallet){
-    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -2788,8 +2785,8 @@ const mAirtimeRechargeDstv = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2821,10 +2818,10 @@ const mAirtimeRechargeDstv = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
   }
   if(payment.siteName =='monnify'){
-    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
+    return await mAirtimeHelpers.tvRecharge(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.customerName,data.invoiceNo,data.customerNumber,data.phoneNumber,type,res);
   }
 }
 const mAirtimeRechargeStartimes = async (req,res)=>{
@@ -2858,7 +2855,7 @@ const mAirtimeRechargeStartimes = async (req,res)=>{
     return res.json(responseData);
   }
   if(data.useWallet){
-    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.phoneNumber,res);
+    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.phoneNumber,res);
   }
   let creditCard;
   let useDefault = data.useDefault;
@@ -2892,8 +2889,8 @@ const mAirtimeRechargeStartimes = async (req,res)=>{
     let serviceCharge = serviceCategory.serviceCharge;
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
-    let amount = data.amount;
-    let totalAmount = parseFloat(amount) + parseFloat(serviceCharge); 
+    let amount = parseInt(data.amount);
+    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2921,10 +2918,10 @@ const mAirtimeRechargeStartimes = async (req,res)=>{
     return res.json(responseData);
   }
   if(payment.siteName =='flutterwave'){
-    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.phoneNumber,res);
+    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.phoneNumber,res);
   }
   if(payment.siteName =='monnify'){
-    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,data.amount,data.cardNo,data.phoneNumber,res);
+    return await mAirtimeHelpers.startimesRecharge(user,trxRef,time,service,parseInt(data.amount),data.cardNo,data.phoneNumber,res);
   }
 }
 const mAirtimeVerifyTransaction = async (req,res)=>{
