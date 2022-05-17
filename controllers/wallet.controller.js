@@ -56,8 +56,8 @@ const updateLoan = async (transaction)=>{
   );
   await models.loan.update(
     {
-      amoundPaid:parseInt(loan.amoundPaid) + parseFloat(transaction.amount),
-      remainingBalance:parseInt(loan.remainingBalance) - parseFloat(transaction.amount),
+      amoundPaid:parseInt(loan.amoundPaid) + parseInt(transaction.amount),
+      remainingBalance:parseInt(loan.remainingBalance) - parseInt(transaction.amount),
     },
     {
       where:{
@@ -72,8 +72,8 @@ const updateLoan = async (transaction)=>{
       }
     }
   );
-  const amoundPaid = parseFloat(updatedLoan.amoundPaid);
-  const amountToBePaid = parseFloat(updatedLoan.amountToBePaid);
+  const amoundPaid = parseInt(updatedLoan.amoundPaid);
+  const amountToBePaid = parseInt(updatedLoan.amountToBePaid);
   if( amoundPaid == amountToBePaid ){
     await models.loan.update(
       {
@@ -132,7 +132,7 @@ const partnership = async (transaction,res)=>{
     return date;
   };
   let date = new Date();
-  date = date.addDays(parseFloat(category.period));
+  date = date.addDays(parseInt(category.period));
   const userType = await models.userType.create(
     {
       id:uuid.v4(),
@@ -282,17 +282,15 @@ const webhook =async (req,res)=>{
             if (error) throw new Error(error);
             let payload = response.body;
             payload =  JSON.parse(payload);
-            // payload =  { NGN_USD: 0.00243 }
-            let amount = payload[`NGN_${accountType.currencyCode}`] * (parseFloat(data.data.amount) /100);
-            console.log(amount);
+            let amount = parseInt(payload[`NGN_${accountType.currencyCode}`] * (parseFloat(data.data.amount) /100));
             if(accountType.serviceFee){
-              let serviceFee  =  payload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee);
+              let serviceFee  =  parseInt(payload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee));
               amount =  amount - serviceFee;
             }
             await models.otherAccount.update(
               {
                 status:0,
-                accountBalance:parseFloat(otherAccount.accountBalance) + amount
+                accountBalance:parseInt(otherAccount.accountBalance) + amount
               },
               {
                 where:{
@@ -309,7 +307,7 @@ const webhook =async (req,res)=>{
               }
             }
           );
-          const balance = parseFloat(wallet.accountBalance) + (parseFloat(data.data.amount) /100);
+          const balance = parseInt(parseInt(wallet.accountBalance) + (parseFloat(data.data.amount) /100));
           await models.wallet.update(
             {
               accountBalance:balance
@@ -416,7 +414,7 @@ const webhook =async (req,res)=>{
       )
       await models.wallet.update(
         {
-          accountBalance:parseFloat(wallet.accountBalance) + parseFloat(data.data.amount)/100,
+          accountBalance:parseInt(parseFloat(wallet.accountBalance) + parseFloat(data.data.amount)/100),
         },
         {
           where:{
@@ -454,7 +452,7 @@ const webhook =async (req,res)=>{
           id:uuid.v4(),
           userId:transaction.userId,
           transactionType:"credit",
-          amount:parseFloat(data.data.amount)/100,
+          amount:parseInt(parseInt(data.data.amount)/100),
           time:data.data.recipient.created_at,
           status:"Success",
           reference:data.data.transfer_code
@@ -469,7 +467,7 @@ const webhook =async (req,res)=>{
       );
       const reverse = await models.wallet.update(
         {
-          accountBalance:parseFloat(wallet.accountBalance) + parseFloat(data.data.amount)/100,
+          accountBalance:parseInt(parseFloat(wallet.accountBalance) + parseFloat(data.data.amount)/100),
         },
         {
           where:
@@ -570,16 +568,15 @@ const flutterwaveWebhook = async (req,res)=>{
           let secondPayload = response.body;
           secondPayload =  JSON.parse(secondPayload);
            // secondPayload =  { NGN_USD: 0.00243 }
-          console.log(secondPayload);
-          let amount = secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(payload.data.amount)
+          let amount = parseInt(secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(payload.data.amount))
           if(accountType.serviceFee){
-            let serviceFee  =  secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee);
+            let serviceFee  =  parseInt(secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee));
             amount =  amount - serviceFee;
           }
           await models.otherAccount.update(
             {
               status:0,
-              accountBalance:parseFloat(otherAccount.accountBalance) + amount
+              accountBalance:parseInt(otherAccount.accountBalance) + amount
             },
             {
               where:{
@@ -596,7 +593,7 @@ const flutterwaveWebhook = async (req,res)=>{
             }
           }
         );
-        const balance = parseFloat(wallet.accountBalance) + parseFloat(payload.data.amount);
+        const balance = parseInt(wallet.accountBalance) + parseInt(payload.data.amount);
         await models.wallet.update(
           {
             accountBalance:balance
@@ -631,7 +628,7 @@ const flutterwaveWebhook = async (req,res)=>{
           beneficiary:"self",
           isRedemmed:true,
           reference:trxRef,
-          amount:payload.data.amount,
+          amount:parseInt(payload.data.amount),
           description:user.firstName + " funding his/her wallet to perform transaction",
           status:"successful",
           time: time
@@ -662,16 +659,15 @@ const flutterwaveWebhook = async (req,res)=>{
           let secondPayload = response.body;
           secondPayload =  JSON.parse(secondPayload);
           // secondPayload =  { NGN_USD: 0.00243 }
-          console.log(secondPayload);
-          let amount = secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(payload.data.amount)
+          let amount = parseInt(secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(payload.data.amount))
           if(accountType.serviceFee){
-            let serviceFee  =  secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee);
+            let serviceFee  =  parseInt(secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee));
             amount =  amount - serviceFee;
           }
           await models.otherAccount.update(
             {
               status:0,
-              accountBalance:parseFloat(otherAccount.accountBalance) + amount
+              accountBalance:parseInt(otherAccount.accountBalance) + amount
             },
             {
               where:{
@@ -688,7 +684,7 @@ const flutterwaveWebhook = async (req,res)=>{
             }
           }
         );
-        const balance = parseFloat(wallet.accountBalance) + parseFloat(payload.data.amount);
+        const balance = parseInt(wallet.accountBalance) + parseInt(payload.data.amount);
         await models.wallet.update(
           {
             accountBalance:balance
@@ -753,7 +749,7 @@ const flutterwaveWebhook = async (req,res)=>{
         transactionType:"debit",
         beneficiary:"self",
         isRedemmed:false,
-        amount:payload.data.amount,
+        amount:parseInt(payload.data.amount),
         description:user.firstName + " funding his/her wallet to perform transaction",
         status:"failed",
         time: time
@@ -807,7 +803,7 @@ const flutterwaveWebhook = async (req,res)=>{
         id:uuid.v4(),
         userId:transaction.userId,
         transactionType:"credit",
-        amount:payload.data.amount,
+        amount:parseInt(payload.data.amount),
         time:payload.data.created_at,
         status:"Success",
         reference:reference
@@ -822,7 +818,7 @@ const flutterwaveWebhook = async (req,res)=>{
     )
     await models.wallet.update(
       {
-        accountBalance:parseFloat(wallet.accountBalance) + parseFloat(payload.data.amount),
+        accountBalance:parseInt(wallet.accountBalance) + parseInt(payload.data.amount),
       },
       {
         where:{
@@ -890,7 +886,7 @@ const monnifyWebhook = async (req,res)=>{
         transactionType:"debit",
         beneficiary:"self",
         isRedemmed:true,
-        amount:payload.amountPaid,
+        amount:parseInt(payload.amountPaid),
         description:payload.firstName + " funding his/her wallet to perform transaction",
         status:"successful",
         time: time
@@ -920,10 +916,9 @@ const monnifyWebhook = async (req,res)=>{
         if (error) throw new Error(error);
         let secondPayload = response.body;
         secondPayload =  JSON.parse(secondPayload);
-        console.log(secondPayload);
-        let amount = secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(payload.amountPaid)
+        let amount = parseInt(secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(payload.amountPaid))
         if(accountType.serviceFee){
-          let serviceFee  =  secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee);
+          let serviceFee  =  parseInt(secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee));
           amount =  amount - serviceFee;
         }
         await models.otherAccount.update(
@@ -946,7 +941,7 @@ const monnifyWebhook = async (req,res)=>{
           }
         }
       );
-      const balance = parseFloat(wallet.accountBalance) + parseFloat(payload.amountPaid);
+      const balance = parseInt(wallet.accountBalance) + parseInt(payload.amountPaid);
       await models.wallet.update(
         {
           accountBalance:balance
@@ -1033,7 +1028,7 @@ const monnifyWebhook = async (req,res)=>{
         transactionType:"debit",
         beneficiary:"self",
         isRedemmed:false,
-        amount:payload.amountPaid,
+        amount:parseInt(payload.amountPaid),
         description:user.firstName + " funding his/her wallet to perform transaction",
         status:"failed",
         time: time
@@ -1096,7 +1091,7 @@ const monnifyEventWebhook = async (req,res)=>{
         id:uuid.v4(),
         userId:transaction.userId,
         transactionType:"credit",
-        amount:payload.eventData.amount,
+        amount:parseInt(payload.eventData.amount),
         time:payload.eventData.completedOn,
         status:"Success",
         reference:reference
@@ -1111,7 +1106,7 @@ const monnifyEventWebhook = async (req,res)=>{
     );
     await models.wallet.update(
       {
-        accountBalance:parseFloat(wallet.accountBalance) + parseFloat(payload.eventData.amount),
+        accountBalance:parseInt(wallet.accountBalance) + parseInt(payload.eventData.amount),
       },
       {
         where:{
