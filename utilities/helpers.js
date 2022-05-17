@@ -36,12 +36,12 @@ const checkLoans = async()=>{
         if(loanCategory.expiryFeeAmount){
           additionalFee = loanCategory.expiryFeeAmount
         }else{
-          additionalFee = parseFloat(loanCategory.expiryPercentage) * parseFloat(loans[i].amount)
+          additionalFee = parseInt(loanCategory.expiryPercentage) * parseInt(loans[i].amount)
         }
         await models.loan.update(
           {
-            amountToBePaid:parseFloat(loans[i].amountToBePaid) + parseFloat(additionalFee),
-            remainingBalance:parseFloat(loans[i].remainingBalance) +  parseFloat(additionalFee)
+            amountToBePaid:parseInt(loans[i].amountToBePaid) + parseInt(additionalFee),
+            remainingBalance:parseInt(loans[i].remainingBalance) +  parseInt(additionalFee)
           },
           {
             where:{
@@ -82,9 +82,7 @@ const checkInvestment = async (req,res)=>{
             }
           }
         );
-        console.log(parseFloat(wallet.accountBalance),"wallet");
-        console.log(parseFloat(investments[i].payout));
-        let newBalance = parseFloat(wallet.accountBalance) + parseFloat(investments[i].payout)
+        let newBalance = parseInt(wallet.accountBalance) + parseInt(investments[i].payout)
         console.log(newBalance);
         await models.wallet.update(
           {
