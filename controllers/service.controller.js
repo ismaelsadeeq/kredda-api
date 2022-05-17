@@ -35,7 +35,7 @@ const createServiceCategory = async (req,res)=>{
           id:uuid.v4(),
           name:data.name,
           type:data.type,
-          serviceCharge:data.serviceCharge,
+          serviceCharge:parseInt(data.serviceCharge),
           status:true
         }
       );
@@ -162,7 +162,7 @@ const editServiceCategory = async (req,res)=>{
         {
           name:data.name,
           type:data.type,
-          serviceCharge: data.serviceCharge
+          serviceCharge: parseInt(data.serviceCharge)
         },
         {
           where:{
@@ -323,8 +323,8 @@ const createService = async (req,res)=>{
           serviceCategoryId:categoryId,
           name:data.name,
           code:data.code,
-          discount:data.discount,
-          amount:data.amount,
+          discount:parseInt(data.discount),
+          amount:parseInt(data.amount),
           status:true
         }
       );
@@ -449,8 +449,8 @@ const editService = async (req,res)=>{
           name:data.name,
           code:data.code,
           serviceCategoryId:categoryId,
-          discount:data.discount,
-          amount:data.amount
+          discount:parseInt(data.discount),
+          amount:parseInt(data.amount)
         },
         {
           where:{
