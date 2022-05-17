@@ -32,11 +32,11 @@ const airtimePurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
       phoneNumber:phoneNumber,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       network:service.name,
       reference:trxRef,
       serviceId:service.id,
@@ -55,11 +55,11 @@ const airtimePurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
       phoneNumber:phoneNumber,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       network:service.code,
       reference:trxRef,
       serviceId:service.id,
@@ -88,11 +88,11 @@ const airtimePurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
       phoneNumber:phoneNumber,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       type:beneficiary.type,
       plan:beneficiary.plan,
       reference:trxRef,
@@ -127,11 +127,11 @@ const dataPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
       phoneNumber:phoneNumber,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       network:service.name,
       reference:trxRef,
       bundle:beneficiary.bundle,
@@ -153,7 +153,7 @@ const dataPurchase = async (transaction,res)=>{
       }
     );
     if(transaction.message=="mtn data gifting"){
-      let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+      let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
       let payload = {
         userId:transaction.userId,
         phoneNumber:phoneNumber,
@@ -167,7 +167,7 @@ const dataPurchase = async (transaction,res)=>{
       return await mobileAirtime.mtnDataGifting(payload,res) 
     }
     if(transaction.message=="mtn data share"){
-      let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+      let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
       let payload = {
         userId:transaction.userId,
         phoneNumber:phoneNumber,
@@ -181,13 +181,13 @@ const dataPurchase = async (transaction,res)=>{
       return await mobileAirtime.mtnDataShare(payload,res) 
     }
     if(transaction.message=="data purchase"){
-      let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+      let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
       let payload = {
         userId:transaction.userId,
         phoneNumber:phoneNumber,
         network:service.code,
         reference:trxRef,
-        amount:beneficiary.amount,
+        amount:parseInt(beneficiary.amount),
         serviceId:service.id,
         totalServiceFee:transaction.amount,
         profit:profit
@@ -205,11 +205,11 @@ const dataPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
       phoneNumber:phoneNumber,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       type:beneficiary.type,
       code:beneficiary.code,
       reference:trxRef,
@@ -244,11 +244,11 @@ const electricityPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
       phoneNumber:phoneNumber,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       reference:trxRef,
       meterNo:beneficiary.meterNo,
       disco:beneficiary.disco,
@@ -270,10 +270,10 @@ const electricityPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       reference:trxRef,
       meterNo:beneficiary.meterNo,
       type:beneficiary.type,
@@ -292,10 +292,10 @@ const electricityPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       reference:trxRef,
       meterNo:beneficiary.meterNo,
       phoneNumber:beneficiary.phoneNumber,
@@ -330,10 +330,10 @@ const waecPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       reference:trxRef,
       numberOfPin:beneficiary.numberOfPin,
       serviceId:service.id,
@@ -351,10 +351,10 @@ const waecPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       reference:trxRef,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
@@ -371,10 +371,10 @@ const waecPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       reference:trxRef,
       pinValue:beneficiary.pinValue,
       numberOfPins:beneficiary.noOfPins,
@@ -409,10 +409,10 @@ const necoPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       reference:trxRef,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
@@ -444,10 +444,10 @@ const dstvPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       reference:trxRef,
       cardNo:beneficiary.cardNo,
       customerName:beneficiary.customerName,
@@ -484,10 +484,10 @@ const dstvPurchaseWithAddOn = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       reference:trxRef,
       cardNo:beneficiary.cardNo,
       customerName:beneficiary.customerName,
@@ -527,10 +527,10 @@ const startimesPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       reference:trxRef,
       cardNo:beneficiary.cardNo,
       customerName:beneficiary.customerName,
@@ -550,10 +550,10 @@ const startimesPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       reference:trxRef,
       phoneNumber:beneficiary.phoneNumber,
       cardNo:beneficiary.cardNo,
@@ -587,10 +587,10 @@ const goTvPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       reference:trxRef,
       cardNo:beneficiary.cardNo,
       customerName:beneficiary.customerName,
@@ -612,10 +612,10 @@ const goTvPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       reference:trxRef,
       phoneNumber:beneficiary.phoneNumber,
       cardNo:beneficiary.cardNo,
@@ -654,10 +654,10 @@ const cablePurchase = async (transaction,res)=>{
       }
     }
   );
-  let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+  let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
   let payload = {
     userId:transaction.userId,
-    amount:beneficiary.amount,
+    amount:parseInt(beneficiary.amount),
     reference:trxRef,
     cardNo:beneficiary.cardNo,
     productMonthsPaidFor:beneficiary.productMonthsPaidFor,
@@ -694,10 +694,10 @@ const jambPurchase = async (transaction,res)=>{
         }
       }
     );
-    let profit = parseFloat(transaction.amount) - parseFloat(beneficiary.amount);
+    let profit = parseInt(transaction.amount) - parseInt(beneficiary.amount);
     let payload = {
       userId:transaction.userId,
-      amount:beneficiary.amount,
+      amount:parseInt(beneficiary.amount),
       reference:trxRef,
       type:beneficiary.type,
       profileCode:beneficiary.profileCode,
