@@ -229,7 +229,7 @@ const fundAccount = async (req,res)=>{
       const payload = {
         "email":user.email,
         "id":user.id,
-        "amount":parseFloat(data.amount * 100),
+        "amount":parseInt(data.amount * 100),
         "value":"Kredda",
         "displayName":user.firstName,
         "variableName":"virtual wallet funding",
@@ -241,7 +241,7 @@ const fundAccount = async (req,res)=>{
     const payload = {
       "email":user.email,
       "id":user.id,
-      "amount":data.amount,
+      "amount":parseInt(data.amount),
       "value":"Kredda",
       "displayName":user.firstName,
       "variableName":"virtual wallet funding",
@@ -258,7 +258,7 @@ const fundAccount = async (req,res)=>{
     let trxRef = `MC-${digits}${firstDigit}`
     const payload = {
       "tx_ref":trxRef,
-      "amount":data.amount,
+      "amount":parseInt(data.amount),
       "account_bank":bankDetail.bankCode,
       "account_number":bankDetail.accountNumber,
       "currency":"NGN",
