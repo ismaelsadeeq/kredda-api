@@ -10,7 +10,7 @@ const multer = require('multer');
 const multerConfig = require('../config/multer');
 
 // imports
-// ---------------------------------------------------------------------------------------------//
+// ------------------------------------------------------------------------------------------//
 
 require('dotenv').config();
 //response global variable
