@@ -15,15 +15,16 @@ const responseData = {
 }
 const checker = async (req,res)=>{
   const data = req.body;
-  if(!data.phoneNumber){
+  if(!data.phoneNumber || !data.countryCode){
     responseData.status = false;
-    responseData.message = "phone number is required";
+    responseData.message = "phone number or country code is missing";
     responseData.data = undefined;
     return res.json(responseData);
   }
   const phoneNumberExist = await models.user.findOne(
     {
       where:{
+        countryCode:data.countryCode,
         phoneNumber:data.phoneNumber
       }
     }
@@ -37,6 +38,7 @@ const checker = async (req,res)=>{
   const user = await models.user.create(
     {
       id:uuid.v4(),
+      countryCode:data.countryCode,
       phoneNumber:data.phoneNumber
     }
   );
@@ -48,7 +50,7 @@ const checker = async (req,res)=>{
     }
   );
   const msg = "Welcome to Kredda use "+val+" to verify your phone number";
-  await smsApi.smsGlobal(data.phoneNumber,msg)
+  await smsApi.smsGlobal(data.countryCode+data.phoneNumber,msg)
   responseData.status = true;
   responseData.message = "otp sent to phone number";
   responseData.data = data.phoneNumber;
@@ -193,6 +195,7 @@ const login = async (req,res)=>{
   const data = req.body;
   const email = data.email;
   const phoneNumber = data.phoneNumber;
+  const countryCode =  data.countryCode;
   let emailExist,phoneNumberExist;
   let user;
   const password = data.pin;
@@ -204,10 +207,13 @@ const login = async (req,res)=>{
    );
    user = emailExist
   }
-  if(phoneNumber){
+  if(phoneNumber && countryCode){
     phoneNumberExist = await models.user.findOne(
       {
-        where:{phoneNumber:phoneNumber}
+        where:{
+          countryCode:data.countryCode,
+          phoneNumber:phoneNumber
+        }
       }
     );
     user = phoneNumberExist
@@ -311,6 +317,7 @@ const forgetPassword = async (req,res)=>{
   const data = req.body;
   const email = data.email;
   const phoneNumber = data.phoneNumber;
+  const countryCode = data.countryCode;
   let emailExist,phoneNumberExist;
   if(email){
      emailExist = await models.user.findOne(
@@ -319,10 +326,13 @@ const forgetPassword = async (req,res)=>{
       }
     );
   }
-  if(phoneNumber){
+  if(phoneNumber && countryCode){
      phoneNumberExist = await models.user.findOne(
       {
-        where:{phoneNumber:phoneNumber}
+        where:{
+          countryCode:data.countryCode,
+          phoneNumber:phoneNumber
+        }
       }
     );
   }
