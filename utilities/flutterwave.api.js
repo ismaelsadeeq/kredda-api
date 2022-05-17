@@ -94,7 +94,7 @@ async function verifyPayment(payload,flutterwave,res){
             transactionType:"debit",
             beneficiary:"self",
             isRedemmed:true,
-            amount:response.data.amount,
+            amount:parseInt(response.data.amount),
             description:payload.firstName + " funding his/her wallet to perform transaction",
             status:"successful",
             time:time
@@ -125,15 +125,15 @@ async function verifyPayment(payload,flutterwave,res){
             let payload = resp.body;
             payload =  JSON.parse(payload);
             console.log(payload);
-            let amount = payload[`NGN_${accountType.currencyCode}`] * parseFloat(response.data.amount)
+            let amount = parseInt(payload[`NGN_${accountType.currencyCode}`] * parseFloat(response.data.amount))
             if(accountType.serviceFee){
-              let serviceFee  =  payload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee);
+              let serviceFee  =  parseInt(payload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee));
               amount  =  amount - serviceFee;
             }
             await models.otherAccount.update(
               {
                 status:0,
-                accountBalance:parseFloat(otherAccount.accountBalance) + amount
+                accountBalance:parseInt(otherAccount.accountBalance) + amount
               },
               {
                 where:{
@@ -150,7 +150,7 @@ async function verifyPayment(payload,flutterwave,res){
               }
             }
           );
-          const balance = parseFloat(wallet.accountBalance) + parseFloat(response.data.amount);
+          const balance = parseInt(wallet.accountBalance) + parseInt(response.data.amount);
           await models.wallet.update(
             {
               status:0,
@@ -186,7 +186,7 @@ async function verifyPayment(payload,flutterwave,res){
           await transaction.update(
             {
               beneficiary:"self",
-              amount:response.data.amount,
+              amount:parseInt(response.data.amount),
               description:payload.firstName + " funding his/her wallet to perform transaction",
               status:"failed",
               time:time
@@ -204,7 +204,7 @@ async function verifyPayment(payload,flutterwave,res){
               }
             }
           );
-          const balance = parseFloat(wallet.accountBalance) - parseFloat(response.data.amount);
+          const balance = parseInt(wallet.accountBalance) - parseInt(response.data.amount);
           await models.wallet.update(
             {
               accountBalance:balance
@@ -230,7 +230,7 @@ async function verifyPayment(payload,flutterwave,res){
             reference:trxRef,
             transactionType:"debit",
             beneficiary:"self",
-            amount:response.data.amount,
+            amount:parseInt(response.data.amount),
             description:payload.firstName + " funding his/her wallet to perform transaction",
             status:"failed",
             time: time
@@ -281,7 +281,7 @@ async function initiatePayment(userId,data,flutterwave,responsee){
             description:payload.fullname + " attempting to fund his/her wallet to perform transaction",
             userId:userId,
             reference:payload.data.flw_ref,
-            amount:payload.data.amount,
+            amount:parseInt(payload.data.amount),
             isRedemmed:false,
             status:"initiated",
             time: time
