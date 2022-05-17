@@ -307,7 +307,7 @@ const disableAccount = async (req,res)=>{
     {
       where:{
         id:req.params.id,
-        accountBalance:"0.0"
+        accountBalance:0
       }
     }
   );
@@ -321,7 +321,7 @@ const disableAccount = async (req,res)=>{
     {
       where:{
         id:req.params.id,
-        accountBalance:"0.0"
+        accountBalance:0
       }
     }
   )
