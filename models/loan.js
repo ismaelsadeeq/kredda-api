@@ -14,11 +14,11 @@ module.exports = (sequelize, DataTypes) => {
     });
   }
   loan.init({
-    amount: DataTypes.STRING,
-    amountToBePaid:DataTypes.STRING,
+    amount: DataTypes.INTEGER,
+    amountToBePaid:DataTypes.INTEGER,
     isApproved: DataTypes.BOOLEAN,
-    amoundPaid: DataTypes.STRING,
-    remainingBalance: DataTypes.STRING,
+    amoundPaid: DataTypes.INTEGER,
+    remainingBalance: DataTypes.INTEGER,
     isPaid: DataTypes.BOOLEAN,
     dueDate:DataTypes.DATE,
     hasPenalty:DataTypes.BOOLEAN,

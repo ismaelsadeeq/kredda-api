@@ -30,7 +30,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       amount: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       beneficiary: {
         type: Sequelize.STRING(1234)

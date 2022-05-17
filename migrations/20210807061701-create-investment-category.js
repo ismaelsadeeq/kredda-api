@@ -20,10 +20,10 @@ module.exports = {
         type: Sequelize.STRING
       },
       pricePerUnit :{
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       interestRate: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       period: {
         type: Sequelize.STRING

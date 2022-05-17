@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
   accountType.init({
     name: DataTypes.STRING,
     currency: DataTypes.STRING,
-    serviceFee: DataTypes.STRING,
+    serviceFee: DataTypes.INTEGER,
     currencyCode:DataTypes.STRING,
     status: DataTypes.BOOLEAN
   }, {

@@ -34,7 +34,7 @@ module.exports = {
         type: Sequelize.DATE
       },
       payout :{
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       unit :{
         type: Sequelize.STRING

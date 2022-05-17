@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   }
   saving.init({
-    amount: DataTypes.STRING
+    amount: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'saving',

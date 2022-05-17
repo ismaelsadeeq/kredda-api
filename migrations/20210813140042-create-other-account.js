@@ -32,7 +32,7 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       accountBalance: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

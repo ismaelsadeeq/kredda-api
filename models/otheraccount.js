@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   otherAccount.init({
     status:DataTypes.BOOLEAN,
-    accountBalance: DataTypes.STRING
+    accountBalance: DataTypes.INTEGER
   }, {
     sequelize,
     paranoid:true,

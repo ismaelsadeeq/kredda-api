@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   }
   wallet.init({
-    accountBalance: DataTypes.STRING,
+    accountBalance: DataTypes.INTEGER,
     customerCode: DataTypes.STRING
   }, {
     sequelize,

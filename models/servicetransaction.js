@@ -15,12 +15,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   serviceTransaction.init({
     reference: DataTypes.STRING,
-    amount: DataTypes.STRING,
+    amount: DataTypes.INTEGER,
     beneficiary: DataTypes.STRING,
     time: DataTypes.STRING,
     status: DataTypes.BOOLEAN,
-    totalServiceFee: DataTypes.STRING,
-    profit: DataTypes.STRING
+    totalServiceFee: DataTypes.INTEGER,
+    profit: DataTypes.INTEGER
   }, {
     sequelize,
     paranoid:true,

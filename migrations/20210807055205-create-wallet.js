@@ -21,7 +21,7 @@ module.exports = {
         }
       },
       accountBalance: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       customerCode: {
         type: Sequelize.STRING

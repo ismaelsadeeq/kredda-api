@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     message: DataTypes.STRING,
     reference: DataTypes.STRING,
     status:DataTypes.STRING,
-    amount: DataTypes.STRING,
+    amount: DataTypes.INTEGER,
     time:DataTypes.STRING,
     beneficiary: DataTypes.STRING(1234),
     description: DataTypes.STRING,

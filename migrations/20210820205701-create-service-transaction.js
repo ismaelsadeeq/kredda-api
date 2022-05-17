@@ -32,7 +32,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       amount: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       beneficiary: {
         type: Sequelize.STRING
@@ -44,10 +44,10 @@ module.exports = {
         type: Sequelize.STRING
       },
       totalServiceFee: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       profit: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

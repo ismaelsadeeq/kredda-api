@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
   serviceCategory.init({
     name: DataTypes.STRING,
     type: DataTypes.STRING,
-    serviceCharge: DataTypes.STRING,
+    serviceCharge: DataTypes.INTEGER,
     logo: DataTypes.STRING,
     status: DataTypes.BOOLEAN
   }, {

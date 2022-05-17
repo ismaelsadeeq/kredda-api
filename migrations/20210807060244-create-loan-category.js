@@ -17,16 +17,16 @@ module.exports = {
         type: Sequelize.STRING
       },
       interestRate: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       defaultInterest: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       interestAmount: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       maximumAmount: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       maximumDuration: {
         type: Sequelize.STRING
@@ -35,7 +35,7 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       expiryFeeAmount :{
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       expiryPercentage :{
         type: Sequelize.STRING

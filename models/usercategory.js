@@ -7,9 +7,9 @@ module.exports = (sequelize, DataTypes) => {
   };
   userCategory.init({
     name: DataTypes.STRING,
-    discountRate: DataTypes.STRING,
+    discountRate: DataTypes.INTEGER,
     period: DataTypes.STRING,
-    fee: DataTypes.STRING
+    fee: DataTypes.INTEGER
   }, {
     sequelize,
     paranoid:true,

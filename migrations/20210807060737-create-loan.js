@@ -31,19 +31,19 @@ module.exports = {
         }
       },
       amount :{
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       isApproved: {
         type: Sequelize.BOOLEAN
       },
       amountToBePaid :{
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       amoundPaid: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       remainingBalance: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       isPaid: {
         type: Sequelize.BOOLEAN

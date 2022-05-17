@@ -12,13 +12,13 @@ module.exports = {
         type: Sequelize.STRING
       },
       discountRate: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       period: {
         type: Sequelize.STRING
       },
       fee: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
