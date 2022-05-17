@@ -37,15 +37,15 @@ const createLoanCategory = async (req,res)=>{
       id:uuid.v4(),
       name:data.name,
       type:data.type,
-      interestRate:data.interestRate,
-      defaultInterest:data.defaultInterest,
-      interestAmount:data.interestAmount,
-      maximumAmount:data.maximumAmount,
+      interestRate:parseInt(data.interestRate),
+      defaultInterest:parseInt(data.defaultInterest),
+      interestAmount:parseInt(data.interestAmount),
+      maximumAmount:parseInt(data.maximumAmount),
       maximumDuration:data.maximumDuration,
       status:true,
       hasExpiryFee:data.hasExpiryFee,
-      expiryFeeAmount:data.expiryFeeAmount,
-      expiryPercentage:data.expiryPercentage
+      expiryFeeAmount:parseInt(data.expiryFeeAmount),
+      expiryPercentage:parseInt(data.expiryPercentage)
     }
   );
   if(!createLoan){
@@ -144,14 +144,14 @@ const editLoanCategory = async (req,res)=>{
       {
         name:data.name,
         type:data.type,
-        interestRate:data.interestRate,
-        defaultInterest:data.defaultInterest,
-        interestAmount:data.interestAmount,
-        maximumAmount:data.maximumAmount,
+        interestRate:parseInt(data.interestRate),
+        defaultInterest:parseInt(data.defaultInterest),
+        interestAmount:parseInt(data.interestAmount),
+        maximumAmount:parseInt(data.maximumAmount),
         maximumDuration:data.maximumDuration,
         hasExpiryFee:data.hasExpiryFee,
-        expiryFeeAmount:data.expiryFeeAmount,
-        expiryPercentage:data.expiryPercentage
+        expiryFeeAmount:parseInt(data.expiryFeeAmount),
+        expiryPercentage:parseInt(data.expiryPercentage)
       },
       {
         where:{
@@ -274,7 +274,7 @@ const applyForAloan = async(req,res)=>{
   const user = req.user;
   const data = req.body;
   const categoryId = req.params.categoryId;
-  const amount = parseFloat(data.amount);
+  const amount = parseInt(data.amount);
   const creditCard = await models.creditCard.findOne(
     {
       where:{
@@ -320,7 +320,7 @@ const applyForAloan = async(req,res)=>{
     responseData.data = undefined;
     return res.json(responseData);
   }
-  let maximumAmount = parseFloat(loanCategory.maximumAmount);
+  let maximumAmount = parseInt(loanCategory.maximumAmount);
   if(amount > maximumAmount){
     responseData.status = false;
     responseData.message = "loan amount exceeds maximum loan amount";
@@ -481,10 +481,10 @@ const approveALoan = async(req,res)=>{
   let amountToBePaid 
   if(loanCategory.interestRate){
     let interestRate = parseFloat(loanCategory.interestRate) / 100;
-    let interestAmount = interestRate * parseFloat(loan.amount);
-    amountToBePaid = interestAmount + parseFloat(loan.amount);
+    let interestAmount = interestRate * parseInt(loan.amount);
+    amountToBePaid = interestAmount + parseInt(loan.amount);
   }else{
-    amountToBePaid = parseFloat(loanCategory.interestAmount) + parseFloat(loan.amount);
+    amountToBePaid = parseInt(loanCategory.interestAmount) + parseInt(loan.amount);
   }
   Date.prototype.addDays = function(days) {
     var date = new Date(this.valueOf());
@@ -492,12 +492,12 @@ const approveALoan = async(req,res)=>{
     return date;
   };
   let date = new Date();
-  date = date.addDays(parseFloat(loanCategory.maximumDuration));
+  date = date.addDays(parseInt(loanCategory.maximumDuration));
   await models.loan.update(
     {
       isApproved:true,
       amountToBePaid:amountToBePaid,
-      amoundPaid:"0.0",
+      amoundPaid:0,
       remainingBalance:amountToBePaid,
       isPaid:false,
       dueDate:date
@@ -517,7 +517,7 @@ const approveALoan = async(req,res)=>{
       description:user.firstName + " account funded after loan is approved",
       userId:loan.userId,
       reference:trxRef,
-      amount:loan.amount,
+      amount:parseInt(loan.amount),
       status:"successful",
       time: time
     }
@@ -529,7 +529,7 @@ const approveALoan = async(req,res)=>{
       }
     }
   );
-  let walletBalance = parseFloat(wallet.accountBalance) + parseFloat(loan.amount);
+  let walletBalance = parseInt(wallet.accountBalance) + parseInt(loan.amount);
   await models.wallet.update(
     {
       accountBalance:walletBalance
@@ -593,7 +593,7 @@ const userPayLoan = async(req,res)=>{
   const data = req.body;
   const useDefault = data.useDefault;
   const creditCardId = data.creditCardId
-  const amount = parseFloat(data.amount);
+  const amount = parseInt(data.amount);
   let digits = helpers.generateOTP()
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
@@ -672,7 +672,7 @@ const walletpayment = async (user,amount,trxRef,time,loan,loanId,res)=>{
       }
     }
   );
-  let walletBalance = parseFloat(wallet.accountBalance);
+  let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance<amount){
     const transaction = await models.transaction.create(
       {
@@ -735,8 +735,8 @@ const walletpayment = async (user,amount,trxRef,time,loan,loanId,res)=>{
       }
     }
   );
-  const amoundPaid = parseFloat(updatedLoan.amoundPaid);
-  const amountToBePaid = parseFloat(updatedLoan.amountToBePaid);
+  const amoundPaid = parseInt(updatedLoan.amoundPaid);
+  const amountToBePaid = parseInt(updatedLoan.amountToBePaid);
   if(amoundPaid==amountToBePaid){
     await models.loan.update(
       {

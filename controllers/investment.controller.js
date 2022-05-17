@@ -38,8 +38,8 @@ const createInvestmentPlan = async (req,res)=>{
           name:data.name,
           type:data.type,
           organization:data.organization,
-          pricePerUnit:data.pricePerUnit,
-          interestRate:data.interestRate,
+          pricePerUnit:parseInt(data.pricePerUnit),
+          interestRate:parseInt(data.interestRate),
           period:data.period,
           picture:req.file.path
         }
@@ -86,8 +86,8 @@ const editInvestmentPlan = async (req,res)=>{
           name:data.name,
           type:data.type,
           organization:data.organization,
-          pricePerUnit:data.pricePerUnit,
-          interestRate:data.interestRate,
+          pricePerUnit:parseInt(data.pricePerUnit),
+          interestRate:parseInt(data.interestRate),
           period:data.period,
           picture:req.file.path
         },
@@ -178,7 +178,7 @@ const invest = async (req,res)=>{
   const data = req.body;
   const user = req.user;
   const planId = req.params.planId;
-  const amount = parseFloat(data.amount);
+  const amount = parseInt(data.amount);
   const creditCardId = data.creditCardId
   let digits = helpers.generateOTP()
   let name = user.firstName;
@@ -254,9 +254,8 @@ const invest = async (req,res)=>{
     )
   }
   if(payment.siteName =='paystack'){
-    let unit = amount / parseFloat(investmentPlan.pricePerUnit);
-    let interestAmount = (parseFloat(investmentPlan.interestRate)/100) * amount;
-    console.log(interestAmount);
+    let unit = amount / parseInt(investmentPlan.pricePerUnit);
+    let interestAmount = parseInt(parseFloat(investmentPlan.interestRate)/100 * amount);
     let payout = amount + interestAmount;
     console.log(payout);
     Date.prototype.addDays = function(days) {
@@ -265,7 +264,7 @@ const invest = async (req,res)=>{
       return date;
     };
     let date = new Date();
-    date = date.addDays(parseFloat(investmentPlan.period));
+    date = date.addDays(parseInt(investmentPlan.period));
     const createInvestment = await models.investment.create(
       {
         id:uuid.v4(),
@@ -309,7 +308,7 @@ const walletpayment = async (user,amount,trxRef,time,investmentPlan,res)=>{
       }
     }
   );
-  let walletBalance = parseFloat(wallet.accountBalance);
+  let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance<amount){
     const transaction = await models.transaction.create(
       {
@@ -340,8 +339,8 @@ const walletpayment = async (user,amount,trxRef,time,investmentPlan,res)=>{
       }
     }
   );
-  let unit = amount / parseFloat(investmentPlan.pricePerUnit);
-  let interestAmount = (parseFloat(investmentPlan.interestRate)/100) * amount;
+  let unit = amount / parseInt(investmentPlan.pricePerUnit);
+  let interestAmount = parseInt(parseFloat(investmentPlan.interestRate)/100 * amount);
   let payout = amount + interestAmount;
   Date.prototype.addDays = function(days) {
     var date = new Date(this.valueOf());
@@ -349,7 +348,7 @@ const walletpayment = async (user,amount,trxRef,time,investmentPlan,res)=>{
     return date;
   };
   let date = new Date();
-  date = date.addDays(parseFloat(investmentPlan.period));
+  date = date.addDays(parseInt(investmentPlan.period));
   const createInvestment = await models.investment.create(
     {
       payout:payout,
