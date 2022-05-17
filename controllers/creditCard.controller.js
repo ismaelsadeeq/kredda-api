@@ -38,7 +38,7 @@ const chargeSavedCreditCard = async (req,res)=>{
       return res.json(responseData)
     }
     const payload = {
-      amount : data.amount,
+      amount : parseInt(data.amount),
       email : user.email,
       authorizationCode : creditCard.authCode,
       userId:user.id,
@@ -72,7 +72,7 @@ const chargeSavedCreditCard = async (req,res)=>{
 const initiateCardChargePaystack = async (req,res)=>{
   const reference = req.params.reference;
   const user = req.user;
-  const amount = req.body.amount;
+  const amount = parseInt(req.body.amount);
   let time = new Date();
   time = time.toLocaleString()
   const transaction = await models.transaction.create(
@@ -129,7 +129,7 @@ const chargeDefaultCreditCard = async (req,res)=>{
       return res.json(responseData);
     }
     const payload = {
-      amount : data.amount,
+      amount : parseInt(data.amount),
       email : user.email,
       authorizationCode : creditCard.authCode,
       userId:user.id,
