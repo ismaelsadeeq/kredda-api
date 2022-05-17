@@ -9,7 +9,6 @@ const responseData = {
 }
 const checkTransactionStatus = async (payload,res)=>{
   var request = require('request');
-  console.log(payload);
   var options = {
     'method': 'GET',
     'url': `https://mobileairtimeng.com/httpapi/status?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&transid=${payload}&jsn=json`,
@@ -257,7 +256,6 @@ const rechargeInternationalNumber = async (payload,res)=>{
 
 const mtnDataGifting = async (payload,res)=>{
   var request = require('request');
-  console.log(payload);
   var options = {
     'method': 'POST',
     'url': `https://mobileairtimeng.com/httpapi/cdatashare?userid=${process.env.MOBILE_AIRTIME_PHONENUMBER}&pass=${process.env.MOBILE_AIRTIME_KEY}&network=${payload.network}&phone=${payload.phoneNumber}&datasize=${payload.dataSize}&user_ref=${payload.reference}&jsn=json`,
