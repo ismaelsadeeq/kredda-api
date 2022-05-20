@@ -16,10 +16,10 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     countryCode:DataTypes.STRING,
     phoneNumber: DataTypes.STRING,
-    isVerified: DataTypes.STRING,
+    isVerified: DataTypes.BOOLEAN,
     profilePicture: DataTypes.STRING,
     permission:DataTypes.STRING,
-    isSuperAdmin:DataTypes.BOOLEAN,
+    superAdmin:DataTypes.BOOLEAN,
     password: DataTypes.STRING
   }, {
     sequelize,

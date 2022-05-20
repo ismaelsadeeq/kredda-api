@@ -26,7 +26,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       isVerified: {
-        type: Sequelize.STRING
+        type: Sequelize.BOOLEAN
       },
       profilePicture: {
         type: Sequelize.STRING
@@ -34,7 +34,7 @@ module.exports = {
       permission : {
         type: Sequelize.STRING
       },
-      isSuperAdmin :{
+      superAdmin :{
         type: Sequelize.BOOLEAN
       },
       password: {

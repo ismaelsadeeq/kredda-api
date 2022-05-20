@@ -60,7 +60,7 @@ const createSuperAdmin = async (req,res) =>{
         email:data.email,
         countryCode:data.countryCode,
         phoneNumber:data.phoneNumber,
-        isSuperAdmin:true,
+        superAdmin:true,
         permission:"1",
         password:hash
       }
@@ -132,7 +132,7 @@ const createAdmin = async (req,res) =>{
         email:data.email,
         countryCode:data.countryCode,
         phoneNumber:data.phoneNumber,
-        isSuperAdmin:false,
+        superAdmin:false,
         permission:"1",
         password:hash
       }
@@ -216,7 +216,7 @@ const getAdmin = async  (req,res)=>{
       where:{
         id:user.id
       },
-      attributes:['id','firstName','lastName','  countryCode','phoneNumber','email','isVerified','profilePicture']
+      attributes:['id','firstName','lastName','countryCode','phoneNumber','email','isVerified','profilePicture']
     }
   );
   if(admin){
@@ -543,7 +543,7 @@ const editAdminPrioriy = async(req,res)=>{
       }
     }
   );
-  if(user.isSuperAdmin){
+  if(user.superAdmin){
     const updateAdmin = await models.admin.update(
       {
         permission:data.permission,
