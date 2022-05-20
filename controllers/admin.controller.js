@@ -158,7 +158,6 @@ const createAdmin = async (req,res) =>{
     "html":htmlPart,
     "body":msg
   }
-  data.val = val
   sendEmail(data)
   responseData.status = true
   responseData.message = "Account created use \"password\" as your default password to login";
