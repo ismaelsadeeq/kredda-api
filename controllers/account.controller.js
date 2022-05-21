@@ -330,6 +330,66 @@ const disableAccount = async (req,res)=>{
   responseData.data = account;
   return res.json(responseData);
 }
+const getDashboard = async (req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const users = await models.user.count();
+  const premiumUsers = await models.userType.count();
+  const investments = await models.investment.count({
+    where:{
+      status:true
+    }
+  })
+  const loan = await models.loan.count({
+    where:{
+      isApproved:true,
+    }
+  })
+  const appliedloan = await models.loan.count({
+    where:{
+      isApproved:null
+    }
+  })
+  const transaction = await models.transaction.count();
+  const kyc = await models.kyc.count(
+    {
+      where:{
+        status:null
+      }
+    }
+  );
+  const tickets = await models.ticket.count(
+    {
+      where:{
+        status:1
+      }
+    }
+  );
+  responseData.status = true;
+  responseData.message = "something went wrong";
+  responseData.data = {
+    users:users,
+    premiumUsers:premiumUsers,
+    investments:investments,
+    loan:loan,
+    appliedloan:appliedloan,
+    transaction:transaction,
+    kyc:kyc,
+    tickets:tickets
+
+  }
+  return res.json(responseData);
+}
 module.exports = {
   createAccountType,
   editAccountType,
@@ -340,5 +400,6 @@ module.exports = {
   fundAccount,
   getAccounts,
   getAccount,
-  disableAccount
+  disableAccount,
+  getDashboard
 }
