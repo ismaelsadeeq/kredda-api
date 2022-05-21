@@ -216,7 +216,7 @@ const getAdmin = async  (req,res)=>{
       where:{
         id:user.id
       },
-      attributes:['id','firstName','lastName','countryCode','phoneNumber','email','isVerified','profilePicture']
+      attributes:['id','firstName','superAdmin','lastName','countryCode','phoneNumber','email','isVerified','profilePicture']
     }
   );
   if(admin){
