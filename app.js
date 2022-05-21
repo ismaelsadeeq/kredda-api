@@ -39,12 +39,14 @@ var servicesRouter = require('./routes/services');
 var transactionRouter = require('./routes/transaction');
 var supportRouter = require('./routes/support');
 var userTypeRouter = require('./routes/user.type.js')
+var dashRouter = require('./routes/dash.js')
 
 const cron = require('node-cron');
 const helpers = require('./utilities/helpers');
 
 app.use('/api/v1', indexRouter);
 app.use('/api/v1',authRouter);
+app.use('/api/v1/dashboard', dashRouter);
 app.use('/api/v1/account', usersRouter);
 app.use('/api/v1/admin',adminRouter);
 app.use('/api/v1/auth',authRouter);

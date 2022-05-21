@@ -375,9 +375,7 @@ const getDashboard = async (req,res)=>{
       }
     }
   );
-  responseData.status = true;
-  responseData.message = "something went wrong";
-  responseData.data = {
+  const payload = {
     users:users,
     premiumUsers:premiumUsers,
     investments:investments,
@@ -386,8 +384,10 @@ const getDashboard = async (req,res)=>{
     transaction:transaction,
     kyc:kyc,
     tickets:tickets
-
   }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = payload
   return res.json(responseData);
 }
 module.exports = {

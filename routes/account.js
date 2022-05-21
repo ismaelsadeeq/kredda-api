@@ -31,10 +31,6 @@ router.put('/fund/:id',
   passport.authenticate('jwt',{session:false}),
   controller.fundAccount
 );
-router.get('/dashboard',
-  passport.authenticate('jwt',{session:false}),
-  controller.getDashboard
-);
 router.get('/',
   passport.authenticate('jwt',{session:false}),
   controller.getAccounts
