@@ -234,6 +234,7 @@ const getAdmin = async  (req,res)=>{
 const editAdmin = async (req,res)=>{
   const user = req.user;
   const data = req.body;
+  console.log(data)
   const updateAdmin = await models.admin.update(
     {
       firstName:data.firstName,
