@@ -247,7 +247,16 @@ const editAdmin = async (req,res)=>{
       }
     }
   );
+  const admin = await models.admin.findOne(
+    {
+      where:{
+        id:user.id
+      }
+    }
+  );
+  
   responseData.status = true;
+  responseData.data = admin
   responseData.message = "admin is updated";
   return res.json(responseData);
 }
