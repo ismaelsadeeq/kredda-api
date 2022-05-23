@@ -7,7 +7,22 @@ router.get('/',
   passport.authenticate('jwt',{session:false}),
   controller.getAdmin
 );
-
+router.get('/activated', 
+  passport.authenticate('jwt',{session:false}),
+  controller.getActivatedAdmin
+);
+router.get('/deactivated', 
+  passport.authenticate('jwt',{session:false}),
+  controller.getDeactivatedAdmin
+);
+router.put('/activate/:id', 
+  passport.authenticate('jwt',{session:false}),
+  controller.activateAdmin
+);
+router.put('/deactivate/:id', 
+  passport.authenticate('jwt',{session:false}),
+  controller.deactivateAdmin
+);
 router.post('/login', 
   controller.adminLogin
 );

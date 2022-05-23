@@ -61,6 +61,7 @@ const createSuperAdmin = async (req,res) =>{
         countryCode:data.countryCode,
         phoneNumber:data.phoneNumber,
         superAdmin:true,
+        isVerified:true,
         permission:"1",
         password:hash
       }
@@ -132,6 +133,7 @@ const createAdmin = async (req,res) =>{
         email:data.email,
         countryCode:data.countryCode,
         phoneNumber:data.phoneNumber,
+        isVerified:true,
         superAdmin:false,
         permission:"1",
         password:hash
@@ -230,6 +232,48 @@ const getAdmin = async  (req,res)=>{
   responseData.data = admin
   return res.json(responseData);
 }
+const getActivatedAdmin = async  (req,res)=>{
+
+  const admins = await models.admin.findAll(
+    {
+      where:{
+        isVerified:true
+      },
+      attributes:['id','firstName','superAdmin','lastName','countryCode','phoneNumber','email','isVerified','profilePicture']
+    }
+  );
+  if(admins){
+    responseData.status = true;
+    responseData.message = "completed";
+    responseData.data = admins
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "something went wrong";
+  responseData.data = undefined
+  return res.json(responseData);
+}
+const getDeactivatedAdmin = async  (req,res)=>{
+
+  const admins = await models.admin.findAll(
+    {
+      where:{
+        isVerified:false
+      },
+      attributes:['id','firstName','superAdmin','lastName','countryCode','phoneNumber','email','isVerified','profilePicture']
+    }
+  );
+  if(admins){
+    responseData.status = true;
+    responseData.message = "completed";
+    responseData.data = admins
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "something went wrong";
+  responseData.data = undefined
+  return res.json(responseData);
+}
 
 const editAdmin = async (req,res)=>{
   const user = req.user;
@@ -313,6 +357,41 @@ const restoreAdmin = async (req,res)=>{
   responseData.message = "deleted";
   return res.json(responseData);
 }
+const activateAdmin = async (req,res)=>{
+  const user = req.user;
+  const id = req.params.id;
+   await models.admin.update(
+    {
+      isVerified:true
+    },
+    {
+      where:{
+        id:id
+      }
+    }
+  );
+  responseData.status = true;
+  responseData.message = "activated";
+  return res.json(responseData);
+}
+const deactivateAdmin = async (req,res)=>{
+  const user = req.user;
+  const id = req.params.id;
+   await models.admin.update(
+    {
+      isVerified:false
+    },
+    {
+      where:{
+        id:id
+      }
+    }
+  );
+  responseData.status = true;
+  responseData.message = "activated";
+  return res.json(responseData);
+}
+
 
 
 const verifyEmail = async (req,res)=>{
@@ -592,5 +671,9 @@ module.exports = {
   changePassword,
   editProfilePicture,
   editAdminPrioriy,
-  restoreAdmin
+  restoreAdmin,
+  getActivatedAdmin,
+  getDeactivatedAdmin,
+  activateAdmin,
+  deactivateAdmin
 }
