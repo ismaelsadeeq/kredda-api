@@ -234,7 +234,6 @@ const getAdmin = async  (req,res)=>{
 const editAdmin = async (req,res)=>{
   const user = req.user;
   const data = req.body;
-  console.log(data)
   const updateAdmin = await models.admin.update(
     {
       firstName:data.firstName,
@@ -248,16 +247,8 @@ const editAdmin = async (req,res)=>{
       }
     }
   );
-  const admin = await models.admin.findOne(
-    {
-      where:{
-        id:user.id
-      }
-    }
-  );
-  
   responseData.status = true;
-  responseData.data = admin
+  responseData.data = undefined;
   responseData.message = "admin is updated";
   return res.json(responseData);
 }
