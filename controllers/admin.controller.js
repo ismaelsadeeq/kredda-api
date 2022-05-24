@@ -174,7 +174,7 @@ const adminLogin = async (req,res)=>{
     const admin = await models.admin.findOne(
       {
         where:{email:email},
-        attributes:['id','firstName','lastName','phoneNumber','email','password']
+        attributes:['id','isVerified','firstName','lastName','phoneNumber','email','password']
       }
       );
     if (admin){
