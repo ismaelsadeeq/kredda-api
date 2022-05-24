@@ -237,7 +237,7 @@ const getActivatedAdmin = async  (req,res)=>{
   const admins = await models.admin.findAll(
     {
       where:{
-        isVerified:true
+        isVerified:true||null
       },
       attributes:['id','firstName','superAdmin','lastName','countryCode','phoneNumber','email','isVerified','profilePicture']
     }
