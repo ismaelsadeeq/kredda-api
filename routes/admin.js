@@ -7,6 +7,10 @@ router.get('/',
   passport.authenticate('jwt',{session:false}),
   controller.getAdmin
 );
+router.get('/:id', 
+  passport.authenticate('jwt',{session:false}),
+  controller.getAdminWithId
+);
 router.get('/activated', 
   passport.authenticate('jwt',{session:false}),
   controller.getActivatedAdmin
