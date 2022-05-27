@@ -8,6 +8,7 @@ const mailer = require('../utilities/mailjet');
 const helpers = require('../utilities/helpers');
 const multer = require('multer');
 const multerConfig = require('../config/multer');
+const { response } = require('express');
 
 // imports
 // ------------------------------------------------------------------------------------------//
@@ -360,6 +361,16 @@ const restoreAdmin = async (req,res)=>{
 }
 const activateAdmin = async (req,res)=>{
   const user = req.user;
+  const admin = await models.admin.findOne(
+    {
+      where:{
+        id:user.id
+      }
+    }
+  );
+  if(!admin.superAdmin){
+    return res.json('Unauthorize');
+  }
   const id = req.params.id;
    await models.admin.update(
     {
@@ -373,10 +384,21 @@ const activateAdmin = async (req,res)=>{
   );
   responseData.status = true;
   responseData.message = "completed";
+  responseData.data = undefined;
   return res.json(responseData);
 }
 const deactivateAdmin = async (req,res)=>{
   const user = req.user;
+  const admin = await models.admin.findOne(
+    {
+      where:{
+        id:user.id
+      }
+    }
+  );
+  if(!admin.superAdmin){
+    return res.json('Unauthorize');
+  }
   const id = req.params.id;
    await models.admin.update(
     {
@@ -390,6 +412,7 @@ const deactivateAdmin = async (req,res)=>{
   );
   responseData.status = true;
   responseData.message = "completed";
+  responseData.data = undefined;
   return res.json(responseData);
 }
 
