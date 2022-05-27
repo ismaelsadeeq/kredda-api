@@ -372,7 +372,7 @@ const activateAdmin = async (req,res)=>{
     }
   );
   responseData.status = true;
-  responseData.message = "activated";
+  responseData.message = "completed";
   return res.json(responseData);
 }
 const deactivateAdmin = async (req,res)=>{
@@ -389,7 +389,7 @@ const deactivateAdmin = async (req,res)=>{
     }
   );
   responseData.status = true;
-  responseData.message = "activated";
+  responseData.message = "completed";
   return res.json(responseData);
 }
 
