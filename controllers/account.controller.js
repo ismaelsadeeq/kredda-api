@@ -391,7 +391,6 @@ const getDashboard = async (req,res)=>{
   return res.json(responseData);
 }
 const getAdminWithId = async  (req,res)=>{
-  console.log(req.params.id);
   const admin = await models.admin.findOne(
     {
       where:{
@@ -400,7 +399,6 @@ const getAdminWithId = async  (req,res)=>{
       attributes:['id','firstName','superAdmin','lastName','countryCode','phoneNumber','email','isVerified','profilePicture']
     }
   );
-  console.log(admin);
   if(admin){
     responseData.status = true;
     responseData.message = "completed";
