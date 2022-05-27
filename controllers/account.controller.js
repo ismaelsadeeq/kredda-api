@@ -399,6 +399,7 @@ const getAdminWithId = async  (req,res)=>{
       attributes:['id','firstName','superAdmin','lastName','countryCode','phoneNumber','email','isVerified','profilePicture']
     }
   );
+  console.log(admin);
   if(admin){
     responseData.status = true;
     responseData.message = "completed";
