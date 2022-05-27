@@ -391,6 +391,7 @@ const getDashboard = async (req,res)=>{
   return res.json(responseData);
 }
 const getAdminWithId = async  (req,res)=>{
+  console.log(req.params.id);
   const admin = await models.admin.findOne(
     {
       where:{
