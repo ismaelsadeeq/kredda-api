@@ -23,6 +23,10 @@ router.put('/deactivate/:id',
   passport.authenticate('jwt',{session:false}),
   controller.deactivateAdmin
 );
+router.get('/get-admin/:id', 
+  passport.authenticate('jwt',{session:false}),
+  controller.getAdminWithId
+);
 router.post('/login', 
   controller.adminLogin
 );
@@ -67,8 +71,5 @@ router.delete('/',
   passport.authenticate('jwt',{session:false}),
   controller.deleteAdmin
 );
-router.get('/:id', 
-  passport.authenticate('jwt',{session:false}),
-  controller.getAdminWithId
-);
+
 module.exports = router;
