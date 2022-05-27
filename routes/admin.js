@@ -16,10 +16,7 @@ router.get('/deactivated',
   passport.authenticate('jwt',{session:false}),
   controller.getDeactivatedAdmin
 );
-router.get('/get/admin/:id', 
-  passport.authenticate('jwt',{session:false}),
-  controller.getAdminWithId
-);
+
 router.put('/activate/:id', 
   passport.authenticate('jwt',{session:false}),
   controller.activateAdmin

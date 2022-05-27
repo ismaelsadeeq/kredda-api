@@ -3,6 +3,10 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/account.controller');
 
+router.get('/get/admin/:id', 
+  passport.authenticate('jwt',{session:false}),
+  controller.getAdminWithId
+);
 router.post('/type',
   passport.authenticate('jwt',{session:false}),
   controller.createAccountType

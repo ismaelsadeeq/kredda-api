@@ -232,26 +232,7 @@ const getAdmin = async  (req,res)=>{
   responseData.data = admin
   return res.json(responseData);
 }
-const getAdminWithId = async  (req,res)=>{
-  const admin = await models.admin.findOne(
-    {
-      where:{
-        id:req.params.id
-      },
-      attributes:['id','firstName','superAdmin','lastName','countryCode','phoneNumber','email','isVerified','profilePicture']
-    }
-  );
-  if(admin){
-    responseData.status = true;
-    responseData.message = "completed";
-    responseData.data = admin
-    return res.json(responseData);
-  }
-  responseData.status = true;
-  responseData.message = "something went wrong";
-  responseData.data = admin
-  return res.json(responseData);
-}
+
 const getActivatedAdmin = async  (req,res)=>{
 
   const admins = await models.admin.findAll(
@@ -696,5 +677,5 @@ module.exports = {
   getDeactivatedAdmin,
   activateAdmin,
   deactivateAdmin,
-  getAdminWithId
+  
 }

@@ -390,6 +390,26 @@ const getDashboard = async (req,res)=>{
   responseData.data = payload
   return res.json(responseData);
 }
+const getAdminWithId = async  (req,res)=>{
+  const admin = await models.admin.findOne(
+    {
+      where:{
+        id:req.params.id
+      },
+      attributes:['id','firstName','superAdmin','lastName','countryCode','phoneNumber','email','isVerified','profilePicture']
+    }
+  );
+  if(admin){
+    responseData.status = true;
+    responseData.message = "completed";
+    responseData.data = admin
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "something went wrong";
+  responseData.data = admin
+  return res.json(responseData);
+}
 module.exports = {
   createAccountType,
   editAccountType,
@@ -401,5 +421,6 @@ module.exports = {
   getAccounts,
   getAccount,
   disableAccount,
-  getDashboard
+  getDashboard,
+  getAdminWithId
 }
