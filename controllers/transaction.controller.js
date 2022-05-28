@@ -613,7 +613,7 @@ const checkAdmin = async (req)=>{
   }
   return true
 }
-const pendingToSuccess = (req,res)=>{
+const pendingToSuccess = async (req,res)=>{
   const isAdmin = await checkAdmin(req)
   if(!isAdmin){
     res.statusCode = 401;
@@ -645,7 +645,7 @@ const pendingToSuccess = (req,res)=>{
   responseData.data = undefined;
   return res.json(responseData);
 }
-const pendingToFailed = (req,res)=>{
+const pendingToFailed = async (req,res)=>{
   const isAdmin = await checkAdmin(req)
   if(!isAdmin){
     res.statusCode = 401;
