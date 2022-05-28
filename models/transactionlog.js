@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   transactionLog.init({
     description: DataTypes.STRING,
-    trxType: DataTypes.STRING
+    trxType: DataTypes.STRING,
     time:DataTypes.STRING
   }, {
     sequelize,
