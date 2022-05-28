@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
     admin.hasMany(models.otpCode,{
       foreignKey:'adminId'
     });
+    admin.hasMany(models.transactionLog,{
+      foreignKey:'adminId'
+    });
   }
   admin.init({
     firstName: DataTypes.STRING,
