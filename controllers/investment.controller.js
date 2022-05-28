@@ -257,7 +257,6 @@ const invest = async (req,res)=>{
     let unit = amount / parseInt(investmentPlan.pricePerUnit);
     let interestAmount = parseInt(parseFloat(investmentPlan.interestRate)/100 * amount);
     let payout = amount + interestAmount;
-    console.log(payout);
     Date.prototype.addDays = function(days) {
       var date = new Date(this.valueOf());
       date.setDate(date.getDate() + days);
