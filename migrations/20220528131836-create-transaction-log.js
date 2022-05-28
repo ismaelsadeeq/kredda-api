@@ -6,8 +6,7 @@ module.exports = {
         allowNull: false,
         primaryKey: true,
         unique:true,
-        type: Sequelize.UUID,
-        defaultValue:uuid.v4()
+        type: Sequelize.UUID
       },
       adminId:{
         type:Sequelize.UUID,
