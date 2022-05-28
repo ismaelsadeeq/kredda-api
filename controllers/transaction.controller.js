@@ -88,6 +88,32 @@ const successfulServiceTransactions = async (req,res)=>{
   responseData.data = transactions;
   return res.json(responseData);
 }
+const pendingServiceTransactions = async (req,res)=>{
+  let pageLimit = parseInt(req.query.pageLimit);
+  let currentPage = parseInt(req.query.currentPage);
+  let	skip = currentPage * pageLimit;
+  const transactions = await models.serviceTransaction.findAll(
+    {
+      order:[['createdAt','DESC']],
+      offset:skip,
+      limit:pageLimit,
+      where:{
+        userId:req.user.id,
+        status:"pending"
+      }
+    }
+  );
+  if(!transactions){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = transactions;
+  return res.json(responseData);
+}
 const getServiceTransaction = async (req,res)=>{
   const id = req.params.id;
   const transaction = await models.serviceTransaction.findOne(
@@ -193,6 +219,100 @@ const successfulTransactions = async (req,res)=>{
         userId:req.user.id,
         status:"successful"
       }
+    }
+  );
+  if(!transactions){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = transactions;
+  return res.json(responseData);
+}
+const pendingTransactions = async (req,res)=>{
+  let pageLimit = parseInt(req.query.pageLimit);
+  let currentPage = parseInt(req.query.currentPage);
+  let	skip = currentPage * pageLimit;
+  const transactions = await models.transaction.findAll(
+    {
+      order:[['createdAt','DESC']],
+      offset:skip,
+      limit:pageLimit,
+      where:{
+        userId:req.user.id,
+        status:"pending"
+      }
+    }
+  );
+  if(!transactions){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = transactions;
+  return res.json(responseData);
+}
+const allNewTransactions = async (req,res)=>{
+  const transactions = await models.transaction.findAll(
+    {
+      order:[['createdAt','DESC']]
+    }
+  );
+  if(!transactions){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = transactions;
+  return res.json(responseData);
+}
+const allFailedTransactions = async (req,res)=>{
+  const transactions = await models.transaction.findAll(
+    {
+      order:[['createdAt','DESC']]
+    }
+  );
+  if(!transactions){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = transactions;
+  return res.json(responseData);
+}
+const allSuccessfulTransactions = async (req,res)=>{
+  const transactions = await models.transaction.findAll(
+    {
+      order:[['createdAt','DESC']]
+    }
+  );
+  if(!transactions){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = transactions;
+  return res.json(responseData);
+}
+const allPendingTransactions = async (req,res)=>{
+  const transactions = await models.transaction.findAll(
+    {
+      order:[['createdAt','DESC']]
     }
   );
   if(!transactions){
@@ -479,12 +599,19 @@ module.exports = {
   successfulServiceTransactions,
   getServiceTransaction,
   getAServiceTransactionInfo,
+  pendingServiceTransactions,
 
   userNewTransactions,
   failedTransactions,
   successfulTransactions,
   getTransaction,
   getATransactionInfo,
+  pendingTransactions,
+
+  allNewTransactions,
+  allFailedTransactions,
+  allSuccessfulTransactions,
+  allPendingTransactions,
 
   //widthraw
   createTransferRecipient,

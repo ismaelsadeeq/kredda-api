@@ -49,6 +49,27 @@ router.get('/user/success',
   passport.authenticate('jwt',{session:false}),
   controller.successfulTransactions
 );
+
+router.get('/user/pending',
+  passport.authenticate('jwt',{session:false}),
+  controller.pendingTransactions
+);
+router.get('/all',
+  passport.authenticate('jwt',{session:false}),
+  controller.userNewTransactions
+);
+router.get('/failed',
+  passport.authenticate('jwt',{session:false}),
+  controller.failedTransactions
+);
+router.get('/success',
+  passport.authenticate('jwt',{session:false}),
+  controller.successfulTransactions
+);
+router.get('/pending',
+  passport.authenticate('jwt',{session:false}),
+  controller.failedTransactions
+);
 router.get('/info/:reference',
   passport.authenticate('jwt',{session:false}),
   controller.getATransactionInfo
