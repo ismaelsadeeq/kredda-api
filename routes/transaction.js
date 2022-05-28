@@ -11,7 +11,14 @@ router.post('/paystack/create-recipient/:bankId',
   passport.authenticate('jwt',{session:false}),
   controller.createTransferRecipient
 );
-
+router.put('/change-status/pending-success/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.pendingToSuccess
+);
+router.put('/change-status/pending-failed/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.pendingToFailed
+);
 router.put('/withdraw-fund/:bankId',
   passport.authenticate('jwt',{session:false}),
   controller.initiateATransfer
@@ -78,4 +85,5 @@ router.get('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getTransaction
 );
+
 module.exports = router;

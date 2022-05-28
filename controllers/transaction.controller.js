@@ -278,7 +278,10 @@ const allNewTransactions = async (req,res)=>{
 const allFailedTransactions = async (req,res)=>{
   const transactions = await models.transaction.findAll(
     {
-      order:[['createdAt','DESC']]
+      order:[['createdAt','DESC']],
+      where:{
+        status:"failed"
+      }
     }
   );
   if(!transactions){
@@ -295,7 +298,10 @@ const allFailedTransactions = async (req,res)=>{
 const allSuccessfulTransactions = async (req,res)=>{
   const transactions = await models.transaction.findAll(
     {
-      order:[['createdAt','DESC']]
+      order:[['createdAt','DESC']],
+      where:{
+        status:"successful"
+      }
     }
   );
   if(!transactions){
@@ -312,7 +318,10 @@ const allSuccessfulTransactions = async (req,res)=>{
 const allPendingTransactions = async (req,res)=>{
   const transactions = await models.transaction.findAll(
     {
-      order:[['createdAt','DESC']]
+      order:[['createdAt','DESC']],
+      where:{
+        status:"pending"
+      }
     }
   );
   if(!transactions){
@@ -592,6 +601,82 @@ const validatePayment = async (req,res)=>{
     return await monnifyApi.getTransfer(payload,payment,res);
   }
 }
+const checkAdmin = async (req)=>{
+  const id = req.params.id
+  const admin = await models.admin.findOne({
+    where:{
+      id:req.user.id
+    }
+  })
+  if(!admin){
+    return false;
+  }
+  return true
+}
+const pendingToSuccess = (req,res)=>{
+  const isAdmin = await checkAdmin(req)
+  if(!isAdmin){
+    res.statusCode = 401;
+    return res.json('Unauthorize');
+  }
+  const transaction = await models.transaction.findOne({
+    where:{
+      id:req.params.id
+    }
+  });
+  if(transaction){
+    await models.transaction.update(
+      {
+        status:'successful'
+      },
+      {
+        where:{
+          id:req.params.id
+        }
+      }
+    );
+    responseData.status = true;
+    responseData.message = 'transaction updated';
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = false;
+  responseData.message = 'incorrect id';
+  responseData.data = undefined;
+  return res.json(responseData);
+}
+const pendingToFailed = (req,res)=>{
+  const isAdmin = await checkAdmin(req)
+  if(!isAdmin){
+    res.statusCode = 401;
+    return res.json('Unauthorize');
+  }
+  const transaction = await models.transaction.findOne({
+    where:{
+      id:req.params.id
+    }
+  });
+  if(transaction){
+    await models.transaction.update(
+      {
+        status:'failed'
+      },
+      {
+        where:{
+          id:req.params.id
+        }
+      }
+    );
+    responseData.status = true;
+    responseData.message = 'transaction updated';
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = false;
+  responseData.message = 'incorrect id';
+  responseData.data = undefined;
+  return res.json(responseData);
+}
 module.exports = {
   //service 
   userNewServiceTransactions,
@@ -616,5 +701,9 @@ module.exports = {
   //widthraw
   createTransferRecipient,
   initiateATransfer,
-  validatePayment
+  validatePayment,
+
+  //validation
+  pendingToFailed,
+  pendingToSuccess
 }
