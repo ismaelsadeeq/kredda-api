@@ -4,17 +4,38 @@ module.exports = {
     await queryInterface.createTable('transactionLogs', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        unique:true,
+        type: Sequelize.UUID,
+        defaultValue:uuid.v4()
+      },
+      adminId:{
+        type:Sequelize.UUID,
+        allowNull:false,
+        onDelete:'CASCADE',
+        references:{
+          model:'admins',
+          key:'id',
+          as:'adminId'
+        }
+      },
+      transactionId:{
+        type:Sequelize.UUID,
+        allowNull:false,
+        onDelete:'CASCADE',
+        references:{
+          model:'transactions',
+          key:'id',
+          as:'transactionId'
+        }
       },
       description: {
         type: Sequelize.STRING
       },
-      : {
+      trxType: {
         type: Sequelize.STRING
       },
-      trxType: {
+      time:{
         type: Sequelize.STRING
       },
       createdAt: {
@@ -23,6 +44,10 @@ module.exports = {
       },
       updatedAt: {
         allowNull: false,
+        type: Sequelize.DATE
+      },
+      deletedAt: {
+        allowNull: true,
         type: Sequelize.DATE
       }
     });
