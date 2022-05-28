@@ -56,19 +56,19 @@ router.get('/user/pending',
 );
 router.get('/all',
   passport.authenticate('jwt',{session:false}),
-  controller.userNewTransactions
+  controller.allNewTransactions
 );
 router.get('/failed',
   passport.authenticate('jwt',{session:false}),
-  controller.failedTransactions
+  controller.allFailedTransactions
 );
 router.get('/success',
   passport.authenticate('jwt',{session:false}),
-  controller.successfulTransactions
+  controller.allSuccessfulTransactions
 );
 router.get('/pending',
   passport.authenticate('jwt',{session:false}),
-  controller.failedTransactions
+  controller.allPendingTransactions
 );
 router.get('/info/:reference',
   passport.authenticate('jwt',{session:false}),
