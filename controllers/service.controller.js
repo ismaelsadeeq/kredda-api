@@ -36,6 +36,7 @@ const createServiceCategory = async (req,res)=>{
           name:data.name,
           type:data.type,
           serviceCharge:parseInt(data.serviceCharge),
+          vat:parseInt(data.vat),
           status:true
         }
       );
@@ -162,7 +163,8 @@ const editServiceCategory = async (req,res)=>{
         {
           name:data.name,
           type:data.type,
-          serviceCharge: parseInt(data.serviceCharge)
+          serviceCharge:parseInt(data.serviceCharge),
+          vat:parseInt(data.vat)
         },
         {
           where:{

@@ -1,8 +1,5 @@
 const models = require('../models');
-const multer = require('multer');
-const uuid = require('uuid');
 const helpers = require('../utilities/helpers');
-const multerConfig = require('../config/multer');
 const shagoApi = require('../utilities/shago.api');
 const mAirtimeApi = require('../utilities/mobile.airtime.api');
 const baxiApi = require('../utilities/baxi.api');
@@ -87,7 +84,8 @@ const shagoBuyAirtime = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+    let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+    let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -98,6 +96,13 @@ const shagoBuyAirtime = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+    let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -105,7 +110,8 @@ const shagoBuyAirtime = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"airtime purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -215,7 +221,8 @@ const shagoDataPurchase = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount =parseInt(amount) +parseInt(serviceCharge); 
+    let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+    let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -228,6 +235,13 @@ const shagoDataPurchase = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+    let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -235,7 +249,8 @@ const shagoDataPurchase = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"data purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -347,7 +362,7 @@ const shagoPurchaseElectricity = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount =parseInt(amount) +parseInt(serviceCharge); 
+    let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -363,6 +378,13 @@ const shagoPurchaseElectricity = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+    let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -370,7 +392,8 @@ const shagoPurchaseElectricity = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"electricity purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -455,7 +478,8 @@ const shagoWaecPinPurchase = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+    let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+    let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -466,6 +490,13 @@ const shagoWaecPinPurchase = async (req,res)=>{
       service:serviceId,
     }
     beneficiary = JSON.stringify(beneficiary);
+    let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -473,7 +504,8 @@ const shagoWaecPinPurchase = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"waec pin purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -570,7 +602,8 @@ const shagoJambPurchase = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -582,6 +615,13 @@ const shagoJambPurchase = async (req,res)=>{
       service:serviceId,
     }
     beneficiary = JSON.stringify(beneficiary);
+    let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -589,7 +629,8 @@ const shagoJambPurchase = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"jamb pin purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -696,7 +737,8 @@ const shagoPurchaseDstv = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -711,6 +753,13 @@ const shagoPurchaseDstv = async (req,res)=>{
       service:serviceId,
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -718,7 +767,8 @@ const shagoPurchaseDstv = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"dstv subscription",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -800,7 +850,8 @@ const shagoPurchaseDstvWithAddOn = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -818,6 +869,13 @@ const shagoPurchaseDstvWithAddOn = async (req,res)=>{
       service:serviceId,
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     console.log(beneficiary);
     const payload = {
       amount:totalAmount,
@@ -826,7 +884,8 @@ const shagoPurchaseDstvWithAddOn = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"dstv subscription with add on",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -908,7 +967,8 @@ const shagoPurchaseStartimes = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -921,6 +981,13 @@ const shagoPurchaseStartimes = async (req,res)=>{
       service:serviceId,
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -928,7 +995,8 @@ const shagoPurchaseStartimes = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"startimes subscription",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -1010,7 +1078,8 @@ const shagoPurchaseGoTv = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1025,6 +1094,13 @@ const shagoPurchaseGoTv = async (req,res)=>{
       service:serviceId,
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -1032,7 +1108,8 @@ const shagoPurchaseGoTv = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"goTv subscription",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -1129,7 +1206,8 @@ const baxiPurchaseAirtime = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1142,6 +1220,13 @@ const baxiPurchaseAirtime = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -1149,7 +1234,8 @@ const baxiPurchaseAirtime = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"airtime purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -1254,7 +1340,8 @@ const baxiPurchaseData = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1267,6 +1354,13 @@ const baxiPurchaseData = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -1274,7 +1368,8 @@ const baxiPurchaseData = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"data purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -1369,7 +1464,8 @@ const baxiPurchaseElectricity = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1382,6 +1478,13 @@ const baxiPurchaseElectricity = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -1389,7 +1492,8 @@ const baxiPurchaseElectricity = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"electricity purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -1482,7 +1586,8 @@ const baxiPurchasePin = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1495,6 +1600,13 @@ const baxiPurchasePin = async (req,res)=>{
       type:data.type
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -1502,7 +1614,8 @@ const baxiPurchasePin = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"waec pin purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -1604,7 +1717,8 @@ const baxiPurchaseCable = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1620,6 +1734,13 @@ const baxiPurchaseCable = async (req,res)=>{
       type:data.serviceType
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -1627,7 +1748,8 @@ const baxiPurchaseCable = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"cable purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -1720,7 +1842,8 @@ const mAirtimeMtnVtuTopUp = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1731,6 +1854,13 @@ const mAirtimeMtnVtuTopUp = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -1738,7 +1868,8 @@ const mAirtimeMtnVtuTopUp = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"mtn vtu airtime purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -1817,7 +1948,8 @@ const mAirtimeAirtimeTopUp = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -1828,6 +1960,13 @@ const mAirtimeAirtimeTopUp = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -1835,7 +1974,8 @@ const mAirtimeAirtimeTopUp = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"airtime purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -1940,6 +2080,13 @@ const mAirtimeRechargeInternational = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -1947,7 +2094,8 @@ const mAirtimeRechargeInternational = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"foreign airtime purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -2029,7 +2177,8 @@ const mAirtimeMtnDataGifting = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2041,6 +2190,13 @@ const mAirtimeMtnDataGifting = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -2048,7 +2204,8 @@ const mAirtimeMtnDataGifting = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"mtn data gifting",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -2130,7 +2287,8 @@ const mAirtimeMtnDataShare = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2142,6 +2300,13 @@ const mAirtimeMtnDataShare = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -2149,7 +2314,8 @@ const mAirtimeMtnDataShare = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"mtn data share",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -2252,7 +2418,8 @@ const mAirtimeDataTopUp = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2263,6 +2430,13 @@ const mAirtimeDataTopUp = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -2270,7 +2444,8 @@ const mAirtimeDataTopUp = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"data purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -2366,7 +2541,8 @@ const mAirtimeElectricityPurchase = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2379,6 +2555,13 @@ const mAirtimeElectricityPurchase = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -2386,7 +2569,8 @@ const mAirtimeElectricityPurchase = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"electricity purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -2462,7 +2646,8 @@ const mAirtimeWaecPurchase = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = service.amount;
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2473,6 +2658,13 @@ const mAirtimeWaecPurchase = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -2480,7 +2672,8 @@ const mAirtimeWaecPurchase = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"waec pin purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -2556,7 +2749,8 @@ const mAirtimeNecoPurchase = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = service.amount;
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2567,6 +2761,13 @@ const mAirtimeNecoPurchase = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -2574,7 +2775,8 @@ const mAirtimeNecoPurchase = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"neco pin purchase",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -2681,7 +2883,8 @@ const mAirtimeRechargeGoTv = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2697,6 +2900,13 @@ const mAirtimeRechargeGoTv = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -2704,7 +2914,8 @@ const mAirtimeRechargeGoTv = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"goTv subscription",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -2786,7 +2997,8 @@ const mAirtimeRechargeDstv = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2802,6 +3014,13 @@ const mAirtimeRechargeDstv = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -2809,7 +3028,8 @@ const mAirtimeRechargeDstv = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"dstv subscription",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -2890,7 +3110,8 @@ const mAirtimeRechargeStartimes = async (req,res)=>{
     let predifinedDiscount = service.discount;
     let discount = await options.getDiscount(user.id,predifinedDiscount);
     let amount = parseInt(data.amount);
-    let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+     let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+     let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
     if(discount){
       totalAmount = totalAmount  - discount;
     }
@@ -2902,6 +3123,13 @@ const mAirtimeRechargeStartimes = async (req,res)=>{
       phoneNumber:data.phoneNumber
     }
     beneficiary = JSON.stringify(beneficiary);
+     let addons = JSON.stringify(
+      {
+        serviceCharge:serviceCharge,
+        vat:serviceCategory.vat,
+        discount:discount
+      }
+    )
     const payload = {
       amount:totalAmount,
       email:user.email,
@@ -2909,7 +3137,8 @@ const mAirtimeRechargeStartimes = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"startimes subscription",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      addons:addons
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
