@@ -27,7 +27,8 @@ const buyAirtime = async (user,trxRef,time,service,phoneNumber,amount,type,plan,
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
   if(discount){
     totalAmount = totalAmount  - discount;
   }
@@ -109,7 +110,8 @@ const buyData = async (user,trxRef,time,service,phoneNumber,amount,type,code,res
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount =parseInt(amount) +parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
   if(discount){
     totalAmount = totalAmount  - discount;
   }
@@ -191,7 +193,8 @@ const buyElectricity = async (user,trxRef,time,service,phoneNumber,amount,code,m
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount =parseInt(amount) +parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
   if(discount){
     totalAmount = totalAmount  - discount;
   }
@@ -272,7 +275,8 @@ const buyWaecPin = async (user,trxRef,time,service,pinValue,noOfPins,type,amount
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount =parseInt(amount) +parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
   if(discount){
     totalAmount = totalAmount  - discount;
   }
@@ -354,7 +358,8 @@ const buyCable = async (user,trxRef,time,service,amount,cardNo,productMonthsPaid
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount =parseInt(amount) +parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
   if(discount){
     totalAmount = totalAmount  - discount;
   }
