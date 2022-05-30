@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     type: DataTypes.STRING,
     serviceCharge: DataTypes.INTEGER,
+    vat:DataTypes.INTEGER,
     logo: DataTypes.STRING,
     status: DataTypes.BOOLEAN
   }, {

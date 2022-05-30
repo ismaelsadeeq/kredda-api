@@ -161,7 +161,6 @@ const getDataBundles = async (payload,res)=>{
 const purchaseData = async (payload,res)=>{
   var request = require('request');
   let url = `https://payments.baxipay.com.ng/api/baxipay/services/databundle/request?agentReference=${payload.reference}&agentId=${process.env.AGENT_ID}&datacode=${payload.code}&service_type=${payload.type}&amount=${payload.amount}&phone=${payload.phoneNumber}`;
-  console.log(url);
   var options = {
     'method': 'POST',
     'url': url,

@@ -167,7 +167,6 @@ const webhook =async (req,res)=>{
         }
       );
       if(transaction.isRedemmed == false){
-        console.log(transaction.message);
         if(transaction.message == "payment of loan"){
           await updateLoan(transaction);
           await transaction.update(

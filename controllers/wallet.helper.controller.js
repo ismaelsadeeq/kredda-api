@@ -217,7 +217,7 @@ const dataPurchase = async (transaction,res)=>{
       totalServiceFee:transaction.amount,
       profit:profit
     }
-    return await baxiApi.purchaseData(payload,res) 
+    return await baxiApi.purchaseData(payload,res)
   }
 }
 const electricityPurchase = async (transaction,res)=>{

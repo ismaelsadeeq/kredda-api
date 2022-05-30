@@ -19,6 +19,9 @@ module.exports = {
       serviceCharge: {
         type: Sequelize.INTEGER
       },
+      vat: {
+        type: Sequelize.INTEGER
+      },
       logo: {
         type: Sequelize.STRING
       },
