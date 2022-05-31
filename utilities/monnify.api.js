@@ -51,6 +51,7 @@ async function validateBvn(payload,monnify){
     }
   });
 }
+//to be modified
 async function validatePayment(payload,monnify,res){
   let apiKey,privateKey;
   if(monnify.privateKey){

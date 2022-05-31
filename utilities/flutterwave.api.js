@@ -43,6 +43,7 @@ async function validateBvn(payload,flutterwave){
     }
   });
 }
+//To be modified
 async function verifyPayment(payload,flutterwave,res){
   let privateKey;
   if(flutterwave.privateKey){
