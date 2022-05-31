@@ -28,10 +28,18 @@ const mtnVTUTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition;  
   if(discount){
     totalAmount = totalAmount  - discount;
   }
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   let profit = totalAmount - amount;
   let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
@@ -46,7 +54,9 @@ const mtnVTUTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -76,7 +86,9 @@ const mtnVTUTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );
   let payload = {
@@ -109,10 +121,18 @@ const airtimePurchase = async (user,trxRef,time,service,phoneNumber,amount,res)=
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition;  
   if(discount){
     totalAmount = totalAmount  - discount;
   }
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   let profit = totalAmount - amount;
   let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
@@ -127,7 +147,9 @@ const airtimePurchase = async (user,trxRef,time,service,phoneNumber,amount,res)=
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -157,7 +179,9 @@ const airtimePurchase = async (user,trxRef,time,service,phoneNumber,amount,res)=
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );;
   let payload = {
@@ -194,6 +218,13 @@ const foreignAirtimePurchase = async (user,trxRef,time,service,phoneNumber,amoun
   if(discount){
     totalAmount = totalAmount  - discount;
   }
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   let profit = totalAmount - amount;
   let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
@@ -208,7 +239,9 @@ const foreignAirtimePurchase = async (user,trxRef,time,service,phoneNumber,amoun
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -238,7 +271,9 @@ const foreignAirtimePurchase = async (user,trxRef,time,service,phoneNumber,amoun
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );
   let payload = {
@@ -272,10 +307,18 @@ const mtnDataGifting = async (user,trxRef,time,service,phoneNumber,amount,dataSi
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition;  
   if(discount){
     totalAmount = totalAmount  - discount;
   }
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   let profit = totalAmount - amount;
   let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
@@ -290,7 +333,9 @@ const mtnDataGifting = async (user,trxRef,time,service,phoneNumber,amount,dataSi
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -320,7 +365,9 @@ const mtnDataGifting = async (user,trxRef,time,service,phoneNumber,amount,dataSi
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );;
   let payload = {
@@ -353,10 +400,18 @@ const mtnDataShare = async (user,trxRef,time,service,phoneNumber,amount,dataSize
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition;  
   if(discount){
     totalAmount = totalAmount  - discount;
   }
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   let profit = totalAmount - amount;
   let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
@@ -371,7 +426,9 @@ const mtnDataShare = async (user,trxRef,time,service,phoneNumber,amount,dataSize
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -401,7 +458,9 @@ const mtnDataShare = async (user,trxRef,time,service,phoneNumber,amount,dataSize
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );;
   let payload = {
@@ -434,10 +493,18 @@ const dataTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition;  
   if(discount){
     totalAmount = totalAmount  - discount;
   }
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   let profit = totalAmount - amount;
   let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
@@ -452,7 +519,9 @@ const dataTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -482,7 +551,9 @@ const dataTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );;
   let payload = {
@@ -515,10 +586,18 @@ const purchaseElectricity = async (user,trxRef,time,service,amount,serviceId,met
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition;  
   if(discount){
     totalAmount = totalAmount  - discount;
   }
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   let profit = totalAmount - amount;
   let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
@@ -533,7 +612,9 @@ const purchaseElectricity = async (user,trxRef,time,service,amount,serviceId,met
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -563,7 +644,9 @@ const purchaseElectricity = async (user,trxRef,time,service,amount,serviceId,met
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );;
   let payload = {
@@ -596,10 +679,18 @@ const waecPinPurchase = async (user,trxRef,time,service,amount,res)=>{
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition;  
   if(discount){
     totalAmount = totalAmount  - discount;
   }
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   let profit = totalAmount - amount;
   let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
@@ -614,7 +705,9 @@ const waecPinPurchase = async (user,trxRef,time,service,amount,res)=>{
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -644,7 +737,9 @@ const waecPinPurchase = async (user,trxRef,time,service,amount,res)=>{
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );;
   let payload = {
@@ -674,10 +769,18 @@ const necoPinPurchase = async (user,trxRef,time,service,amount,res)=>{
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition;  
   if(discount){
     totalAmount = totalAmount  - discount;
   }
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   let profit = totalAmount - amount;
   let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
@@ -692,7 +795,9 @@ const necoPinPurchase = async (user,trxRef,time,service,amount,res)=>{
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -722,7 +827,9 @@ const necoPinPurchase = async (user,trxRef,time,service,amount,res)=>{
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );;
   let payload = {
@@ -752,10 +859,18 @@ const tvRecharge = async (user,trxRef,time,service,amount,cardNo,customerName,in
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition;  
   if(discount){
     totalAmount = totalAmount  - discount;
   }
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   let profit = totalAmount - amount;
   let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
@@ -770,7 +885,9 @@ const tvRecharge = async (user,trxRef,time,service,amount,cardNo,customerName,in
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -800,7 +917,9 @@ const tvRecharge = async (user,trxRef,time,service,amount,cardNo,customerName,in
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );;
   let payload = {
@@ -836,10 +955,18 @@ const startimesRecharge = async (user,trxRef,time,service,amount,cardNo,phoneNum
   let serviceCharge = serviceCategory.serviceCharge;
   let predifinedDiscount = service.discount;
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
-  let totalAmount = parseInt(amount) + parseInt(serviceCharge); 
+  let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
+  let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition;  
   if(discount){
     totalAmount = totalAmount  - discount;
   }
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   let profit = totalAmount - amount;
   let walletBalance = parseInt(wallet.accountBalance);
   if(walletBalance < totalAmount){
@@ -854,7 +981,9 @@ const startimesRecharge = async (user,trxRef,time,service,amount,cardNo,phoneNum
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -884,7 +1013,9 @@ const startimesRecharge = async (user,trxRef,time,service,amount,cardNo,phoneNum
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );
   let payload = {

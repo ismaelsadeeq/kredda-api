@@ -29,11 +29,25 @@ const buyAirtime = async (user,trxRef,time,service,phoneNumber,amount,type,plan,
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
   let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   if(discount){
     totalAmount = totalAmount  - discount;
   }
   let profit = totalAmount - amount;
   let walletBalance = parseInt(wallet.accountBalance);
+  let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   if(walletBalance < totalAmount){
     const transaction = await models.transaction.create(
       {
@@ -46,7 +60,10 @@ const buyAirtime = async (user,trxRef,time,service,phoneNumber,amount,type,plan,
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
+        
       }
     );
     responseData.status = false;
@@ -76,7 +93,9 @@ const buyAirtime = async (user,trxRef,time,service,phoneNumber,amount,type,plan,
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );
   let payload = {
@@ -112,6 +131,13 @@ const buyData = async (user,trxRef,time,service,phoneNumber,amount,type,code,res
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
   let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   if(discount){
     totalAmount = totalAmount  - discount;
   }
@@ -129,7 +155,9 @@ const buyData = async (user,trxRef,time,service,phoneNumber,amount,type,code,res
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -159,7 +187,9 @@ const buyData = async (user,trxRef,time,service,phoneNumber,amount,type,code,res
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );
   let payload = {
@@ -195,6 +225,13 @@ const buyElectricity = async (user,trxRef,time,service,phoneNumber,amount,code,m
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
   let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   if(discount){
     totalAmount = totalAmount  - discount;
   }
@@ -212,7 +249,9 @@ const buyElectricity = async (user,trxRef,time,service,phoneNumber,amount,code,m
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -242,7 +281,9 @@ const buyElectricity = async (user,trxRef,time,service,phoneNumber,amount,code,m
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );
   let payload = {
@@ -277,6 +318,13 @@ const buyWaecPin = async (user,trxRef,time,service,pinValue,noOfPins,type,amount
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
   let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   if(discount){
     totalAmount = totalAmount  - discount;
   }
@@ -294,7 +342,9 @@ const buyWaecPin = async (user,trxRef,time,service,pinValue,noOfPins,type,amount
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -324,7 +374,9 @@ const buyWaecPin = async (user,trxRef,time,service,pinValue,noOfPins,type,amount
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );
   let payload = {
@@ -360,6 +412,13 @@ const buyCable = async (user,trxRef,time,service,amount,cardNo,productMonthsPaid
   let discount = await helpers.getDiscount(user.id,predifinedDiscount);
   let vatAddition = (parseFloat(serviceCategory.vat) / 100) * amount;
   let totalAmount = (parseInt(amount) + parseInt(serviceCharge)) + vatAddition; 
+   let addons = JSON.stringify(
+    {
+      serviceCharge:serviceCharge,
+      vat:serviceCategory.vat,
+      discount:discount
+    }
+  )
   if(discount){
     totalAmount = totalAmount  - discount;
   }
@@ -377,7 +436,9 @@ const buyCable = async (user,trxRef,time,service,amount,cardNo,productMonthsPaid
         reference:trxRef,
         amount:amount,
         status:"failed",
-        time: time
+        time: time,
+        addon:addons,
+        profit:profit
       }
     );
     responseData.status = false;
@@ -407,7 +468,9 @@ const buyCable = async (user,trxRef,time,service,amount,cardNo,productMonthsPaid
       amount:totalAmount,
       isRedemmed:true,
       status:"successful",
-      time: time
+      time: time,
+      addon:addons,
+      profit:profit
     }
   );
   let payload = {
