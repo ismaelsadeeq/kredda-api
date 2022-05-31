@@ -366,7 +366,7 @@ const purchaseElectricity = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 300){
-      c const userWallet = await models.wallet.findOne(
+      const userWallet = await models.wallet.findOne(
         {
           where:{
             userId:payload.userId
