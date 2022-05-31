@@ -3181,7 +3181,7 @@ const mAirtimeRechargeStartimes = async (req,res)=>{
       }
     )
     const payload = {
-      amount:totalAmount,
+      amount:amount,
       email:user.email,
       authorizationCode:creditCard.authCode,
       userId:user.id,

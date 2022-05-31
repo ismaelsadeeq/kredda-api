@@ -72,7 +72,8 @@ async function verifyPayment(payload,flutterwave,res){
           {
             where:{
               reference:trxRef,
-              isRedemmed:true
+              // isRedemmed:true
+              status:"successful"
             }
           }
         );
@@ -267,22 +268,22 @@ async function initiatePayment(userId,data,flutterwave,responsee){
   };
   request(options, async function (error, response) { 
     if (error) throw new Error(error);
-    let payload =await response.body;
-    console.log(payload)
+    let payload = await response.body;
     if(payload.status ==="success" && payload.message=="Charge initiated"){
       let time = new Date();
         time = time.toLocaleString()
         const transaction = await models.transaction.create(
           {
             id:uuid.v4(),
-            transactionType:"debit",
+            transactionType:"Credit",
             message:"funding of wallet",
             beneficiary:"self",
             description:payload.fullname + " attempting to fund his/her wallet to perform transaction",
             userId:userId,
             reference:payload.data.flw_ref,
             amount:parseInt(payload.data.amount),
-            isRedemmed:false,
+            totalServiceFee:payload.amount,
+            profit:0,
             status:"initiated",
             time: time
           }
@@ -317,7 +318,7 @@ async function validateCharge(data,flutterwave,responsee){
       if( payload.data.status=="successful"){
         const transaction = await models.transaction.update(
           {
-            status:"initiated",
+            status:"pending",
           },
           {
             where:{

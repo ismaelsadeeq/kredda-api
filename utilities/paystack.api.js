@@ -39,8 +39,7 @@ async function validateBvn(payload,paystack){
       data += chunk
     });
     res.on('end',async () => {
-      const response = JSON.parse(data);
-      console.log(response);
+      const response = JSON.parse(data);;
       if(response.status = true && response.message =="BVN lookup successful"){
         await models.kyc.update(
           {
@@ -69,7 +68,7 @@ async function chargeAuthorization(payload,paystack){
     privateKey = paystack.testPrivateKey
   }
   const https = require('https')
-  const amount = parseInt(payload.amount) * 100
+  const amount = parseInt(payload.totalServiceFee) * 100
   const params = JSON.stringify({
     "email": payload.email,
     "amount": amount,
@@ -93,8 +92,7 @@ async function chargeAuthorization(payload,paystack){
       data += chunk
     });
     res.on('end',async () => {
-      const response = JSON.parse(data)
-      console.log(response);
+      const response = JSON.parse(data);
       if(response.status === true && response.message == "Charge attempted"){
         let time = new Date();
         time = time.toLocaleString()
@@ -151,7 +149,6 @@ async function verifyPayment(payload,paystack,respond){
     });
     res.on('end',async () => {
       const response = JSON.parse(data)
-      console.log(response);
       if(response.status === true && response.message =="Verification successful"){
         if(response.data.status == "success"){
             const reference = response.data.reference;
@@ -206,7 +203,6 @@ async function verifyPayment(payload,paystack,respond){
                   if (error) throw new Error(error);
                   let payload = resp.body;
                   payload =  JSON.parse(payload);
-                  console.log(payload);
                   let amount = parseInt(payload[`NGN_${accountType.currencyCode}`] * (parseFloat(data.data.amount) /100))
                   if(accountType.serviceFee){
                     let serviceFee  =  parseInt(payload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee));
@@ -356,26 +352,25 @@ async function createCharge(paystack,payload,responsee) {
     res.on('end',async () => {
       let response = JSON.parse(data)
       if(response.status == true && response.data.status == "success"){
-        console.log(response);
-        let time = new Date();
+       let time = new Date();
         time = time.toLocaleString()
         const transaction = await models.transaction.create(
           {
             id:uuid.v4(),
-            transactionType:"debit",
+            transactionType:"Credit",
             message:"funding of wallet",
             beneficiary:"self",
             description:payload.displayName + " attempting to fund his/her wallet to perform transaction",
             userId:userId,
             reference:response.data.reference,
             amount:payload.amount,
-            isRedemmed:false,
+            totalServiceFee:payload.amount,
+            profit:0,
             status:"initiated",
             time: time
           }
         );
       }
-      console.log(response);
       return responsee.json(response);
     })
   }).on('error',async error => {
@@ -431,7 +426,6 @@ async function createChargeKuda(payload,responsee) {
     res.on('end',async () => {
       let response = JSON.parse(data)
       if(response.status == true && response.data.status == "success"){
-        console.log(response);
         let time = new Date();
         time = time.toLocaleString()
         const transaction = await models.transaction.create(
@@ -444,14 +438,14 @@ async function createChargeKuda(payload,responsee) {
             userId:userId,
             reference:response.data.reference,
             amount:payload.amount,
-            isRedemmed:false,
+            totalServiceFee:payload.amount,
+            profit:0,
             status:"initiated",
             time: time
           }
         );
         return responsee.json(response);
-      }
-      console.log(response);
+      };
       return responsee.json(response);
     })
   }).on('error',async error => {
@@ -491,14 +485,13 @@ async function submitPin(paystack,payload,responsee){
     });
     res.on('end',async () => {
       const response = JSON.parse(data);
-      console.log(response)
       if(response.status==false){
         return responsee.json(response);
       }
       if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
         await models.transaction.update(
           {
-            status:"attempted"
+            status:"pending"
           },
           {
             where:{
@@ -559,14 +552,13 @@ async function submitOtp(paystack,payload,responsee){
     });
     res.on('end',async () => {
       const response = JSON.parse(data)
-      console.log(response)
       if(response.status==false){
         return responsee.json(response);
       }
       if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
         await models.transaction.update(
           {
-            status:"attempted"
+            status:"pending"
           },
           {
             where:{
@@ -625,14 +617,13 @@ async function submitPhone(paystack,data,responsee){
     });
     res.on('end',async  () => {
       const response = JSON.parse(data);
-      console.log(response)
       if(response.status==false){
         return responsee.json(response);
       }
       if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
         await models.transaction.update(
           {
-            status:"attempted"
+            status:"pending"
           },
           {
             where:{
@@ -691,14 +682,13 @@ async function submitBirthday(paystack,data,responsee){
     });
     res.on('end',async () => {
       const response = JSON.parse(data)
-      console.log(response)
       if(response.status==false){
         return responsee.json(response);
       }
       if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
         await models.transaction.update(
           {
-            status:"attempted"
+            status:"pending"
           },
           {
             where:{
@@ -761,14 +751,13 @@ async function submitAddress(paystack,payload,responsee){
     });
     res.on('end',async () => {
       const response = JSON.parse(data);
-      console.log(response)
       if(response.status==false){
         return responsee.json(response);
       }
       if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
         await models.transaction.update(
           {
-            status:"attempted"
+            status:"pending"
           },
           {
             where:{
@@ -825,12 +814,11 @@ async function checkPendingCharge(paystack,payload,responsee){
     });
     res.on('end',async () => {
       const response = JSON.parse(data)
-      console.log(response)
       if(response){
         if(response.status==true && response.message =="Charge attempted" && response.data.status=="success"){
           await models.transaction.update(
            {
-             status:"attempted"
+             status:"pending"
            },
            {
              where:{
@@ -887,8 +875,7 @@ async function verifyAccountNumber(paystack,payload,userId,responsee){
       data += chunk
     });
     res.on('end',async () => {
-      const response = JSON.parse(data)
-      console.log(response);
+      const response = JSON.parse(data);
       if(response.status === true && response.message === "Account number resolved"){
         const updateBankDetail = await models.bank.update(
           {
@@ -951,8 +938,7 @@ async function createATransferReciepient(paystack,payload,userId,respond){
       data += chunk
     });
     res.on('end',async () => {
-      const response = JSON.parse(data)
-      console.log(response);
+      const response = JSON.parse(data);
       if(response.status === true && response.message == "Transfer recipient created successfully"){
         const updateBankDetail = await models.bank.update(
           {
@@ -1012,8 +998,7 @@ async function initiateATransfer(paystack,payload,userId,respond){
       data += chunk
     });
     res.on('end',async () => {
-      const response = JSON.parse(data)
-      console.log(response);
+      const response = JSON.parse(data);
       if(response.status === true){
         let date = new Date();
         date = date.toLocaleString();
@@ -1074,8 +1059,7 @@ async function verifyTransfer(paystack,payload,respond){
       data += chunk
     });
     res.on('end',async () => {
-      const response = JSON.parse(data)
-      console.log(response);
+      const response = JSON.parse(data);
       if(response.status === true ){
         if(response.data.status==="success"){
           await models.transaction.update(
