@@ -108,7 +108,9 @@ async function chargeAuthorization(payload,paystack){
             userId:payload.userId,
             reference:response.data.reference,
             amount:payload.amount,
-            isRedemmed:false,
+            totalServiceFee:paylaod.totalServiceFee,
+            addon:payload.addons,
+            profit:payload.profit
             status:"initiated",
             time: time
           }
