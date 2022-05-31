@@ -110,8 +110,8 @@ async function chargeAuthorization(payload,paystack){
             amount:payload.amount,
             totalServiceFee:paylaod.totalServiceFee,
             addon:payload.addons,
-            profit:payload.profit
-            status:"initiated",
+            profit:payload.profit,
+            status:"pending",
             time: time
           }
         );
