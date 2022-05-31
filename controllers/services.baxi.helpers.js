@@ -94,6 +94,7 @@ const buyAirtime = async (user,trxRef,time,service,phoneNumber,amount,type,plan,
     }
   );
   let payload = {
+    addon:addons,
     userId:user.id,
     transactionId:transaction.id,
     phoneNumber:phoneNumber,
@@ -191,6 +192,7 @@ const buyData = async (user,trxRef,time,service,phoneNumber,amount,type,code,res
     }
   );
   let payload = {
+    addon:addons,
     userId:user.id,
     transactionId:transaction.id,
     phoneNumber:phoneNumber,
@@ -288,6 +290,7 @@ const buyElectricity = async (user,trxRef,time,service,phoneNumber,amount,code,m
     }
   );
   let payload = {
+    addon:addons,
     userId:user.id,
     transactionId:transaction.id,
     phoneNumber:phoneNumber,
@@ -384,6 +387,7 @@ const buyWaecPin = async (user,trxRef,time,service,pinValue,noOfPins,type,amount
     }
   );
   let payload = {
+    addon:addons,
     userId:user.id,
     transactionId:transaction.id,
     amount:amount,
@@ -481,6 +485,7 @@ const buyCable = async (user,trxRef,time,service,amount,cardNo,productMonthsPaid
     }
   );
   let payload = {
+    addon:addons,
     userId:user.id,
     transactionId:transaction.id,
     amount:amount,

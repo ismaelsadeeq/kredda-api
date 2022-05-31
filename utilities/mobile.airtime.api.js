@@ -7,6 +7,7 @@ const responseData = {
 	message: "Completed",
 	data: null
 }
+//to be edited
 const checkTransactionStatus = async (payload,res)=>{
   var request = require('request');
   var options = {
@@ -71,42 +72,46 @@ const airtimeTopUp = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.code ==100){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:payload.amount,
-          status:"successful",
-          beneficiary:payload.phoneNumber,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
+    const userWallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:payload.userId
+        }
+      }
+    );
+    let userWalletBalance = parseInt(userWallet.accountBalance);
+    await models.wallet.update(
+      {
+        accountBalance:userWalletBalance + payload.totalAmount
+      },
+      {
+        where:{
+          id:userWallet.id
+        }
+      }
+    );
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
+        transactionId:payload.transactionId,
+        transactionType:'Credit',
         amount:payload.amount,
-        beneficiary:payload.phoneNumber,
+        beneficiary:payload.userId,
         time:time,
-        status:"failed",
+        status:"successful",
         totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
+        addon:payload.addon,
+        typeOfReversal:'Service failure'
       }
     );
     res.statusCode = 200;
-    responseData.message = "completed";
+    responseData.message = "service unavailable";
     responseData.status = false;
     responseData.data = data;
     return res.json(responseData)
@@ -127,43 +132,47 @@ const mtnVTUTopUp =async (payload,res)=>{
     let data = JSON.parse(response.body);
     let time = new Date();
     time = time.toLocaleString()
-    if(data.code ==100){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:payload.amount,
-          status:"successful",
-          beneficiary:payload.phoneNumber,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
+    if(data.code == 100){
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
+     const userWallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:payload.userId
+        }
+      }
+    );
+    let userWalletBalance = parseInt(userWallet.accountBalance);
+    await models.wallet.update(
+      {
+        accountBalance:userWalletBalance + payload.totalAmount
+      },
+      {
+        where:{
+          id:userWallet.id
+        }
+      }
+    );
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
+        transactionId:payload.transactionId,
+        transactionType:'Credit',
         amount:payload.amount,
-        beneficiary:payload.phoneNumber,
+        beneficiary:payload.userId,
         time:time,
-        status:"failed",
+        status:"successful",
         totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
+        addon:payload.addon,
+        typeOfReversal:'Service failure'
       }
     );
     res.statusCode = 200;
-    responseData.message = "completed";
+    responseData.message = "service unavailable";
     responseData.status = false;
     responseData.data = data;
     return res.json(responseData)
@@ -212,42 +221,46 @@ const rechargeInternationalNumber = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.code ==100){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:payload.amount,
-          status:"successful",
-          beneficiary:payload.phoneNumber,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
+     const userWallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:payload.userId
+        }
+      }
+    );
+    let userWalletBalance = parseInt(userWallet.accountBalance);
+    await models.wallet.update(
+      {
+        accountBalance:userWalletBalance + payload.totalAmount
+      },
+      {
+        where:{
+          id:userWallet.id
+        }
+      }
+    );
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
+        transactionId:payload.transactionId,
+        transactionType:'Credit',
         amount:payload.amount,
-        beneficiary:payload.phoneNumber,
+        beneficiary:payload.userId,
         time:time,
-        status:"failed",
+        status:"successful",
         totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
+        addon:payload.addon,
+        typeOfReversal:'Service failure'
       }
     );
     res.statusCode = 200;
-    responseData.message = "completed";
+    responseData.message = "service unavailable";
     responseData.status = false;
     responseData.data = data;
     return res.json(responseData)
@@ -269,42 +282,46 @@ const mtnDataGifting = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.code ==100){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:payload.amount,
-          status:"successful",
-          beneficiary:payload.phoneNumber,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
+     const userWallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:payload.userId
+        }
+      }
+    );
+    let userWalletBalance = parseInt(userWallet.accountBalance);
+    await models.wallet.update(
+      {
+        accountBalance:userWalletBalance + payload.totalAmount
+      },
+      {
+        where:{
+          id:userWallet.id
+        }
+      }
+    );
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
+        transactionId:payload.transactionId,
+        transactionType:'Credit',
         amount:payload.amount,
-        beneficiary:payload.phoneNumber,
+        beneficiary:payload.userId,
         time:time,
-        status:"failed",
+        status:"successful",
         totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
+        addon:payload.addon,
+        typeOfReversal:'Service failure'
       }
     );
     res.statusCode = 200;
-    responseData.message = "completed";
+    responseData.message = "service unavailable";
     responseData.status = false;
     responseData.data = data;
     return res.json(responseData)
@@ -353,42 +370,46 @@ const mtnDataShare = (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.code ==100){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:payload.amount,
-          status:"successful",
-          beneficiary:payload.phoneNumber,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
+     const userWallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:payload.userId
+        }
+      }
+    );
+    let userWalletBalance = parseInt(userWallet.accountBalance);
+    await models.wallet.update(
+      {
+        accountBalance:userWalletBalance + payload.totalAmount
+      },
+      {
+        where:{
+          id:userWallet.id
+        }
+      }
+    );
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
+        transactionId:payload.transactionId,
+        transactionType:'Credit',
         amount:payload.amount,
-        beneficiary:payload.phoneNumber,
+        beneficiary:payload.userId,
         time:time,
-        status:"failed",
+        status:"successful",
         totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
+        addon:payload.addon,
+        typeOfReversal:'Service failure'
       }
     );
     res.statusCode = 200;
-    responseData.message = "completed";
+    responseData.message = "service unavailable";
     responseData.status = false;
     responseData.data = data;
     return res.json(responseData)
@@ -410,42 +431,46 @@ const dataTopUp = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.code ==100){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:payload.amount,
-          status:"successful",
-          beneficiary:payload.phoneNumber,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
+     const userWallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:payload.userId
+        }
+      }
+    );
+    let userWalletBalance = parseInt(userWallet.accountBalance);
+    await models.wallet.update(
+      {
+        accountBalance:userWalletBalance + payload.totalAmount
+      },
+      {
+        where:{
+          id:userWallet.id
+        }
+      }
+    );
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
+        transactionId:payload.transactionId,
+        transactionType:'Credit',
         amount:payload.amount,
-        beneficiary:payload.phoneNumber,
+        beneficiary:payload.userId,
         time:time,
-        status:"failed",
+        status:"successful",
         totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
+        addon:payload.addon,
+        typeOfReversal:'Service failure'
       }
     );
     res.statusCode = 200;
-    responseData.message = "completed";
+    responseData.message = "service unavailable";
     responseData.status = false;
     responseData.data = data;
     return res.json(responseData)
@@ -467,42 +492,46 @@ const purchaseWeacDirect = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.code ==100){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:payload.amount,
-          status:"successful",
-          beneficiary:payload.beneficiary,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
+     const userWallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:payload.userId
+        }
+      }
+    );
+    let userWalletBalance = parseInt(userWallet.accountBalance);
+    await models.wallet.update(
+      {
+        accountBalance:userWalletBalance + payload.totalAmount
+      },
+      {
+        where:{
+          id:userWallet.id
+        }
+      }
+    );
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
+        transactionId:payload.transactionId,
+        transactionType:'Credit',
         amount:payload.amount,
-        beneficiary:payload.beneficiary,
+        beneficiary:payload.userId,
         time:time,
-        status:"failed",
+        status:"successful",
         totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
+        addon:payload.addon,
+        typeOfReversal:'Service failure'
       }
     );
     res.statusCode = 200;
-    responseData.message = "completed";
+    responseData.message = "service unavailable";
     responseData.status = false;
     responseData.data = data;
     return res.json(responseData)
@@ -524,42 +553,46 @@ const purchaseNecoDirect = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.code ==100){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:payload.amount,
-          status:"successful",
-          beneficiary:payload.beneficiary,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
+     const userWallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:payload.userId
+        }
+      }
+    );
+    let userWalletBalance = parseInt(userWallet.accountBalance);
+    await models.wallet.update(
+      {
+        accountBalance:userWalletBalance + payload.totalAmount
+      },
+      {
+        where:{
+          id:userWallet.id
+        }
+      }
+    );
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
+        transactionId:payload.transactionId,
+        transactionType:'Credit',
         amount:payload.amount,
-        beneficiary:payload.beneficiary,
+        beneficiary:payload.userId,
         time:time,
-        status:"failed",
+        status:"successful",
         totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
+        addon:payload.addon,
+        typeOfReversal:'Service failure'
       }
     );
     res.statusCode = 200;
-    responseData.message = "completed";
+    responseData.message = "service unavailable";
     responseData.status = false;
     responseData.data = data;
     return res.json(responseData)
@@ -608,42 +641,46 @@ const rechargeGoOrDstv = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.code ==100){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:payload.amount,
-          status:"successful",
-          beneficiary:payload.cardNo,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
+     const userWallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:payload.userId
+        }
+      }
+    );
+    let userWalletBalance = parseInt(userWallet.accountBalance);
+    await models.wallet.update(
+      {
+        accountBalance:userWalletBalance + payload.totalAmount
+      },
+      {
+        where:{
+          id:userWallet.id
+        }
+      }
+    );
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
+        transactionId:payload.transactionId,
+        transactionType:'Credit',
         amount:payload.amount,
-        beneficiary:payload.cardNo,
+        beneficiary:payload.userId,
         time:time,
-        status:"failed",
+        status:"successful",
         totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
+        addon:payload.addon,
+        typeOfReversal:'Service failure'
       }
     );
     res.statusCode = 200;
-    responseData.message = "completed";
+    responseData.message = "service unavailable";
     responseData.status = false;
     responseData.data = data;
     return res.json(responseData)
@@ -665,42 +702,46 @@ const rechargeStartimes = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.code ==100){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:payload.amount,
-          status:"successful",
-          beneficiary:payload.cardNo,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
+     const userWallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:payload.userId
+        }
+      }
+    );
+    let userWalletBalance = parseInt(userWallet.accountBalance);
+    await models.wallet.update(
+      {
+        accountBalance:userWalletBalance + payload.totalAmount
+      },
+      {
+        where:{
+          id:userWallet.id
+        }
+      }
+    );
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
+        transactionId:payload.transactionId,
+        transactionType:'Credit',
         amount:payload.amount,
-        beneficiary:payload.cardNo,
+        beneficiary:payload.userId,
         time:time,
-        status:"failed",
+        status:"successful",
         totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
+        addon:payload.addon,
+        typeOfReversal:'Service failure'
       }
     );
     res.statusCode = 200;
-    responseData.message = "completed";
+    responseData.message = "service unavailable";
     responseData.status = false;
     responseData.data = data;
     return res.json(responseData)
@@ -777,42 +818,46 @@ const purchaseElectricity = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.code ==100){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:payload.amount,
-          status:"successful",
-          beneficiary:payload.meterNo,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
+     const userWallet = await models.wallet.findOne(
+      {
+        where:{
+          userId:payload.userId
+        }
+      }
+    );
+    let userWalletBalance = parseInt(userWallet.accountBalance);
+    await models.wallet.update(
+      {
+        accountBalance:userWalletBalance + payload.totalAmount
+      },
+      {
+        where:{
+          id:userWallet.id
+        }
+      }
+    );
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
+        transactionId:payload.transactionId,
+        transactionType:'Credit',
         amount:payload.amount,
-        beneficiary:payload.meterNo,
+        beneficiary:payload.userId,
         time:time,
-        status:"failed",
+        status:"successful",
         totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
+        addon:payload.addon,
+        typeOfReversal:'Service failure'
       }
     );
     res.statusCode = 200;
-    responseData.message = "completed";
+    responseData.message = "service unavailable";
     responseData.status = false;
     responseData.data = data;
     return res.json(responseData)

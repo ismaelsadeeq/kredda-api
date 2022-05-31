@@ -111,10 +111,9 @@ const purchaseAirtime = async (payload,res)=>{
         }
       }
     );
-    const  createReversedTransaction = await models.reversedTransaction.create(
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
         transactionId:payload.transactionId,
         transactionType:'Credit',
         amount:payload.amount,
@@ -203,10 +202,9 @@ const purchaseData = async (payload,res)=>{
         }
       }
     );
-    const  createReversedTransaction = await models.reversedTransaction.create(
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
         transactionId:payload.transactionId,
         transactionType:'Credit',
         amount:payload.amount,
@@ -322,10 +320,9 @@ const purchaseCableTv = async (payload,res)=>{
         }
       }
     );
-    const  createReversedTransaction = await models.reversedTransaction.create(
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
         transactionId:payload.transactionId,
         transactionType:'Credit',
         amount:payload.amount,
@@ -413,10 +410,9 @@ const purchaseWaecDirectPin = async (payload,res)=>{
         }
       }
     );
-    const  createReversedTransaction = await models.reversedTransaction.create(
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
         transactionId:payload.transactionId,
         transactionType:'Credit',
         amount:payload.amount,
@@ -530,10 +526,9 @@ const purchaseElectricity = async (payload,res)=>{
         }
       }
     );
-    const  createReversedTransaction = await models.reversedTransaction.create(
+    const createReversedTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:payload.userId,
         transactionId:payload.transactionId,
         transactionType:'Credit',
         amount:payload.amount,

@@ -767,9 +767,10 @@ const waecPinPurchase = async (user,trxRef,time,service,amount,res)=>{
     }
   );;
   let payload = {
+    addon:addons,
     amount:amount,
-
-transactionId:transaction.id,    reference:trxRef,
+    transactionId:transaction.id,
+    reference:trxRef,
     serviceId:service.id,
     totalServiceFee:totalAmount,
     profit:profit
@@ -861,8 +862,8 @@ const necoPinPurchase = async (user,trxRef,time,service,amount,res)=>{
   );;
   let payload = {
     amount:amount,
-
-transactionId:transaction.id,    reference:trxRef,
+    transactionId:transaction.id,
+    reference:trxRef,
     serviceId:service.id,
     totalServiceFee:totalAmount,
     profit:profit
@@ -953,9 +954,10 @@ const tvRecharge = async (user,trxRef,time,service,amount,cardNo,customerName,in
     }
   );;
   let payload = {
+    addon:addons,
     amount:amount,
-
-transactionId:transaction.id,    cardNo:cardNo,
+    transactionId:transaction.id,
+    cardNo:cardNo,
     customerName:customerName,
     invoiceNo:invoiceNo,
     phoneNumber:phoneNumber,
@@ -1053,8 +1055,9 @@ const startimesRecharge = async (user,trxRef,time,service,amount,cardNo,phoneNum
   );
   let payload = {
     amount:amount,
-
-transactionId:transaction.id,    cardNo:cardNo,
+    addon:addons,
+    transactionId:transaction.id,
+    cardNo:cardNo,
     phoneNumber:phoneNumber,
     reference:trxRef,
     serviceId:service.id,
