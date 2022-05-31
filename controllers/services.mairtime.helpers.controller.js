@@ -96,6 +96,7 @@ const mtnVTUTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     phoneNumber:phoneNumber,
     amount:amount,
     network:service.code,
@@ -191,6 +192,7 @@ const airtimePurchase = async (user,trxRef,time,service,phoneNumber,amount,res)=
   );;
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     phoneNumber:phoneNumber,
     amount:amount,
     network:service.code,
@@ -285,6 +287,7 @@ const foreignAirtimePurchase = async (user,trxRef,time,service,phoneNumber,amoun
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     phoneNumber:phoneNumber,
     amount:amount,
     country:country,
@@ -381,6 +384,7 @@ const mtnDataGifting = async (user,trxRef,time,service,phoneNumber,amount,dataSi
   );;
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     phoneNumber:phoneNumber,
     dataSize:dataSize,
     network:service.code,
@@ -476,6 +480,7 @@ const mtnDataShare = async (user,trxRef,time,service,phoneNumber,amount,dataSize
   );;
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     phoneNumber:phoneNumber,
     dataSize:dataSize,
     network:service.code,
@@ -571,6 +576,7 @@ const dataTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
   );;
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     amount:amount,
     phoneNumber:phoneNumber,
     network:service.code,
@@ -666,6 +672,7 @@ const purchaseElectricity = async (user,trxRef,time,service,amount,serviceId,met
   );;
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     meterNo:meterNo,
     type:type,
     amount:amount,
@@ -761,7 +768,8 @@ const waecPinPurchase = async (user,trxRef,time,service,amount,res)=>{
   );;
   let payload = {
     amount:amount,
-    reference:trxRef,
+
+transactionId:transaction.id,    reference:trxRef,
     serviceId:service.id,
     totalServiceFee:totalAmount,
     profit:profit
@@ -853,7 +861,8 @@ const necoPinPurchase = async (user,trxRef,time,service,amount,res)=>{
   );;
   let payload = {
     amount:amount,
-    reference:trxRef,
+
+transactionId:transaction.id,    reference:trxRef,
     serviceId:service.id,
     totalServiceFee:totalAmount,
     profit:profit
@@ -945,7 +954,8 @@ const tvRecharge = async (user,trxRef,time,service,amount,cardNo,customerName,in
   );;
   let payload = {
     amount:amount,
-    cardNo:cardNo,
+
+transactionId:transaction.id,    cardNo:cardNo,
     customerName:customerName,
     invoiceNo:invoiceNo,
     phoneNumber:phoneNumber,
@@ -1043,7 +1053,8 @@ const startimesRecharge = async (user,trxRef,time,service,amount,cardNo,phoneNum
   );
   let payload = {
     amount:amount,
-    cardNo:cardNo,
+
+transactionId:transaction.id,    cardNo:cardNo,
     phoneNumber:phoneNumber,
     reference:trxRef,
     serviceId:service.id,

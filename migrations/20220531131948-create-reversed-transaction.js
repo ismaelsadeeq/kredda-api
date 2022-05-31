@@ -10,7 +10,7 @@ module.exports = {
       },
       adminId:{
         type:Sequelize.UUID,
-        allowNull:false,
+        allowNull:true,
         onDelete:'CASCADE',
         references:{
           model:'admins',
@@ -29,9 +29,6 @@ module.exports = {
         }
       },
       transactionType: {
-        type: Sequelize.STRING
-      },
-      reference: {
         type: Sequelize.STRING
       },
       amount: {

@@ -41,13 +41,6 @@ const buyAirtime = async (user,trxRef,time,service,phoneNumber,amount,type,plan,
   }
   let profit = totalAmount - amount;
   let walletBalance = parseInt(wallet.accountBalance);
-  let addons = JSON.stringify(
-    {
-      serviceCharge:serviceCharge,
-      vat:serviceCategory.vat,
-      discount:discount
-    }
-  )
   if(walletBalance < totalAmount){
     const transaction = await models.transaction.create(
       {
@@ -102,6 +95,7 @@ const buyAirtime = async (user,trxRef,time,service,phoneNumber,amount,type,plan,
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     phoneNumber:phoneNumber,
     amount:amount,
     type:type,
@@ -198,6 +192,7 @@ const buyData = async (user,trxRef,time,service,phoneNumber,amount,type,code,res
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     phoneNumber:phoneNumber,
     amount:amount,
     type:type,
@@ -294,6 +289,7 @@ const buyElectricity = async (user,trxRef,time,service,phoneNumber,amount,code,m
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     phoneNumber:phoneNumber,
     amount:amount,
     type:code,
@@ -389,6 +385,7 @@ const buyWaecPin = async (user,trxRef,time,service,pinValue,noOfPins,type,amount
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     amount:amount,
     pinValue:pinValue,
     numberOfPins:noOfPins,
@@ -485,6 +482,7 @@ const buyCable = async (user,trxRef,time,service,amount,cardNo,productMonthsPaid
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     amount:amount,
     cardNo:cardNo,
     productMonthsPaidFor:productMonthsPaidFor,

@@ -15,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   reversedTransaction.init({
     transactionType: DataTypes.STRING,
-    reference: DataTypes.STRING,
     amount: DataTypes.STRING,
     status: DataTypes.STRING,
     beneficiary: DataTypes.STRING,

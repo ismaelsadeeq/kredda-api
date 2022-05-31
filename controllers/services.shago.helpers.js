@@ -96,6 +96,7 @@ const walletpayment = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     phoneNumber:phoneNumber,
     amount:amount,
     network:service.name,
@@ -191,6 +192,7 @@ const walletDatapayment = async (user,trxRef,time,service,phoneNumber,package,bu
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     phoneNumber:phoneNumber,
     amount:amount,
     bundle:bundle,
@@ -287,6 +289,7 @@ const walletElectricityPayment = async (user,trxRef,time,service,phoneNumber,met
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     phoneNumber:phoneNumber,
     amount:amount,
     meterNo:meterNo,
@@ -386,6 +389,7 @@ const waecPinPurchase = async (user,trxRef,time,service,amount,numberOfPin,res)=
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     amount:amount,
     numberOfPin:numberOfPin,
     reference:trxRef,
@@ -480,6 +484,7 @@ const jambPinPurchase = async (user,trxRef,time,service,type,amount,profileCode,
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     amount:amount,
     type:type,
     profileCode:profileCode,
@@ -575,6 +580,7 @@ const dstvPurchase = async (user,trxRef,time,service,amount,cardNo,customerName,
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     amount:amount,
     cardNo:cardNo,
     customerName:customerName,
@@ -673,6 +679,7 @@ const dstvPurchaseWithAddOn = async (user,trxRef,time,service,amount,cardNo,cust
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     amount:amount,
     cardNo:cardNo,
     customerName:customerName,
@@ -774,6 +781,7 @@ const startimesPurchase = async (user,trxRef,time,service,amount,cardNo,customer
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     amount:amount,
     cardNo:cardNo,
     customerName:customerName,
@@ -870,6 +878,7 @@ const goTvPurchase = async (user,trxRef,time,service,amount,cardNo,customerName,
   );
   let payload = {
     userId:user.id,
+    transactionId:transaction.id,
     amount:amount,
     cardNo:cardNo,
     customerName:customerName,
