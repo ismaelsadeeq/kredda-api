@@ -7,6 +7,7 @@ const responseData = {
 	message: "Completed",
 	data: null
 }
+// To be modified
 const queryTransaction = async (payload,res)=>{
   var request = require('request');
   var options = {
@@ -73,7 +74,6 @@ const queryTransaction = async (payload,res)=>{
 const purchaseAirtime = async (payload,res)=>{
   var request = require('request');
   let url = `https://payments.baxipay.com.ng/api/baxipay/services/airtime/request?phone=${payload.phoneNumber}&amount=${payload.amount}&service_type=${payload.type}&plan=${payload.plan}&agentId=${process.env.AGENT_ID}&agentReference=${payload.reference}`;
-  console.log(url);
   var options = {
     'method': 'POST',
     'url': url,
@@ -86,7 +86,7 @@ const purchaseAirtime = async (payload,res)=>{
     if (error) throw new Error(error);
     let data = JSON.parse(response.body);
     let time = new Date();
-    time = time.toLocaleString()
+    time = time.toLocaleString();
     if(data.code ==200 && data.data.transactionStatus=="success"){
       const  createTransaction = await models.serviceTransaction.create(
         {

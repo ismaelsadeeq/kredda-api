@@ -12,6 +12,9 @@ module.exports = (sequelize, DataTypes) => {
     transaction.hasMany(models.transactionLog,{
       foreignKey:'transactionId'
     });
+    transaction.hasOne(models.reversedTransaction,{
+      foreignKey:'transactionId'
+    });
   }
   transaction.init({
     transactionType: DataTypes.STRING,

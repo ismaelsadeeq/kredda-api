@@ -12,6 +12,9 @@ module.exports = (sequelize, DataTypes) => {
     admin.hasMany(models.transactionLog,{
       foreignKey:'adminId'
     });
+    admin.hasMany(models.reversedTransaction,{
+      foreignKey:'adminId'
+    });
   }
   admin.init({
     firstName: DataTypes.STRING,

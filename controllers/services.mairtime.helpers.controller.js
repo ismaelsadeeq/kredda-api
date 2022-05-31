@@ -9,6 +9,7 @@ const responseData = {
 	message: "Completed",
 	data: null
 }
+
 //Mobile Airtime
 const mtnVTUTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
   const wallet = await models.wallet.findOne(
