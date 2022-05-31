@@ -86,20 +86,6 @@ const airtimePushase =async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.status == 200){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          status:"successful",
-          beneficiary:payload.phoneNumber,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
@@ -107,18 +93,14 @@ const airtimePushase =async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 400){
-      const  createTransaction = await models.serviceTransaction.create(
+      await models.transaction.update(
         {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.phoneNumber,
-          time:time,
-          status:"pending",
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          status:"pending"
+        },
+        {
+          where:{
+            id:payload.transactionId
+          }
         }
       );
       res.statusCode = 200;
@@ -128,40 +110,44 @@ const airtimePushase =async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 300){
-      const  createTransaction = await models.serviceTransaction.create(
+      const userWallet = await models.wallet.findOne(
+        {
+          where:{
+            userId:payload.userId
+          }
+        }
+      );
+      let userWalletBalance = parseInt(userWallet.accountBalance);
+      await models.wallet.update(
+        {
+          accountBalance:userWalletBalance + payload.totalAmount
+        },
+        {
+          where:{
+            id:userWallet.id
+          }
+        }
+      );
+      const createReversedTransaction = await models.reversedTransaction.create(
         {
           id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.phoneNumber,
+          transactionId:payload.transactionId,
+          transactionType:'Credit',
+          amount:payload.amount,
+          beneficiary:payload.userId,
           time:time,
-          status:"failed",
+          status:"successful",
           totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          addon:payload.addon,
+          typeOfReversal:'Service failure'
         }
       );
       res.statusCode = 200;
-      responseData.message = "completed";
+      responseData.message = "service unavailable";
       responseData.status = false;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
-      {
-        id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
-        amount:parseInt(payload.amount),
-        beneficiary:payload.phoneNumber,
-        time:time,
-        status:"something went wrong",
-        totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
-      }
-    );
     res.statusCode = 200;
     responseData.message = "completed";
     responseData.status = false;
@@ -227,20 +213,6 @@ const dataPurchase = async (payload,res)=>{
     time = time.toLocaleString()
     const data = JSON.parse(response.body);
     if(data.status == 200){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          status:"successful",
-          beneficiary:payload.phoneNumber,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
@@ -248,18 +220,14 @@ const dataPurchase = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 400){
-      const  createTransaction = await models.serviceTransaction.create(
+      await models.transaction.update(
         {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.phoneNumber,
-          time:time,
-          status:"pending",
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          status:"pending"
+        },
+        {
+          where:{
+            id:payload.transactionId
+          }
         }
       );
       res.statusCode = 200;
@@ -269,40 +237,44 @@ const dataPurchase = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 300){
-      const  createTransaction = await models.serviceTransaction.create(
+      const userWallet = await models.wallet.findOne(
+        {
+          where:{
+            userId:payload.userId
+          }
+        }
+      );
+      let userWalletBalance = parseInt(userWallet.accountBalance);
+      await models.wallet.update(
+        {
+          accountBalance:userWalletBalance + payload.totalAmount
+        },
+        {
+          where:{
+            id:userWallet.id
+          }
+        }
+      );
+      const createReversedTransaction = await models.reversedTransaction.create(
         {
           id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.phoneNumber,
+          transactionId:payload.transactionId,
+          transactionType:'Credit',
+          amount:payload.amount,
+          beneficiary:payload.userId,
           time:time,
-          status:"failed",
+          status:"successful",
           totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          addon:payload.addon,
+          typeOfReversal:'Service failure'
         }
       );
       res.statusCode = 200;
-      responseData.message = "completed";
+      responseData.message = "service unavailable";
       responseData.status = false;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
-      {
-        id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
-        amount:parseInt(payload.amount),
-        beneficiary:payload.phoneNumber,
-        time:time,
-        status:"something went wrong",
-        totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
-      }
-    );
     res.statusCode = 200;
     responseData.message = "completed";
     responseData.status = false;
@@ -370,20 +342,6 @@ const purchaseElectricity = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.status == 200){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          status:"successful",
-          beneficiary:payload.meterNo,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
@@ -391,18 +349,14 @@ const purchaseElectricity = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 400){
-      const  createTransaction = await models.serviceTransaction.create(
+      await models.transaction.update(
         {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.meterNo,
-          time:time,
-          status:"pending",
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          status:"pending"
+        },
+        {
+          where:{
+            id:payload.transactionId
+          }
         }
       );
       res.statusCode = 200;
@@ -412,40 +366,44 @@ const purchaseElectricity = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 300){
-      const  createTransaction = await models.serviceTransaction.create(
+      c const userWallet = await models.wallet.findOne(
+        {
+          where:{
+            userId:payload.userId
+          }
+        }
+      );
+      let userWalletBalance = parseInt(userWallet.accountBalance);
+      await models.wallet.update(
+        {
+          accountBalance:userWalletBalance + payload.totalAmount
+        },
+        {
+          where:{
+            id:userWallet.id
+          }
+        }
+      );
+      const createReversedTransaction = await models.reversedTransaction.create(
         {
           id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.meterNo,
+          transactionId:payload.transactionId,
+          transactionType:'Credit',
+          amount:payload.amount,
+          beneficiary:payload.userId,
           time:time,
-          status:"failed",
+          status:"successful",
           totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          addon:payload.addon,
+          typeOfReversal:'Service failure'
         }
       );
       res.statusCode = 200;
-      responseData.message = "completed";
+      responseData.message = "service unavailable";
       responseData.status = false;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
-      {
-        id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
-        amount:parseInt(payload.amount),
-        beneficiary:payload.meterNo,
-        time:time,
-        status:"something went wrong",
-        totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
-      }
-    );
     res.statusCode = 200;
     responseData.message = "something went wrong";
     responseData.status = false;
@@ -514,20 +472,6 @@ const purchaseDstvNoAddOn = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.status == 200){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          status:"successful",
-          beneficiary:payload.cardNo,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
@@ -535,18 +479,14 @@ const purchaseDstvNoAddOn = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 400){
-      const  createTransaction = await models.serviceTransaction.create(
+       await models.transaction.update(
         {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.cardNo,
-          time:time,
-          status:"pending",
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          status:"pending"
+        },
+        {
+          where:{
+            id:payload.transactionId
+          }
         }
       );
       res.statusCode = 200;
@@ -556,40 +496,44 @@ const purchaseDstvNoAddOn = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 300){
-      const  createTransaction = await models.serviceTransaction.create(
+      const userWallet = await models.wallet.findOne(
+        {
+          where:{
+            userId:payload.userId
+          }
+        }
+      );
+      let userWalletBalance = parseInt(userWallet.accountBalance);
+      await models.wallet.update(
+        {
+          accountBalance:userWalletBalance + payload.totalAmount
+        },
+        {
+          where:{
+            id:userWallet.id
+          }
+        }
+      );
+      const createReversedTransaction = await models.reversedTransaction.create(
         {
           id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.cardNo,
+          transactionId:payload.transactionId,
+          transactionType:'Credit',
+          amount:payload.amount,
+          beneficiary:payload.userId,
           time:time,
-          status:"failed",
+          status:"successful",
           totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          addon:payload.addon,
+          typeOfReversal:'Service failure'
         }
       );
       res.statusCode = 200;
-      responseData.message = "completed";
+      responseData.message = "service unavailable";
       responseData.status = false;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
-      {
-        id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
-        amount:parseInt(payload.amount),
-        beneficiary:payload.cardNo,
-        time:time,
-        status:"something went wrong",
-        totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
-      }
-    );
     res.statusCode = 200;
     responseData.message = "completed";
     responseData.status = false;
@@ -659,20 +603,6 @@ const purchaseDstvWithAddOn = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString();
     if(data.status == 200){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          status:"successful",
-          beneficiary:payload.cardNo,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
@@ -680,18 +610,14 @@ const purchaseDstvWithAddOn = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 400){
-      const  createTransaction = await models.serviceTransaction.create(
+       await models.transaction.update(
         {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.cardNo,
-          time:time,
-          status:"pending",
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          status:"pending"
+        },
+        {
+          where:{
+            id:payload.transactionId
+          }
         }
       );
       res.statusCode = 200;
@@ -701,40 +627,44 @@ const purchaseDstvWithAddOn = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 300){
-      const  createTransaction = await models.serviceTransaction.create(
+      const userWallet = await models.wallet.findOne(
+        {
+          where:{
+            userId:payload.userId
+          }
+        }
+      );
+      let userWalletBalance = parseInt(userWallet.accountBalance);
+      await models.wallet.update(
+        {
+          accountBalance:userWalletBalance + payload.totalAmount
+        },
+        {
+          where:{
+            id:userWallet.id
+          }
+        }
+      );
+      const createReversedTransaction = await models.reversedTransaction.create(
         {
           id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.cardNo,
+          transactionId:payload.transactionId,
+          transactionType:'Credit',
+          amount:payload.amount,
+          beneficiary:payload.userId,
           time:time,
-          status:"failed",
+          status:"successful",
           totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          addon:payload.addon,
+          typeOfReversal:'Service failure'
         }
       );
       res.statusCode = 200;
-      responseData.message = "completed";
+      responseData.message = "service unavailable";
       responseData.status = false;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
-      {
-        id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
-        amount:parseInt(payload.amount),
-        beneficiary:payload.cardNo,
-        time:time,
-        status:"something went wrong",
-        totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
-      }
-    );
     res.statusCode = 200;
     responseData.message = "completed";
     responseData.status = false;
@@ -769,20 +699,6 @@ const startimesPurchase = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString();
     if(data.status == 200){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          status:"successful",
-          beneficiary:payload.cardNo,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
@@ -790,18 +706,14 @@ const startimesPurchase = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 400){
-      const  createTransaction = await models.serviceTransaction.create(
+       await models.transaction.update(
         {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.cardNo,
-          time:time,
-          status:"pending",
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          status:"pending"
+        },
+        {
+          where:{
+            id:payload.transactionId
+          }
         }
       );
       res.statusCode = 200;
@@ -811,40 +723,44 @@ const startimesPurchase = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 300){
-      const  createTransaction = await models.serviceTransaction.create(
+      const userWallet = await models.wallet.findOne(
+        {
+          where:{
+            userId:payload.userId
+          }
+        }
+      );
+      let userWalletBalance = parseInt(userWallet.accountBalance);
+      await models.wallet.update(
+        {
+          accountBalance:userWalletBalance + payload.totalAmount
+        },
+        {
+          where:{
+            id:userWallet.id
+          }
+        }
+      );
+      const createReversedTransaction = await models.reversedTransaction.create(
         {
           id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.cardNo,
+          transactionId:payload.transactionId,
+          transactionType:'Credit',
+          amount:payload.amount,
+          beneficiary:payload.userId,
           time:time,
-          status:"failed",
+          status:"successful",
           totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          addon:payload.addon,
+          typeOfReversal:'Service failure'
         }
       );
       res.statusCode = 200;
-      responseData.message = "completed";
+      responseData.message = "service unavailable";
       responseData.status = false;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
-      {
-        id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
-        amount:parseInt(payload.amount),
-        beneficiary:payload.cardNo,
-        time:time,
-        status:"something went wrong",
-        totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
-      }
-    );
     res.statusCode = 200;
     responseData.message = "completed";
     responseData.status = false;
@@ -882,20 +798,6 @@ const goTvPurchase = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString();
     if(data.status == 200){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          status:"successful",
-          beneficiary:payload.cardNo,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
@@ -903,18 +805,14 @@ const goTvPurchase = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 400){
-      const  createTransaction = await models.serviceTransaction.create(
+       await models.transaction.update(
         {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.cardNo,
-          time:time,
-          status:"pending",
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          status:"pending"
+        },
+        {
+          where:{
+            id:payload.transactionId
+          }
         }
       );
       res.statusCode = 200;
@@ -924,40 +822,44 @@ const goTvPurchase = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 300){
-      const  createTransaction = await models.serviceTransaction.create(
+      const userWallet = await models.wallet.findOne(
+        {
+          where:{
+            userId:payload.userId
+          }
+        }
+      );
+      let userWalletBalance = parseInt(userWallet.accountBalance);
+      await models.wallet.update(
+        {
+          accountBalance:userWalletBalance + payload.totalAmount
+        },
+        {
+          where:{
+            id:userWallet.id
+          }
+        }
+      );
+      const createReversedTransaction = await models.reversedTransaction.create(
         {
           id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.cardNo,
+          transactionId:payload.transactionId,
+          transactionType:'Credit',
+          amount:payload.amount,
+          beneficiary:payload.userId,
           time:time,
-          status:"failed",
+          status:"successful",
           totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          addon:payload.addon,
+          typeOfReversal:'Service failure'
         }
       );
       res.statusCode = 200;
-      responseData.message = "completed";
+      responseData.message = "service unavailable";
       responseData.status = false;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
-      {
-        id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
-        amount:parseInt(payload.amount),
-        beneficiary:payload.cardNo,
-        time:time,
-        status:"something went wrong",
-        totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
-      }
-    );
     res.statusCode = 200;
     responseData.message = "completed";
     responseData.status = false;
@@ -1045,20 +947,6 @@ const waecPinPurchase = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.status == 200){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          status:"successful",
-          beneficiary:payload.numberOfPin,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
@@ -1066,18 +954,14 @@ const waecPinPurchase = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 400){
-      const  createTransaction = await models.serviceTransaction.create(
+      await models.transaction.update(
         {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.numberOfPin,
-          time:time,
-          status:"pending",
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          status:"pending"
+        },
+        {
+          where:{
+            id:payload.transactionId
+          }
         }
       );
       res.statusCode = 200;
@@ -1087,40 +971,44 @@ const waecPinPurchase = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 300){
-      const  createTransaction = await models.serviceTransaction.create(
+      const userWallet = await models.wallet.findOne(
+        {
+          where:{
+            userId:payload.userId
+          }
+        }
+      );
+      let userWalletBalance = parseInt(userWallet.accountBalance);
+      await models.wallet.update(
+        {
+          accountBalance:userWalletBalance + payload.totalAmount
+        },
+        {
+          where:{
+            id:userWallet.id
+          }
+        }
+      );
+      const createReversedTransaction = await models.reversedTransaction.create(
         {
           id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.numberOfPin,
+          transactionId:payload.transactionId,
+          transactionType:'Credit',
+          amount:payload.amount,
+          beneficiary:payload.userId,
           time:time,
-          status:"failed",
+          status:"successful",
           totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          addon:payload.addon,
+          typeOfReversal:'Service failure'
         }
       );
       res.statusCode = 200;
-      responseData.message = "completed";
+      responseData.message = "service unavailable";
       responseData.status = false;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
-      {
-        id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
-        amount:parseInt(payload.amount),
-        beneficiary:payload.numberOfPin,
-        time:time,
-        status:"something went wrong",
-        totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
-      }
-    );
     res.statusCode = 200;
     responseData.message = "something went wrong";
     responseData.status = false;
@@ -1211,20 +1099,6 @@ const jambPinPurchase = async (payload,res)=>{
     let time = new Date();
     time = time.toLocaleString()
     if(data.status == 200){
-      const  createTransaction = await models.serviceTransaction.create(
-        {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          status:"successful",
-          beneficiary:payload.profileCode,
-          time:time,
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
-        }
-      );
       res.statusCode = 200;
       responseData.message = "completed";
       responseData.status = true;
@@ -1232,18 +1106,14 @@ const jambPinPurchase = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 400){
-      const  createTransaction = await models.serviceTransaction.create(
+      await models.transaction.update(
         {
-          id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.profileCode,
-          time:time,
-          status:"pending",
-          totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          status:"pending"
+        },
+        {
+          where:{
+            id:payload.transactionId
+          }
         }
       );
       res.statusCode = 200;
@@ -1253,40 +1123,44 @@ const jambPinPurchase = async (payload,res)=>{
       return res.json(responseData)
     }
     if(data.status == 300){
-      const  createTransaction = await models.serviceTransaction.create(
+      const userWallet = await models.wallet.findOne(
+        {
+          where:{
+            userId:payload.userId
+          }
+        }
+      );
+      let userWalletBalance = parseInt(userWallet.accountBalance);
+      await models.wallet.update(
+        {
+          accountBalance:userWalletBalance + payload.totalAmount
+        },
+        {
+          where:{
+            id:userWallet.id
+          }
+        }
+      );
+      const createReversedTransaction = await models.reversedTransaction.create(
         {
           id:uuid.v4(),
-          userId:payload.userId,
-          serviceId:payload.serviceId,
-          reference:payload.reference,
-          amount:parseInt(payload.amount),
-          beneficiary:payload.profileCode,
+          transactionId:payload.transactionId,
+          transactionType:'Credit',
+          amount:payload.amount,
+          beneficiary:payload.userId,
           time:time,
-          status:"failed",
+          status:"successful",
           totalServiceFee:payload.totalServiceFee,
-          profit:payload.profit
+          addon:payload.addon,
+          typeOfReversal:'Service failure'
         }
       );
       res.statusCode = 200;
-      responseData.message = "completed";
+      responseData.message = "service unavailable";
       responseData.status = false;
       responseData.data = data;
       return res.json(responseData)
     }
-    const  createTransaction = await models.serviceTransaction.create(
-      {
-        id:uuid.v4(),
-        userId:payload.userId,
-        serviceId:payload.serviceId,
-        reference:payload.reference,
-        amount:parseInt(payload.amount),
-        beneficiary:payload.profileCode,
-        time:time,
-        status:"something went wrong",
-        totalServiceFee:payload.totalServiceFee,
-        profit:payload.profit
-      }
-    );
     res.statusCode = 200;
     responseData.message = "completed";
     responseData.status = false;
