@@ -61,6 +61,7 @@ const buyAirtime = async (user,trxRef,time,service,phoneNumber,amount,type,plan,
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
         
@@ -94,6 +95,7 @@ const buyAirtime = async (user,trxRef,time,service,phoneNumber,amount,type,plan,
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
@@ -156,6 +158,7 @@ const buyData = async (user,trxRef,time,service,phoneNumber,amount,type,code,res
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -188,6 +191,7 @@ const buyData = async (user,trxRef,time,service,phoneNumber,amount,type,code,res
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
@@ -250,6 +254,7 @@ const buyElectricity = async (user,trxRef,time,service,phoneNumber,amount,code,m
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -282,6 +287,7 @@ const buyElectricity = async (user,trxRef,time,service,phoneNumber,amount,code,m
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
@@ -343,6 +349,7 @@ const buyWaecPin = async (user,trxRef,time,service,pinValue,noOfPins,type,amount
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -375,6 +382,7 @@ const buyWaecPin = async (user,trxRef,time,service,pinValue,noOfPins,type,amount
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
@@ -437,6 +445,7 @@ const buyCable = async (user,trxRef,time,service,amount,cardNo,productMonthsPaid
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -469,6 +478,7 @@ const buyCable = async (user,trxRef,time,service,amount,cardNo,productMonthsPaid
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }

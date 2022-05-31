@@ -55,6 +55,7 @@ const mtnVTUTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -87,6 +88,7 @@ const mtnVTUTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
@@ -148,6 +150,7 @@ const airtimePurchase = async (user,trxRef,time,service,phoneNumber,amount,res)=
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -180,6 +183,7 @@ const airtimePurchase = async (user,trxRef,time,service,phoneNumber,amount,res)=
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
@@ -240,6 +244,7 @@ const foreignAirtimePurchase = async (user,trxRef,time,service,phoneNumber,amoun
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -272,6 +277,7 @@ const foreignAirtimePurchase = async (user,trxRef,time,service,phoneNumber,amoun
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
@@ -334,6 +340,7 @@ const mtnDataGifting = async (user,trxRef,time,service,phoneNumber,amount,dataSi
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -366,6 +373,7 @@ const mtnDataGifting = async (user,trxRef,time,service,phoneNumber,amount,dataSi
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
@@ -427,6 +435,7 @@ const mtnDataShare = async (user,trxRef,time,service,phoneNumber,amount,dataSize
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -459,6 +468,7 @@ const mtnDataShare = async (user,trxRef,time,service,phoneNumber,amount,dataSize
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
@@ -520,6 +530,7 @@ const dataTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -552,6 +563,7 @@ const dataTopUp = async (user,trxRef,time,service,phoneNumber,amount,res)=>{
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
@@ -613,6 +625,7 @@ const purchaseElectricity = async (user,trxRef,time,service,amount,serviceId,met
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -645,6 +658,7 @@ const purchaseElectricity = async (user,trxRef,time,service,amount,serviceId,met
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
@@ -706,6 +720,7 @@ const waecPinPurchase = async (user,trxRef,time,service,amount,res)=>{
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -738,6 +753,7 @@ const waecPinPurchase = async (user,trxRef,time,service,amount,res)=>{
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
@@ -796,6 +812,7 @@ const necoPinPurchase = async (user,trxRef,time,service,amount,res)=>{
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -828,6 +845,7 @@ const necoPinPurchase = async (user,trxRef,time,service,amount,res)=>{
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
@@ -886,6 +904,7 @@ const tvRecharge = async (user,trxRef,time,service,amount,cardNo,customerName,in
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -918,6 +937,7 @@ const tvRecharge = async (user,trxRef,time,service,amount,cardNo,customerName,in
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
@@ -982,6 +1002,7 @@ const startimesRecharge = async (user,trxRef,time,service,amount,cardNo,phoneNum
         amount:amount,
         status:"failed",
         time: time,
+        totalServiceFee:totalAmount,
         addon:addons,
         profit:profit
       }
@@ -1014,6 +1035,7 @@ const startimesRecharge = async (user,trxRef,time,service,amount,cardNo,phoneNum
       isRedemmed:true,
       status:"successful",
       time: time,
+      totalServiceFee:totalAmount,
       addon:addons,
       profit:profit
     }
