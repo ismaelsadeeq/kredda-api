@@ -21,8 +21,10 @@ module.exports = (sequelize, DataTypes) => {
     amount: DataTypes.INTEGER,
     time:DataTypes.STRING,
     beneficiary: DataTypes.STRING(1234),
+    totalServiceFee: DataTypes.INTEGER,
     description: DataTypes.STRING,
-    isRedemmed: DataTypes.BOOLEAN
+    profit: DataTypes.INTEGER,
+    addon:DataTypes.STRING
   }, {
     sequelize,
     paranoid:true,

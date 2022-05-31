@@ -44,8 +44,14 @@ module.exports = {
       status:{
         type:Sequelize.STRING
       },
-      isRedemmed :{
-        type:Sequelize.BOOLEAN
+      totalServiceFee: {
+        type: Sequelize.INTEGER
+      },
+      profit: {
+        type: Sequelize.INTEGER
+      },
+      addon: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
