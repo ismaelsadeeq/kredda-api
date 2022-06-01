@@ -1212,5 +1212,6 @@ module.exports = {
   webhook,
   flutterwaveWebhook,
   monnifyWebhook,
-  monnifyEventWebhook
+  monnifyEventWebhook,
+  reverseTrx
 }

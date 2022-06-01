@@ -9,7 +9,7 @@ router.get('/',
 );
 router.put('/reverse/:reference',
   passport.authenticate('jwt',{session:false}),
-  controller.getWalletBalance
+  controller.reverseTrx
 );
 router.post('/paystack-webhook',
   controller.webhook
