@@ -7,6 +7,10 @@ router.get('/',
   passport.authenticate('jwt',{session:false}),
   controller.getWalletBalance
 );
+router.put('/reverse/:reference',
+  passport.authenticate('jwt',{session:false}),
+  controller.getWalletBalance
+);
 router.post('/paystack-webhook',
   controller.webhook
 );

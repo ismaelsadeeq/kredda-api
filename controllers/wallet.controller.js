@@ -1102,6 +1102,111 @@ const monnifyEventWebhook = async (req,res)=>{
     return res.json(responseData)
   }
 }
+const reverseTrx = async (req,res)=>{
+  const admin =  await models.admin.findOne(
+    {
+      where:{
+        id:req.user.id
+      }
+    }
+  );
+  if(!admin){
+    res.statusCode = 401;
+    return res.json('Unauthorize')
+  }
+  const reference = req.params.reference;
+  const transaction = await models.transaction.findOne(
+    {
+      where:{
+        reference:reference
+      }
+    }
+  );
+  if(!transaction){
+    responseData.message = "transaction reference is incorrect";
+    responseData.status = true;
+    responseData.data = undefined;
+    return res.json(responseData)
+  }
+  let checkTrx = transaction.transactionType;
+  checkTrx = checkTrx.toLowerCase();
+  let time = new Date();
+  time = time.toLocaleString();
+  if(checkTrx ==="credit"){
+    if(transaction.status ==="successful"){
+      const createTransaction = await models.reversedTransaction.create(
+        {
+          id:uuid.v4(),
+          transactionId:transaction.id,
+          transactionType:"debit",
+          adminId:admin.id,
+          amount:transaction.amount,
+          beneficiary:transaction.userId,
+          time:time,
+          status:"successful",
+          totalServiceFee:transaction.totalServiceFee,
+          typeOfReversal:'Admin reversal'
+        }
+      );
+      const wallet = await models.wallet.findOne(
+        {
+          where:{
+            userId:transaction.userId,
+          }
+        }
+      )
+      await models.wallet.update(
+        {
+          accountBalance:parseInt(parseFloat(wallet.accountBalance) - parseFloat(transaction.totalServiceFee)),
+        },
+        {
+          where:{
+            userId:transaction.userId,
+          }
+        }
+      )
+    }
+  }
+  if(checkTrx ==="debit"){
+    if(transaction.status ==="successful"){
+      const createTransaction = await models.reversedTransaction.create(
+        {
+          id:uuid.v4(),
+          transactionId:transaction.id,
+          transactionType:"credit",
+          adminId:admin.id,
+          amount:transaction.amount,
+          beneficiary:transaction.userId,
+          time:time,
+          status:"successful",
+          totalServiceFee:transaction.totalServiceFee,
+          typeOfReversal:'Admin reversal'
+        }
+      );
+      const wallet = await models.wallet.findOne(
+        {
+          where:{
+            userId:transaction.userId,
+          }
+        }
+      )
+      await models.wallet.update(
+        {
+          accountBalance:parseInt(parseFloat(wallet.accountBalance) + parseFloat(transaction.totalServiceFee)),
+        },
+        {
+          where:{
+            userId:transaction.userId,
+          }
+        }
+      )
+    }
+  }
+  responseData.message = "Transaction Reversed";
+  responseData.status = true;
+  responseData.data = null;
+  return res.json(responseData)
+}
 module.exports = {
   getWalletBalance,
   webhook,
