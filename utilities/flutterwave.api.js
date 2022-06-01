@@ -448,6 +448,8 @@ async function initiateATransfer(flutterwave,data,responsee){
             amount:data.amount,
             time:date,
             status:"pending",
+            totalServiceFee:parseInt(data.totalServiceFee),
+            profit:parseInt(data.totalServiceFee) - parseInt(data.amount),
             reference:payload.data.reference,
           }
         );
@@ -470,6 +472,8 @@ async function initiateATransfer(flutterwave,data,responsee){
         amount:data.amount,
         time:date,
         status:"failed",
+        totalServiceFee:parseInt(data.totalServiceFee),
+        profit:parseInt(data.totalServiceFee) - parseInt(data.amount),
         reference:payload.data.reference,
       }
     );

@@ -315,7 +315,8 @@ async function initiateATransfer(payload,monnify,res){
           amount:payload.amount,
           time:date,
           status:"pending",
-          isRedemmed:false,
+          totalServiceFee:parseInt(payload.totalServiceFee),
+          profit:parseInt(payload.totalServiceFee) - parseInt(payload.amount),
           reference:payload.trxRef,
         }
       );
@@ -336,7 +337,8 @@ async function initiateATransfer(payload,monnify,res){
         amount:payload.amount,
         time:date,
         status:"failed",
-        isRedemmed:false,
+        totalServiceFee:parseInt(payload.totalServiceFee),
+        profit:parseInt(payload.totalServiceFee) - parseInt(payload.amount),
         reference:payload.trxRef,
       }
     );

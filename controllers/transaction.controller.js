@@ -483,6 +483,7 @@ const initiateATransfer = async (req,res)=>{
   let name = user.firstName;
   let firstDigit = name.substring(0,1);
   let trxRef = `TRF-${digits}${firstDigit}`
+  let totalServiceFee = amountInNaira + parseInt(process.env.WIDTHRAW_CHARGE);
   if(payment.siteName =='paystack'){
     if(!bankDetail.recipientCode){
       res.statusCode = 200
@@ -507,7 +508,6 @@ const initiateATransfer = async (req,res)=>{
         attributes:['recipientCode']
       }
     )
-    let totalServiceFee = amountInNaira + parseInt(process.env.WIDTHRAW_CHARGE);
     const payload = {
       amount:amountInNaira * 100,
       recipientCode:reciepientCode,
@@ -532,6 +532,7 @@ const initiateATransfer = async (req,res)=>{
       narration:data.widthrawalReason,
       trxRef:trxRef,
       amount:data.amount,
+      totalServiceFee:totalServiceFee,
       userId:user.id
     }
     return await flutterwaveApi.initiateATransfer(payment,payload,res);
@@ -551,6 +552,7 @@ const initiateATransfer = async (req,res)=>{
       accountNumber:bankDetail.accountNumber,
       narration:data.widthrawalReason,
       trxRef:trxRef,
+      totalServiceFee:totalServiceFee,
       amount:data.amount,
       userId:user.id
     }

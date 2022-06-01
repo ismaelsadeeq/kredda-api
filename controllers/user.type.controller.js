@@ -213,6 +213,8 @@ const partnerWithCategory = async (req,res)=>{
           reference:trxRef,
           amount:fee,
           status:"failed",
+          totalServiceFee:fee,
+          profit:0,
           time: time
         }
       );
@@ -241,7 +243,8 @@ const partnerWithCategory = async (req,res)=>{
         userId:user.id,
         reference:trxRef,
         amount:fee,
-        isRedemmed:true,
+        totalServiceFee:fee,
+        profit:0,
         status:"successful",
         time: time
       }
@@ -301,7 +304,8 @@ const partnerWithCategory = async (req,res)=>{
       userId:user.id,
       firstName:user.firstName,
       message:"partnership",
-      beneficiary:beneficiary
+      beneficiary:beneficiary,
+      totalServiceFee:amount
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;

@@ -1070,38 +1070,40 @@ async function initiateATransfer(paystack,payload,userId,respond){
             time:date,
             status:"pending",
             totalServiceFee:parseFloat(payload.totalServiceFee) / 100,
-            profit:totalServiceFee - amount,
+            profit:totalServiceFee - (parseFloat(payload.amount) / 100),
             reference:response.data.transfer_code,
-          }
-        );
-        responseData.status = true;
-        responseData.message = "widthrawal initiated";
-        responseData.data = response;
-        return respond.json(responseData)
-      }
-      let date = new Date();
-        date = date.toLocaleString();
-        const createTransaction = await models.transaction.create(
-          {
-            id:uuid.v4(),
-            userId:userId,
-            transactionType:"debit",
-            message:"payment",
-            beneficiary:response.data.reference,
-            description:"wallet fund widthrawal",
-            amount:parseFloat(payload.amount) / 100,
-            time:date,
-            status:"failed",
-            totalServiceFee:parseFloat(payload.totalServiceFee) / 100,
-            profit:totalServiceFee - amount,
-            reference:response.data.transfer_code,
-          }
-        );
-      responseData.status = false;
-      responseData.message = "charge failed";
+        }
+      );
+      responseData.status = true;
+      responseData.message = "widthrawal initiated";
       responseData.data = response;
       return respond.json(responseData)
-    })
+    }
+      let date = new Date();
+      date = date.toLocaleString();
+      const createTransaction = await models.transaction.create(
+        {
+          id:uuid.v4(),
+          userId:userId,
+          transactionType:"debit",
+          message:"payment",
+          beneficiary:response.data.reference,
+          description:"wallet fund widthrawal",
+          amount:parseFloat(payload.amount) / 100,
+          time:date,
+          status:"failed",
+          totalServiceFee:parseFloat(payload.totalServiceFee) / 100,
+          profit:payload.totalServiceFee - (parseFloat(payload.amount) / 100),
+          reference:response.data.transfer_code,
+        }
+      )
+    }
+  );
+    responseData.status = false;
+    responseData.message = "charge failed";
+    responseData.data = response;
+    return respond.json(responseData)
+  
   }).on('error', error => {
     console.error(error)
   })
