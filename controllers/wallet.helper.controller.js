@@ -11,8 +11,7 @@ require('dotenv').config();
 const airtimePurchase = async (transaction,res)=>{
   await transaction.update(
     {
-      status:"successful",
-      isRedemmed:true,
+      status:"successful"
     },
     {
       where:{
@@ -41,7 +40,8 @@ const airtimePurchase = async (transaction,res)=>{
       reference:trxRef,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await shagoApi.airtimePushase(payload,res) 
   }
@@ -64,7 +64,8 @@ const airtimePurchase = async (transaction,res)=>{
       reference:trxRef,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     if(transaction.message=="mtn vtu airtime purchase"){
       return await mobileAirtime.mtnVTUTopUp(payload,res);
@@ -98,7 +99,8 @@ const airtimePurchase = async (transaction,res)=>{
       reference:trxRef,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await baxiApi.purchaseAirtime(payload,res) 
   }
@@ -106,8 +108,7 @@ const airtimePurchase = async (transaction,res)=>{
 const dataPurchase = async (transaction,res)=>{
   await transaction.update(
     {
-      status:"successful",
-      isRedemmed:true,
+      status:"successful"
     },
     {
       where:{
@@ -138,7 +139,8 @@ const dataPurchase = async (transaction,res)=>{
       package:beneficiary.package,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await shagoApi.dataPurchase(payload,res) 
   }
@@ -162,7 +164,8 @@ const dataPurchase = async (transaction,res)=>{
         reference:trxRef,
         serviceId:service.id,
         totalServiceFee:transaction.amount,
-        profit:profit
+        profit:profit,
+        addon:transaction.addon
       }
       return await mobileAirtime.mtnDataGifting(payload,res) 
     }
@@ -176,7 +179,8 @@ const dataPurchase = async (transaction,res)=>{
         reference:trxRef,
         serviceId:service.id,
         totalServiceFee:transaction.amount,
-        profit:profit
+        profit:profit,
+        addon:transaction.addon
       }
       return await mobileAirtime.mtnDataShare(payload,res) 
     }
@@ -190,7 +194,8 @@ const dataPurchase = async (transaction,res)=>{
         amount:parseInt(beneficiary.amount),
         serviceId:service.id,
         totalServiceFee:transaction.amount,
-        profit:profit
+        profit:profit,
+        addon:transaction.addon
       }
       return await mobileAirtime.dataTopUp(payload,res) 
     }
@@ -215,7 +220,8 @@ const dataPurchase = async (transaction,res)=>{
       reference:trxRef,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await baxiApi.purchaseData(payload,res)
   }
@@ -223,8 +229,7 @@ const dataPurchase = async (transaction,res)=>{
 const electricityPurchase = async (transaction,res)=>{
   await transaction.update(
     {
-      status:"successful",
-      isRedemmed:true,
+      status:"successful"
     },
     {
       where:{
@@ -257,7 +262,8 @@ const electricityPurchase = async (transaction,res)=>{
       address:beneficiary.address,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await shagoApi.purchaseElectricity(payload,res) 
   }
@@ -279,7 +285,8 @@ const electricityPurchase = async (transaction,res)=>{
       type:beneficiary.type,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await mobileAirtime.purchaseElectricity(payload,res) 
   }
@@ -302,7 +309,8 @@ const electricityPurchase = async (transaction,res)=>{
       type:beneficiary.code,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await baxiApi.purchaseElectricity(payload,res) 
   }
@@ -310,8 +318,7 @@ const electricityPurchase = async (transaction,res)=>{
 const waecPurchase = async (transaction,res)=>{
   await transaction.update(
     {
-      status:"successful",
-      isRedemmed:true,
+      status:"successful"
     },
     {
       where:{
@@ -338,7 +345,8 @@ const waecPurchase = async (transaction,res)=>{
       numberOfPin:beneficiary.numberOfPin,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await shagoApi.waecPinPurchase(payload,res) 
   }
@@ -358,7 +366,8 @@ const waecPurchase = async (transaction,res)=>{
       reference:trxRef,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await mobileAirtime.purchaseWeacDirect(payload,res) 
   }
@@ -381,7 +390,8 @@ const waecPurchase = async (transaction,res)=>{
       type:beneficiary.type,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await mobileAirtime.purchaseWeacDirect(payload,res) 
   }
@@ -389,8 +399,7 @@ const waecPurchase = async (transaction,res)=>{
 const necoPurchase = async (transaction,res)=>{
   await transaction.update(
     {
-      status:"successful",
-      isRedemmed:true,
+      status:"successful"
     },
     {
       where:{
@@ -416,7 +425,8 @@ const necoPurchase = async (transaction,res)=>{
       reference:trxRef,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await mobileAirtime.purchaseNecoDirect(payload,res) 
   }
@@ -424,8 +434,7 @@ const necoPurchase = async (transaction,res)=>{
 const dstvPurchase = async (transaction,res)=>{
   await transaction.update(
     {
-      status:"successful",
-      isRedemmed:true,
+      status:"successful"
     },
     {
       where:{
@@ -456,7 +465,8 @@ const dstvPurchase = async (transaction,res)=>{
       period:beneficiary.period,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await shagoApi.purchaseDstvNoAddOn(payload,res) 
   }
@@ -464,8 +474,7 @@ const dstvPurchase = async (transaction,res)=>{
 const dstvPurchaseWithAddOn = async (transaction,res)=>{
   await transaction.update(
     {
-      status:"successful",
-      isRedemmed:true,
+      status:"successful"
     },
     {
       where:{
@@ -499,7 +508,8 @@ const dstvPurchaseWithAddOn = async (transaction,res)=>{
       addOnAmount:beneficiary.addOnAmount,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await shagoApi.purchaseDstvWithAddOn(payload,res) 
   }
@@ -507,8 +517,7 @@ const dstvPurchaseWithAddOn = async (transaction,res)=>{
 const startimesPurchase = async (transaction,res)=>{
   await transaction.update(
     {
-      status:"successful",
-      isRedemmed:true,
+      status:"successful"
     },
     {
       where:{
@@ -537,7 +546,8 @@ const startimesPurchase = async (transaction,res)=>{
       packageName:beneficiary.packageName,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await shagoApi.startimesPurchase(payload,res) 
   }
@@ -559,7 +569,8 @@ const startimesPurchase = async (transaction,res)=>{
       cardNo:beneficiary.cardNo,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await mobileAirtime.rechargeStartimes(payload,res) 
   }
@@ -567,8 +578,7 @@ const startimesPurchase = async (transaction,res)=>{
 const goTvPurchase = async (transaction,res)=>{
   await transaction.update(
     {
-      status:"successful",
-      isRedemmed:true,
+      status:"successful"
     },
     {
       where:{
@@ -599,7 +609,8 @@ const goTvPurchase = async (transaction,res)=>{
       period:beneficiary.period,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await shagoApi.goTvPurchase(payload,res) 
   }
@@ -625,7 +636,8 @@ const goTvPurchase = async (transaction,res)=>{
       customerNumber:beneficiary.customerNumber,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
 
     return await mobileAirtime.rechargeGoOrDstv(payload,res) 
@@ -634,8 +646,7 @@ const goTvPurchase = async (transaction,res)=>{
 const cablePurchase = async (transaction,res)=>{
   await transaction.update(
     {
-      status:"successful",
-      isRedemmed:true,
+      status:"successful"
     },
     {
       where:{
@@ -667,15 +678,15 @@ const cablePurchase = async (transaction,res)=>{
     type:beneficiary.type,
     serviceId:service.id,
     totalServiceFee:transaction.amount,
-    profit:profit
+    profit:profit,
+    addon:transaction.addon
   }
   return await baxiApi.purchaseCableTv(payload,res) 
 }
 const jambPurchase = async (transaction,res)=>{
   await transaction.update(
     {
-      status:"successful",
-      isRedemmed:true,
+      status:"successful"
     },
     {
       where:{
@@ -703,7 +714,8 @@ const jambPurchase = async (transaction,res)=>{
       profileCode:beneficiary.profileCode,
       serviceId:service.id,
       totalServiceFee:transaction.amount,
-      profit:profit
+      profit:profit,
+      addon:transaction.addon
     }
     return await shagoApi.jambPinPurchase(payload,res) 
   }
