@@ -395,12 +395,11 @@ const webhook =async (req,res)=>{
           transactionId:transaction.id,
           transactionType:"credit",
           amount:parseFloat(data.data.amount)/100,
-          beneficiary:transaction.userId
+          beneficiary:transaction.userId,
           time:time,
           status:"successful",
           totalServiceFee:parseFloat(data.data.amount)/100,
           typeOfReversal:'Service Failure'
-          reference:data.data.transfer_code
         }
       );
       const wallet = await models.wallet.findOne(
@@ -444,12 +443,11 @@ const webhook =async (req,res)=>{
               transactionId:transaction.id,
               transactionType:"debit",
               amount:parseFloat(data.data.amount)/100,
-              beneficiary:transaction.userId
+              beneficiary:transaction.userId,
               time:time,
               status:"successful",
               totalServiceFee:parseFloat(data.data.amount)/100,
               typeOfReversal:'Service Failure'
-              reference:data.data.transfer_code
             }
           );
           const wallet = await models.wallet.findOne(
@@ -479,12 +477,11 @@ const webhook =async (req,res)=>{
               transactionId:transaction.id,
               transactionType:"Credit",
               amount:parseFloat(data.data.amount)/100,
-              beneficiary:transaction.userId
+              beneficiary:transaction.userId,
               time:time,
               status:"successful",
               totalServiceFee:parseFloat(data.data.amount)/100,
               typeOfReversal:'Service Failure'
-              reference:data.data.transfer_code
             }
           );
           const wallet = await models.wallet.findOne(
@@ -506,46 +503,6 @@ const webhook =async (req,res)=>{
           )
         }
       }
-      await models.transaction.update(
-        {
-          status:"Reversed",
-          isRedemmed:true
-        },
-        {
-          where:{
-            reference:data.data.transfer_code
-          }
-        }
-      );
-      const createTransaction = await models.transaction.create(
-        {
-          id:uuid.v4(),
-          userId:transaction.userId,
-          transactionType:"credit",
-          amount:parseInt(parseInt(data.data.amount)/100),
-          time:data.data.recipient.created_at,
-          status:"Success",
-          reference:data.data.transfer_code
-        }
-      );
-      const wallet = await models.wallet.findOne(
-        {
-          where:{
-            userId:transaction.userId
-          }
-        }
-      );
-      const reverse = await models.wallet.update(
-        {
-          accountBalance:parseInt(parseFloat(wallet.accountBalance) + parseFloat(data.data.amount)/100),
-        },
-        {
-          where:
-          {
-            userId:transaction.userId
-          }
-        }
-      );
       responseData.message = "Transaction Reversed";
       responseData.status = true;
       responseData.data = null;
@@ -587,14 +544,7 @@ const flutterwaveWebhook = async (req,res)=>{
       {
         where:{
           reference:trxRef,
-          isRedemmed:true
-        }
-      }
-    );
-    const user = await models.user.findOne(
-      {
-        where:{
-          email:payload.data.customer.email
+          status:"successful"
         }
       }
     );
@@ -605,6 +555,13 @@ const flutterwaveWebhook = async (req,res)=>{
       responseData.data = undefined;
       return res.json(responseData)
     }
+    const user = await models.user.findOne(
+      {
+        where:{
+          email:payload.data.customer.email
+        }
+      }
+    );
     const transactionExist = await models.transaction.findOne(
       {
         where:{
@@ -613,72 +570,9 @@ const flutterwaveWebhook = async (req,res)=>{
       }
     );
     if(transactionExist){
-      const otherAccount = await models.otherAccount.findOne(
-        {
-          where:{
-            userId:transactionExist.userId,
-            status:true
-          }
-        }
-      );
-      if(otherAccount){
-        const accountType = await models.accountType.findOne(
-          {
-            where:{
-              id:otherAccount.accountTypeId
-            }
-          }
-        );
-        var options = {
-          'method': 'GET',
-          'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${apiKey}`
-        };
-        request(options, async function (error, response) { 
-          if (error) throw new Error(error);
-          let secondPayload = response.body;
-          secondPayload =  JSON.parse(secondPayload);
-           // secondPayload =  { NGN_USD: 0.00243 }
-          let amount = parseInt(secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(payload.data.amount))
-          if(accountType.serviceFee){
-            let serviceFee  =  parseInt(secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee));
-            amount =  amount - serviceFee;
-          }
-          await models.otherAccount.update(
-            {
-              status:0,
-              accountBalance:parseInt(otherAccount.accountBalance) + amount
-            },
-            {
-              where:{
-                id:otherAccount.id
-              }
-            }
-          )
-        });
-      } else {
-        const wallet = await models.wallet.findOne(
-          {
-            where:{
-              userId:transactionExist.userId,
-            }
-          }
-        );
-        const balance = parseInt(wallet.accountBalance) + parseInt(payload.data.amount);
-        await models.wallet.update(
-          {
-            accountBalance:balance
-          },
-          {
-            where:{
-              id:wallet.id
-            }
-          }
-        );
-      }
       await models.transaction.update(
         {
-          isRedemmed:true,
-          status:"successful",
+          status:"successful"
         },
         {
           where:{
@@ -696,7 +590,6 @@ const flutterwaveWebhook = async (req,res)=>{
           message:"funding of wallet",
           transactionType:"debit",
           beneficiary:"self",
-          isRedemmed:true,
           reference:trxRef,
           amount:parseInt(payload.data.amount),
           description:user.firstName + " funding his/her wallet to perform transaction",
@@ -704,68 +597,68 @@ const flutterwaveWebhook = async (req,res)=>{
           time: time
         }
       );
-      const otherAccount = await models.otherAccount.findOne(
+    }
+    const otherAccount = await models.otherAccount.findOne(
+      {
+        where:{
+          userId:user.id,
+          status:true
+        }
+      }
+    );
+    if(otherAccount){
+      const accountType = await models.accountType.findOne(
         {
           where:{
-            userId:user.id,
-            status:true
+            id:otherAccount.accountTypeId
           }
         }
       );
-      if(otherAccount){
-        const accountType = await models.accountType.findOne(
+      var options = {
+        'method': 'GET',
+        'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${apiKey}`
+      };
+      request(options, async function (error, response) { 
+        if (error) throw new Error(error);
+        let secondPayload = response.body;
+        secondPayload =  JSON.parse(secondPayload);
+         // secondPayload =  { NGN_USD: 0.00243 }
+        let amount = parseInt(secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(payload.data.amount))
+        if(accountType.serviceFee){
+          let serviceFee  =  parseInt(secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee));
+          amount =  amount - serviceFee;
+        }
+        await models.otherAccount.update(
           {
-            where:{
-              id:otherAccount.accountTypeId
-            }
-          }
-        );
-        var options = {
-          'method': 'GET',
-          'url': `https://free.currconv.com/api/v7/convert?q=NGN_${accountType.currencyCode}&compact=ultra&apiKey=${apiKey}`
-        };
-        request(options, async function (error, response) { 
-          if (error) throw new Error(error);
-          let secondPayload = response.body;
-          secondPayload =  JSON.parse(secondPayload);
-          // secondPayload =  { NGN_USD: 0.00243 }
-          let amount = parseInt(secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(payload.data.amount))
-          if(accountType.serviceFee){
-            let serviceFee  =  parseInt(secondPayload[`NGN_${accountType.currencyCode}`] * parseFloat(accountType.serviceFee));
-            amount =  amount - serviceFee;
-          }
-          await models.otherAccount.update(
-            {
-              status:0,
-              accountBalance:parseInt(otherAccount.accountBalance) + amount
-            },
-            {
-              where:{
-                id:otherAccount.id
-              }
-            }
-          )
-        });
-      } else {
-        const wallet = await models.wallet.findOne(
-          {
-            where:{
-              userId:user.id,
-            }
-          }
-        );
-        const balance = parseInt(wallet.accountBalance) + parseInt(payload.data.amount);
-        await models.wallet.update(
-          {
-            accountBalance:balance
+            status:0,
+            accountBalance:parseInt(otherAccount.accountBalance) + amount
           },
           {
             where:{
-              id:wallet.id
+              id:otherAccount.id
             }
           }
-        );
-      }
+        )
+      });
+    } else {
+      const wallet = await models.wallet.findOne(
+        {
+          where:{
+            userId:user.id,
+          }
+        }
+      );
+      const balance = parseInt(wallet.accountBalance) + parseInt(payload.data.amount);
+      await models.wallet.update(
+        {
+          accountBalance:balance
+        },
+        {
+          where:{
+            id:wallet.id
+          }
+        }
+      );
     }
     res.statusCode = 200;
     responseData.message = "Success";
@@ -793,8 +686,7 @@ const flutterwaveWebhook = async (req,res)=>{
     if(transaction){
       await transaction.update(
         {
-          status:"failed",
-          isRedemmed:false
+          status:"failed"
         },
         {
           where:{
@@ -818,7 +710,6 @@ const flutterwaveWebhook = async (req,res)=>{
         reference:trxRef,
         transactionType:"debit",
         beneficiary:"self",
-        isRedemmed:false,
         amount:parseInt(payload.data.amount),
         description:user.firstName + " funding his/her wallet to perform transaction",
         status:"failed",
@@ -834,8 +725,7 @@ const flutterwaveWebhook = async (req,res)=>{
   if(payload.event=="transfer.completed" && payload.data.status =="SUCCESSFUL"){
     await models.transaction.update(
       {
-        status:"success",
-        isRedemmed:true, 
+        status:"successful"
       },
       {
         where:{
@@ -858,8 +748,7 @@ const flutterwaveWebhook = async (req,res)=>{
     );
     await models.transaction.update(
       {
-        status:"Failed",
-        isRedemmed:true
+        status:"Failed"
       },
       {
         where:{
@@ -868,15 +757,17 @@ const flutterwaveWebhook = async (req,res)=>{
       }
     );
     let reference = helpers.generateOTP()+"renew" ;
-    const createTransaction = await models.transaction.create(
+    const createTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:transaction.userId,
+        transactionId:transaction.id,
         transactionType:"credit",
         amount:parseInt(payload.data.amount),
         time:payload.data.created_at,
-        status:"Success",
-        reference:reference
+        status:"successful",
+        beneficiary:transaction.userId,
+        totalServiceFee:parseInt(payload.data.amount),
+        typeOfReversal:'Service Failure'
       }
     );
     const wallet = await models.wallet.findOne(
@@ -927,7 +818,7 @@ const monnifyWebhook = async (req,res)=>{
       {
         where:{
           reference:trxRef,
-          isRedemmed:true
+          status:"successful"
         }
       }
     );
@@ -945,23 +836,42 @@ const monnifyWebhook = async (req,res)=>{
         }
       }
     );
-    let time = new Date();
-    time = time.toLocaleString()
-    await models.transaction.create(
+    const transactionExist = await models.transaction.findOne(
       {
-        id:uuid.v4(),
-        userId:user.id,
-        message:"funding of wallet",
-        reference:trxRef,
-        transactionType:"debit",
-        beneficiary:"self",
-        isRedemmed:true,
-        amount:parseInt(payload.amountPaid),
-        description:payload.firstName + " funding his/her wallet to perform transaction",
-        status:"successful",
-        time: time
+        where:{
+          reference:trxRef
+        }
       }
     );
+    if(transactionExist){
+      await models.transaction.update(
+        {
+          status:"successful"
+        },
+        {
+          where:{
+            reference:trxRef
+          }
+        }
+      );
+    }else{
+      let time = new Date();
+      time = time.toLocaleString()
+      await models.transaction.create(
+        {
+          id:uuid.v4(),
+          userId:user.id,
+          message:"funding of wallet",
+          reference:trxRef,
+          transactionType:"debit",
+          beneficiary:"self",
+          amount:parseInt(payload.amountPaid),
+          description:payload.firstName + " funding his/her wallet to perform transaction",
+          status:"successful",
+          time: time
+        }
+      );
+    }
     const otherAccount = await models.otherAccount.findOne(
       {
         where:{
@@ -1072,8 +982,7 @@ const monnifyWebhook = async (req,res)=>{
     if(transaction){
       await models.transaction.update(
         {
-          status:"failed",
-          isRedemmed:false
+          status:"failed"
         },
         {
           where:{
@@ -1086,24 +995,24 @@ const monnifyWebhook = async (req,res)=>{
       responseData.status = true;
       responseData.data = undefined;
       return res.json(responseData)
+    }else{
+      let time = new Date();
+      time = time.toLocaleString()
+      await models.transaction.create(
+        {
+          id:uuid.v4(),
+          userId:user.id,
+          message:"funding of wallet",
+          reference:trxRef,
+          transactionType:"debit",
+          beneficiary:"self",
+          amount:parseInt(payload.amountPaid),
+          description:user.firstName + " funding his/her wallet to perform transaction",
+          status:"failed",
+          time: time
+        }
+      );
     }
-    let time = new Date();
-    time = time.toLocaleString()
-    await models.transaction.create(
-      {
-        id:uuid.v4(),
-        userId:user.id,
-        message:"funding of wallet",
-        reference:trxRef,
-        transactionType:"debit",
-        beneficiary:"self",
-        isRedemmed:false,
-        amount:parseInt(payload.amountPaid),
-        description:user.firstName + " funding his/her wallet to perform transaction",
-        status:"failed",
-        time: time
-      }
-    );
     res.statusCode = 200;
     responseData.message = "Success";
     responseData.status = true;
@@ -1121,8 +1030,7 @@ const monnifyEventWebhook = async (req,res)=>{
     let trxReference = payload.eventData.reference;
     await models.transaction.update(
       {
-        status:"success",
-        isRedemmed:true, 
+        status:"successful"
       },
       {
         where:{
@@ -1146,8 +1054,7 @@ const monnifyEventWebhook = async (req,res)=>{
     );
     await models.transaction.update(
       {
-        status:"Failed",
-        isRedemmed:true
+        status:"Failed"
       },
       {
         where:{
@@ -1156,15 +1063,20 @@ const monnifyEventWebhook = async (req,res)=>{
       }
     );
     let reference = helpers.generateOTP()+"renew";
-    const createTransaction = await models.transaction.create(
+    let time = new Date();
+    time = time.toLocaleString();
+    const createTransaction = await models.reversedTransaction.create(
       {
         id:uuid.v4(),
-        userId:transaction.userId,
+        transactionId:transaction.id,
         transactionType:"credit",
         amount:parseInt(payload.eventData.amount),
-        time:payload.eventData.completedOn,
-        status:"Success",
-        reference:reference
+        time:time,
+        totalServiceFee:parseInt(payload.eventData.amount),
+        beneficiary:transaction.userId,
+        status:"successful",
+        reference:reference,
+        typeOfReversal:'Service failure'
       }
     );
     const wallet = await models.wallet.findOne(
