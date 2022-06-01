@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     remainingBalance: DataTypes.INTEGER,
     isPaid: DataTypes.BOOLEAN,
     dueDate:DataTypes.DATE,
-    hasPenalty:DataTypes.BOOLEAN,
+    hasPenalty:DataTypes.BOOLEAN
   }, {
     sequelize,
     paranoid:true,

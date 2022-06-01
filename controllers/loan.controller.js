@@ -508,6 +508,16 @@ const approveALoan = async(req,res)=>{
       }
     }
   );
+  const addon = JSON.stringify({
+    amount:loan.amount,
+    interestRate: loanCategory.interestRate,
+    interestAmount:interestAmount,
+    amountToBePaid:amountToBePaid,
+    hasExpiryFee:loanCategory.hasExpiryFee,
+    expiryFeeAmount:loanCategory.expiryFeeAmount,
+    expiryPercentage:loanCategory.expiryPercentage,
+    dueDate:date
+  })
   const transaction = await models.transaction.create(
     {
       id:uuid.v4(),
@@ -517,6 +527,9 @@ const approveALoan = async(req,res)=>{
       description:user.firstName + " account funded after loan is approved",
       userId:loan.userId,
       reference:trxRef,
+      totalServiceFee:parseInt(loan.amount),
+      addon:.addons,
+      profit:amountToBePaid - parseInt(loan.amount)
       amount:parseInt(loan.amount),
       status:"successful",
       time: time
@@ -617,6 +630,12 @@ const userPayLoan = async(req,res)=>{
   if(loan.isPaid == true){
     responseData.status = false;
     responseData.message = "loan is paid";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  if(amount > parseInt(loan.amountToBePaid) || amount < 0){
+    responseData.status = false;
+    responseData.message = "Invalid Amount";
     responseData.data = undefined;
     return res.json(responseData);
   }
