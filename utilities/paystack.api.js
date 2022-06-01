@@ -99,14 +99,14 @@ async function chargeAuthorization(payload,paystack){
         const transaction = await models.transaction.create(
           {
             id:uuid.v4(),
-            transactionType:"debit",
-            message: message ||"funding of wallet",
-            beneficiary:beneficiary || "self",
+            transactionType:"Credit",
+            message: message,
+            beneficiary:beneficiary ,
             description:payload.firstName + " funding his/her wallet to perform transaction",
             userId:payload.userId,
             reference:response.data.reference,
             amount:payload.amount,
-            totalServiceFee:paylaod.totalServiceFee,
+            totalServiceFee:payload.totalServiceFee,
             addon:payload.addons,
             profit:payload.profit,
             status:"pending",
@@ -151,13 +151,13 @@ async function verifyPayment(payload,paystack,respond){
       const response = JSON.parse(data)
       if(response.status === true && response.message =="Verification successful"){
         if(response.data.status == "success"){
-            const reference = response.data.reference;
+            const reference = payload.reference; //response.data.reference
             const authorization = response.data.authorization;
             const transaction = await models.transaction.findOne(
               {
                 where:{
                   reference:reference,
-                  isRedemmed:false
+                  status:"successful"
                 }
               }
             );
@@ -232,7 +232,7 @@ async function verifyPayment(payload,paystack,respond){
                     }
                   }
                 );
-                }
+              }
               const authCodeExist = await models.creditCard.findOne(
                 {
                   where:{
@@ -266,34 +266,91 @@ async function verifyPayment(payload,paystack,respond){
             return respond.json(responseData); 
         } else {
           const reference = response.data.reference;
-           const wallet = await models.wallet.findOne(
-             {
-               where:{
-                 reference:reference
-               }
-             }
-           );
-            const transaction = await models.transaction.findOne(
+          const transaction = await models.transaction.findOne(
+            {
+              where:{
+                reference:reference
+              }
+            }
+          );
+          if(!transaction){
+            let time = new Date();
+            time = time.toLocaleString()
+            await transaction.create(
+              {
+                id:uuid.v4(),
+                userId:user.id,
+                message:"funding of wallet",
+                reference:trxRef,
+                transactionType:"Credit",
+                beneficiary:"self",
+                amount:parseInt(response.data.amount) /100,
+                totalServiceFee:parseInt(response.data.amount) /100,
+                profit:0,
+                description:"Wallet funding",
+                status:"failed",
+                time: time
+              }
+            );
+          }
+          if(transaction.status ==="successful"){
+            let time = new Date();
+            time = time.toLocaleString()
+            const createReversedTransaction = await models.reversedTransaction.create(
+              {
+                id:uuid.v4(),
+                transactionId:transaction.id,
+                transactionType:'Debit',
+                amount:transaction.amount,
+                beneficiary:transaction.userId,
+                time:time,
+                status:"successful",
+                totalServiceFee:transaction.totalServiceFee,
+                typeOfReversal:'Service failure'
+              }
+            );
+            const wallet = await models.wallet.findOne(
               {
                 where:{
-                  reference:reference
+                  userId:payload.userId,
                 }
               }
             );
-            await transaction.update(
+            const balance = parseInt(wallet.accountBalance) - transaction.totalServiceFee ;
+            await models.wallet.update(
+              {
+                accountBalance:balance
+              },
+              {
+                where:{
+                  id:wallet.id
+                }
+              }
+            );
+            responseData.message = "charge failed";
+            responseData.status = true;
+            responseData.data = response;
+            return res.json(responseData)
+          }else if(transaction.status ==="pending"){
+            await models.transaction.update(
               {
                 status:"failed"
               },
               {
                 where:{
-                  reference:reference
+                  id:transaction.id
                 }
               }
             );
-            responseData.status = 200;
             responseData.message = "charge failed";
-            responseData.data = response
-            return respond.json(responseData);
+            responseData.status = true;
+            responseData.data = response;
+            return res.json(responseData)
+          }
+          responseData.status = 200;
+          responseData.message = "charge failed";
+          responseData.data = response
+          return respond.json(responseData);
         }
       }
       responseData.status = 200;

@@ -64,7 +64,6 @@ async function verifyPayment(payload,flutterwave,res){
     if (error) throw new Error(error);
     let response = data.body;
     response =  JSON.parse(response)
-    console.log(response);
     if(response.status == "success" && response.message == "Transaction fetched successfully"){
       if(response.data.status=="successful"){
         res.statusCode = 200;
@@ -73,7 +72,6 @@ async function verifyPayment(payload,flutterwave,res){
           {
             where:{
               reference:trxRef,
-              // isRedemmed:true
               status:"successful"
             }
           }
@@ -85,21 +83,14 @@ async function verifyPayment(payload,flutterwave,res){
           responseData.data = response;
           return res.json(responseData)
         }
-        let time = new Date();
-        time = time.toLocaleString()
-        await models.transaction.create(
+        await models.transaction.update(
           {
-            id:uuid.v4(),
-            userId:payload.userId,
-            message:"funding of wallet",
-            reference:trxRef,
-            transactionType:"debit",
-            beneficiary:"self",
-            isRedemmed:true,
-            amount:parseInt(response.data.amount),
-            description:payload.firstName + " funding his/her wallet to perform transaction",
-            status:"successful",
-            time:time
+            status:"successful"
+          },
+          {
+            where:{
+              reference:trxRef
+            }
           }
         );
         const otherAccount = await models.otherAccount.findOne(
@@ -177,26 +168,44 @@ async function verifyPayment(payload,flutterwave,res){
         const transaction = await models.transaction.findOne(
           {
             where:{
-              reference:trxRef,
-              isRedemmed:true
+              reference:trxRef
             }
           }
         );
-        if(transaction){
+        if(!transaction){
           let time = new Date();
           time = time.toLocaleString()
-          await transaction.update(
+          await transaction.create(
             {
+              id:uuid.v4(),
+              userId:user.id,
+              message:"funding of wallet",
+              reference:trxRef,
+              transactionType:"Credit",
               beneficiary:"self",
               amount:parseInt(response.data.amount),
+              totalServiceFee:parseInt(response.data.amount),
+              profit:0,
               description:payload.firstName + " funding his/her wallet to perform transaction",
               status:"failed",
-              time:time
-            },
+              time: time
+            }
+          );
+        }
+        if(transaction.status ==="successful"){
+          let time = new Date();
+          time = time.toLocaleString()
+          const createReversedTransaction = await models.reversedTransaction.create(
             {
-              where:{
-                reference:trxRef,
-              }
+              id:uuid.v4(),
+              transactionId:transaction.id,
+              transactionType:'Debit',
+              amount:transaction.amount,
+              beneficiary:transaction.userId,
+              time:time,
+              status:"successful",
+              totalServiceFee:transaction.totalServiceFee,
+              typeOfReversal:'Service failure'
             }
           );
           const wallet = await models.wallet.findOne(
@@ -221,23 +230,22 @@ async function verifyPayment(payload,flutterwave,res){
           responseData.status = true;
           responseData.data = response;
           return res.json(responseData)
+        }else if(transaction.status ==="pending"){
+          await models.transaction.update(
+            {
+              status:"failed"
+            },
+            {
+              where:{
+                id:transaction.id
+              }
+            }
+          );
+          responseData.message = "Success";
+          responseData.status = true;
+          responseData.data = response;
+          return res.json(responseData)
         }
-        let time = new Date();
-        time = time.toLocaleString()
-        await transaction.create(
-          {
-            id:uuid.v4(),
-            userId:user.id,
-            message:"funding of wallet",
-            reference:trxRef,
-            transactionType:"debit",
-            beneficiary:"self",
-            amount:parseInt(response.data.amount),
-            description:payload.firstName + " funding his/her wallet to perform transaction",
-            status:"failed",
-            time: time
-          }
-        );
         responseData.message = "Success";
         responseData.status = true;
         responseData.data = response;

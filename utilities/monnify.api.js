@@ -51,7 +51,7 @@ async function validateBvn(payload,monnify){
     }
   });
 }
-//to be modified
+
 async function validatePayment(payload,monnify,res){
   let apiKey,privateKey;
   if(monnify.privateKey){
@@ -82,7 +82,7 @@ async function validatePayment(payload,monnify,res){
           {
             where:{
               reference:trxRef,
-              isRedemmed:true
+              status:"successful"
             }
           }
         );
@@ -103,7 +103,8 @@ async function validatePayment(payload,monnify,res){
             reference:trxRef,
             transactionType:"debit",
             beneficiary:"self",
-            isRedemmed:true,
+            totalServiceFee:response.responseBody.amount,
+            profit:0,
             amount:response.responseBody.amount,
             description:payload.firstName + " funding his/her wallet to perform transaction",
             status:"successful",
@@ -174,6 +175,88 @@ async function validatePayment(payload,monnify,res){
         }
         res.statusCode = 200;
         responseData.message = "Success";
+        responseData.status = true;
+        responseData.data = response;
+        return res.json(responseData)
+      }
+      const reference = payload.reference;
+      const transaction = await models.transaction.findOne(
+        {
+          where:{
+            reference:reference
+          }
+        }
+      );
+      if(!transaction){
+        let time = new Date();
+        time = time.toLocaleString()
+        await transaction.create(
+          {
+            id:uuid.v4(),
+            userId:user.id,
+            message:"funding of wallet",
+            reference:trxRef,
+            transactionType:"Credit",
+            beneficiary:"self",
+            amount:response.responseBody.amount,
+            totalServiceFee:response.responseBody.amount,
+            profit:0,
+            description:"Wallet funding",
+            status:"failed",
+            time: time
+          }
+        );
+      }
+      if(transaction.status ==="successful"){
+        let time = new Date();
+        time = time.toLocaleString()
+        const createReversedTransaction = await models.reversedTransaction.create(
+          {
+            id:uuid.v4(),
+            transactionId:transaction.id,
+            transactionType:'Debit',
+            amount:transaction.amount,
+            beneficiary:transaction.userId,
+            time:time,
+            status:"successful",
+            totalServiceFee:transaction.totalServiceFee,
+            typeOfReversal:'Service failure'
+          }
+        );
+        const wallet = await models.wallet.findOne(
+          {
+            where:{
+              userId:payload.userId,
+            }
+          }
+        );
+        const balance = parseInt(wallet.accountBalance) - transaction.totalServiceFee ;
+        await models.wallet.update(
+          {
+            accountBalance:balance
+          },
+          {
+            where:{
+              id:wallet.id
+            }
+          }
+        );
+        responseData.message = "charge failed";
+        responseData.status = true;
+        responseData.data = response;
+        return res.json(responseData)
+      }else if(transaction.status ==="pending"){
+        await models.transaction.update(
+          {
+            status:"failed"
+          },
+          {
+            where:{
+              id:transaction.id
+            }
+          }
+        );
+        responseData.message = "charge failed";
         responseData.status = true;
         responseData.data = response;
         return res.json(responseData)

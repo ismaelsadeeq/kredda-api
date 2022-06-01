@@ -43,8 +43,8 @@ const chargeSavedCreditCard = async (req,res)=>{
       authorizationCode : creditCard.authCode,
       userId:user.id,
       firstName:user.firstName,
-      message:null,
-      beneficiary:null
+      message:"funding of wallet",
+      beneficiary:"self"
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -78,15 +78,16 @@ const initiateCardChargePaystack = async (req,res)=>{
   const transaction = await models.transaction.create(
     {
       id:uuid.v4(),
-      transactionType:"debit",
+      transactionType:"Credit",
       userId:user.id,
       message:"funding of wallet",
       reference:reference,
       beneficiary:"self",
       description:user.firstName + " funding his/her wallet to perform transaction",
       amount:amount,
-      isRedemmed:false,
-      status:"initiated",
+      totalServiceFee:amount,
+      profit:0,
+      status:"pending",
       time: time
     }
   );
@@ -134,7 +135,8 @@ const chargeDefaultCreditCard = async (req,res)=>{
       authorizationCode : creditCard.authCode,
       userId:user.id,
       firstName:user.firstName,
-      message:null
+      message:"funding of wallet",
+      beneficiary:"self"
     }
     await paystackApi.chargeAuthorization(payload,payment);
     responseData.status = 200;
