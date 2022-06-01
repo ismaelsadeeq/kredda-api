@@ -276,6 +276,14 @@ const invest = async (req,res)=>{
         status:false
       }
     );
+    const addon = JSON.stringify({
+      interestRate:investmentPlan.interestRate,
+      interestAmount:interestAmount,
+      pricePerUnit:investmentPlan.pricePerUnit,
+      amount:amount,
+      unit:unit,
+      payout:payout,
+    })
     const payload = {
       amount : amount,
       email : user.email,
@@ -284,6 +292,9 @@ const invest = async (req,res)=>{
       firstName:user.firstName,
       message:"investment",
       beneficiary:createInvestment.id,
+      addon:addon,
+      profit:0,
+      totalServiceFee:amount
     }
     await paystackApi.chargeAuthorization(payload,payment)
     responseData.status = 200;
@@ -359,6 +370,14 @@ const walletpayment = async (user,amount,trxRef,time,investmentPlan,res)=>{
       status:true
     }
   );
+  const addon = JSON.stringify({
+    interestRate:investmentPlan.interestRate,
+    interestAmount:interestAmount,
+    pricePerUnit:investmentPlan.pricePerUnit,
+    amount:amount,
+    unit:unit,
+    payout:payout,
+  })
   const transaction = await models.transaction.create(
     {
       id:uuid.v4(),
@@ -369,6 +388,9 @@ const walletpayment = async (user,amount,trxRef,time,investmentPlan,res)=>{
       userId:user.id,
       reference:trxRef,
       amount:amount,
+      addon:addon,
+      totalServiceFee:amount,
+      profit:0,
       status:"successful",
       time: time
     }

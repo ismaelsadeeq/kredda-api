@@ -51,7 +51,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       addon: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(1234)
       },
       createdAt: {
         allowNull: false,

@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     totalServiceFee: DataTypes.INTEGER,
     description: DataTypes.STRING,
     profit: DataTypes.INTEGER,
-    addon:DataTypes.STRING
+    addon: DataTypes.STRING(1234)
   }, {
     sequelize,
     paranoid:true,
