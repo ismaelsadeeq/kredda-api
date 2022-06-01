@@ -74,7 +74,6 @@ async function validatePayment(payload,monnify,res){
     if (error) throw new Error(error);
     let response = data.body;
     response = JSON.parse(response)
-    console.log(response);
     if(response.requestSuccessful==true && response.responseMessage =="success"){
       if(response.responseBody.paymentStatus ==="PAID"){
         const trxRef = response.responseBody.transactionReference;
@@ -302,7 +301,6 @@ async function initiateATransfer(payload,monnify,res){
   request(options, async function (error, data) { 
     if (error) throw new Error(error);
     let response = data.body;
-    console.log(response);
     let date = new Date();
     date = date.toLocaleString();
     if(response.responseMessage == "Transaction successful"){
@@ -372,7 +370,6 @@ async function getTransfer(payload,monnify,res){
     if (error) throw new Error(error);
     let response = data.body;
     response = JSON.parse(response)
-    console.log(response);
     if(response.requestSuccessful==true && response.responseMessage=="success"){
       if(response.responseBody.status =="SUCCESS"){
         await models.transaction.update(
@@ -391,21 +388,68 @@ async function getTransfer(payload,monnify,res){
         responseData.data = response;
         return res.json(responseData)
       }
-      await models.transaction.update(
+      const transaction =  await models.transaction.findOne(
         {
-          status:response.data.status,
-        },
-        {
-          where:
-          {
+          where:{
             reference:response.responseBody.reference
           }
         }
       )
-      responseData.status = true;
-      responseData.message = "completed";
-      responseData.data = response;
-      return res.json(responseData)
+      if(transaction.status ==="successful"){
+        let time = new Date();
+        time = time.toLocaleString()
+        const createReversedTransaction = await models.reversedTransaction.create(
+          {
+            id:uuid.v4(),
+            transactionId:transaction.id,
+            transactionType:'Credit',
+            amount:transaction.amount,
+            beneficiary:transaction.userId,
+            time:time,
+            status:"successful",
+            totalServiceFee:transaction.totalServiceFee,
+            typeOfReversal:'Service failure'
+          }
+        );
+        const wallet = await models.wallet.findOne(
+          {
+            where:{
+              userId:transaction.userId
+            }
+          }
+        );
+        const balance = parseInt(wallet.accountBalance) + (parseInt(response.responseBody.amount));
+        await models.wallet.update(
+          {
+            accountBalance:balance
+          },
+          {
+            where:{
+              id:wallet.id
+            }
+          }
+        );
+        responseData.status = true;
+        responseData.message = "charge failed";
+        responseData.data = response;
+        return respond.json(responseData)
+      }
+      if(transaction.status ==="pending"){
+        await models.transaction.update(
+          {
+            status:"failed",
+          },
+          {
+            where:{
+              reference:response.responseBody.reference
+            }
+          }
+        )
+        responseData.status = false;
+        responseData.message = "charge failed";
+        responseData.data = response;
+        return respond.json(responseData)
+      }
     }
     responseData.status = true;
     responseData.message = "something went wrong";

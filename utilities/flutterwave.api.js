@@ -521,7 +521,7 @@ async function validateTransfer(flutterwave,data,responsee){
       const transaction =  await models.transaction.findOne(
         {
           where:{
-            beneficiary:payload.data.reference
+            reference:payload.data.reference
           }
         }
       )
@@ -571,7 +571,7 @@ async function validateTransfer(flutterwave,data,responsee){
           },
           {
             where:{
-              beneficiary:payload.data.reference
+              reference:payload.data.reference
             }
           }
         )
