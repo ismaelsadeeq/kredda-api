@@ -109,8 +109,7 @@ const updateInvestment = async (transaction)=>{
 const partnership = async (transaction,res)=>{
   await transaction.update(
     {
-      status:"successful",
-      isRedemmed:true,
+      status:"successful"
     },
     {
       where:{
@@ -166,13 +165,12 @@ const webhook =async (req,res)=>{
           }
         }
       );
-      if(transaction.isRedemmed == false){
+      if(transaction){
         if(transaction.message == "payment of loan"){
           await updateLoan(transaction);
           await transaction.update(
             {
-              status:"successful",
-              isRedemmed:true,
+              status:"successful"
             },
             {
               where:{
@@ -190,8 +188,7 @@ const webhook =async (req,res)=>{
           await updateInvestment(transaction);
           await transaction.update(
             {
-              status:"successful",
-              isRedemmed:true,
+              status:"successful"
             },
             {
               where:{
@@ -322,7 +319,6 @@ const webhook =async (req,res)=>{
       await transaction.update(
         {
           status:"successful",
-          isRedemmed:true,
         },
         {
           where:{
@@ -366,8 +362,7 @@ const webhook =async (req,res)=>{
     if(data.event ==="transfer.success"){
       await models.transaction.update(
         {
-          status:"success",
-          isRedemmed:true, 
+          status:"successful"
         },
         {
           where:{
@@ -385,7 +380,6 @@ const webhook =async (req,res)=>{
       await models.transaction.update(
         {
           status:"Failed",
-          isRedemmed:true
         },
         {
           where:{
@@ -393,14 +387,19 @@ const webhook =async (req,res)=>{
           }
         }
       );
-      const createTransaction = await models.transaction.create(
+      let time = new Date();
+      time = time.toLocaleString();
+      const createTransaction = await models.reversedTransaction.create(
         {
           id:uuid.v4(),
-          userId:transaction.userId,
+          transactionId:transaction.id,
           transactionType:"credit",
           amount:parseFloat(data.data.amount)/100,
-          time:data.data.recipient.created_at,
-          status:"Success",
+          beneficiary:transaction.userId
+          time:time,
+          status:"successful",
+          totalServiceFee:parseFloat(data.data.amount)/100,
+          typeOfReversal:'Service Failure'
           reference:data.data.transfer_code
         }
       );
@@ -435,6 +434,78 @@ const webhook =async (req,res)=>{
           }
         }
       );
+      let checkTrx = transaction.transactionType;
+      checkTrx = checkTrx.toLowerCase();
+      if(checkTrx ==="credit"){
+        if(transaction.status ==="successful"){
+          const createTransaction = await models.reversedTransaction.create(
+            {
+              id:uuid.v4(),
+              transactionId:transaction.id,
+              transactionType:"debit",
+              amount:parseFloat(data.data.amount)/100,
+              beneficiary:transaction.userId
+              time:time,
+              status:"successful",
+              totalServiceFee:parseFloat(data.data.amount)/100,
+              typeOfReversal:'Service Failure'
+              reference:data.data.transfer_code
+            }
+          );
+          const wallet = await models.wallet.findOne(
+            {
+              where:{
+                userId:transaction.userId,
+              }
+            }
+          )
+          await models.wallet.update(
+            {
+              accountBalance:parseInt(parseFloat(wallet.accountBalance) - parseFloat(data.data.amount)/100),
+            },
+            {
+              where:{
+                userId:transaction.userId,
+              }
+            }
+          )
+        }
+      }
+      if(checkTrx ==="debit"){
+        if(transaction.status ==="successful"){
+          const createTransaction = await models.reversedTransaction.create(
+            {
+              id:uuid.v4(),
+              transactionId:transaction.id,
+              transactionType:"Credit",
+              amount:parseFloat(data.data.amount)/100,
+              beneficiary:transaction.userId
+              time:time,
+              status:"successful",
+              totalServiceFee:parseFloat(data.data.amount)/100,
+              typeOfReversal:'Service Failure'
+              reference:data.data.transfer_code
+            }
+          );
+          const wallet = await models.wallet.findOne(
+            {
+              where:{
+                userId:transaction.userId,
+              }
+            }
+          )
+          await models.wallet.update(
+            {
+              accountBalance:parseInt(parseFloat(wallet.accountBalance) + parseFloat(data.data.amount)/100),
+            },
+            {
+              where:{
+                userId:transaction.userId,
+              }
+            }
+          )
+        }
+      }
       await models.transaction.update(
         {
           status:"Reversed",
