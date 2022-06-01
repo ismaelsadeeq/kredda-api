@@ -479,6 +479,10 @@ const initiateATransfer = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData)
   }
+  let digits = helpers.generateOTP()
+  let name = user.firstName;
+  let firstDigit = name.substring(0,1);
+  let trxRef = `TRF-${digits}${firstDigit}`
   if(payment.siteName =='paystack'){
     if(!bankDetail.recipientCode){
       res.statusCode = 200
@@ -503,19 +507,17 @@ const initiateATransfer = async (req,res)=>{
         attributes:['recipientCode']
       }
     )
+    let totalServiceFee = amountInNaira + parseInt(process.env.WIDTHRAW_CHARGE);
     const payload = {
       amount:amountInNaira * 100,
       recipientCode:reciepientCode,
-      reason:data.widthrawalReason
+      reason:data.widthrawalReason,
+      totalServiceFee:totalServiceFee * 100,
+      trxRef:trxRef
     }
     return await paystackApi.initiateATransfer(payment,payload,user.id,res);
-    
   }
   if(payment.siteName =='flutterwave'){
-    let digits = helpers.generateOTP()
-    let name = user.firstName;
-    let firstDigit = name.substring(0,1);
-    let trxRef = `payment-${digits}${firstDigit}`
     await models.wallet.update(
       {
         accountBalance:parseInt(wallet.accountBalance) - amountInNaira,
@@ -535,10 +537,6 @@ const initiateATransfer = async (req,res)=>{
     return await flutterwaveApi.initiateATransfer(payment,payload,res);
   }
   if(payment.siteName =='monnify'){
-    let digits = helpers.generateOTP()
-    let name = user.firstName;
-    let firstDigit = name.substring(0,1);
-    let trxRef = `payment-${digits}${firstDigit}`
     await models.wallet.update(
       {
         accountBalance:parseInt(wallet.accountBalance) - amountInNaira,

@@ -434,7 +434,6 @@ async function initiateATransfer(flutterwave,data,responsee){
   request(options, async function (error, response) { 
     if (error) throw new Error(error);
     let payload = response.body;
-    console.log(payload)
     if(payload.status==="success"&& payload.message==="Transfer Queued Successfully"){
         let date = new Date();
         date = date.toLocaleString();
@@ -449,7 +448,6 @@ async function initiateATransfer(flutterwave,data,responsee){
             amount:data.amount,
             time:date,
             status:"pending",
-            isRedemmed:false,
             reference:payload.data.reference,
           }
         );
@@ -459,9 +457,25 @@ async function initiateATransfer(flutterwave,data,responsee){
         responseData.data = payload;
         return responsee.json(responseData)
     }
+    let date = new Date();
+    date = date.toLocaleString();
+    const createTransaction = await models.transaction.create(
+      {
+        id:uuid.v4(),
+        userId:data.userId,
+        transactionType:"debit",
+        message:"payment",
+        beneficiary:payload.data.id,
+        description:"wallet fund widthrawal",
+        amount:data.amount,
+        time:date,
+        status:"failed",
+        reference:payload.data.reference,
+      }
+    );
     responsee.statusCode = 200
     responseData.status = false;
-    responseData.message = "something went wrong";
+    responseData.message = "transfer failed";
     responseData.data = payload;
     return responsee.json(responseData)
   });
@@ -485,37 +499,92 @@ async function validateTransfer(flutterwave,data,responsee){
   request(options, async function (error, response) { 
     if (error) throw new Error(error);
     let payload = response.body;
-    console.log(payload)
     if(payload.status==="success"&& payload.message==="Transfer fetched"){
-      await models.transaction.update(
-        {
-          status:payload.data.status,
-        },
-        {
-          where:
+      if(payload.data.status ==="SUCCESSFUL"){
+        await models.transaction.update(
           {
-            reference:payload.data.reference
+            status:"successful",
+          },
+          {
+            where:
+            {
+              reference:payload.data.reference
+            }
+          }
+        )
+        responsee.statusCode = 200
+        responseData.status = true;
+        responseData.message = "completed";
+        responseData.data = payload;
+        return responsee.json(responseData)
+      }
+      const transaction =  await models.transaction.findOne(
+        {
+          where:{
+            beneficiary:payload.data.reference
           }
         }
       )
+      if(transaction.status ==="successful"){
+        let time = new Date();
+        time = time.toLocaleString()
+        const createReversedTransaction = await models.reversedTransaction.create(
+          {
+            id:uuid.v4(),
+            transactionId:transaction.id,
+            transactionType:'Credit',
+            amount:transaction.amount,
+            beneficiary:transaction.userId,
+            time:time,
+            status:"successful",
+            totalServiceFee:transaction.totalServiceFee,
+            typeOfReversal:'Service failure'
+          }
+        );
+        const wallet = await models.wallet.findOne(
+          {
+            where:{
+              userId:transaction.userId
+            }
+          }
+        );
+        const balance = parseInt(wallet.accountBalance) + (parseInt(payload.data.amount));
+        await models.wallet.update(
+          {
+            accountBalance:balance
+          },
+          {
+            where:{
+              id:wallet.id
+            }
+          }
+        );
+        responseData.status = true;
+        responseData.message = "charge failed";
+        responseData.data = response;
+        return respond.json(responseData)
+      }
+      if(transaction.status ==="pending"){
+        await models.transaction.update(
+          {
+            status:"failed",
+          },
+          {
+            where:{
+              beneficiary:payload.data.reference
+            }
+          }
+        )
+        responseData.status = false;
+        responseData.message = "charge failed";
+        responseData.data = response;
+        return respond.json(responseData)
+      }
       responsee.statusCode = 200
       responseData.status = true;
       responseData.message = "completed";
       responseData.data = payload;
       return responsee.json(responseData)
-    }
-    if(payload.data && payload.reference){
-      await models.transaction.update(
-        {
-          status:payload.data.status,
-        },
-        {
-          where:
-          {
-            reference:payload.data.reference
-          }
-        }
-      )
     }
     responsee.statusCode = 200
     responseData.status = false;

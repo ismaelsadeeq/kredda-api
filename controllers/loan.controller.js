@@ -528,8 +528,8 @@ const approveALoan = async(req,res)=>{
       userId:loan.userId,
       reference:trxRef,
       totalServiceFee:parseInt(loan.amount),
-      addon:.addons,
-      profit:amountToBePaid - parseInt(loan.amount)
+      addon:addons,
+      profit:amountToBePaid - parseInt(loan.amount),
       amount:parseInt(loan.amount),
       status:"successful",
       time: time

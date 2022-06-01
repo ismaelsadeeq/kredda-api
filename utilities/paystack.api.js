@@ -1031,11 +1031,10 @@ async function initiateATransfer(paystack,payload,userId,respond){
   }else{
     privateKey = paystack.testPrivateKey
   }
-  console.log(payload);
   const https = require('https')
   const params = JSON.stringify({
     "source": "balance",
-    "amount": payload.amount,
+    "amount": payload.totalServiceFee,
     "recipient": payload.recipientCode,
     "reason": payload.reason
   })
@@ -1070,7 +1069,8 @@ async function initiateATransfer(paystack,payload,userId,respond){
             amount:parseFloat(payload.amount) / 100,
             time:date,
             status:"pending",
-            isRedemmed:false,
+            totalServiceFee:parseFloat(payload.totalServiceFee) / 100,
+            profit:totalServiceFee - amount,
             reference:response.data.transfer_code,
           }
         );
@@ -1079,8 +1079,26 @@ async function initiateATransfer(paystack,payload,userId,respond){
         responseData.data = response;
         return respond.json(responseData)
       }
-      responseData.status = true;
-      responseData.message = "something went wrong";
+      let date = new Date();
+        date = date.toLocaleString();
+        const createTransaction = await models.transaction.create(
+          {
+            id:uuid.v4(),
+            userId:userId,
+            transactionType:"debit",
+            message:"payment",
+            beneficiary:response.data.reference,
+            description:"wallet fund widthrawal",
+            amount:parseFloat(payload.amount) / 100,
+            time:date,
+            status:"failed",
+            totalServiceFee:parseFloat(payload.totalServiceFee) / 100,
+            profit:totalServiceFee - amount,
+            reference:response.data.transfer_code,
+          }
+        );
+      responseData.status = false;
+      responseData.message = "charge failed";
       responseData.data = response;
       return respond.json(responseData)
     })
@@ -1121,7 +1139,7 @@ async function verifyTransfer(paystack,payload,respond){
         if(response.data.status==="success"){
           await models.transaction.update(
             {
-              status:"success",
+              status:"successful",
             },
             {
               where:{
@@ -1134,20 +1152,68 @@ async function verifyTransfer(paystack,payload,respond){
           responseData.data = response;
           return respond.json(responseData)
         }
-        await models.transaction.update(
-          {
-            status:response.data.status,
-          },
+        const transaction =  await models.transaction.findOne(
           {
             where:{
               beneficiary:payload.reference
             }
           }
         )
-        responseData.status = true;
-        responseData.message = "completed";
-        responseData.data = response;
-        return respond.json(responseData)
+        if(transaction.status ==="successful"){
+          let time = new Date();
+          time = time.toLocaleString()
+          const createReversedTransaction = await models.reversedTransaction.create(
+            {
+              id:uuid.v4(),
+              transactionId:transaction.id,
+              transactionType:'Credit',
+              amount:transaction.amount,
+              beneficiary:transaction.userId,
+              time:time,
+              status:"successful",
+              totalServiceFee:transaction.totalServiceFee,
+              typeOfReversal:'Service failure'
+            }
+          );
+          const wallet = await models.wallet.findOne(
+            {
+              where:{
+                userId:transaction.userId
+              }
+            }
+          );
+          const balance = parseInt(wallet.accountBalance) + (parseInt(response.data.amount)/100);
+          await models.wallet.update(
+            {
+              accountBalance:balance
+            },
+            {
+              where:{
+                id:wallet.id
+              }
+            }
+          );
+          responseData.status = true;
+          responseData.message = "charge failed";
+          responseData.data = response;
+          return respond.json(responseData)
+        }
+        if(transaction.status ==="pending"){
+          await models.transaction.update(
+            {
+              status:"failed",
+            },
+            {
+              where:{
+                beneficiary:payload.reference
+              }
+            }
+          )
+          responseData.status = false;
+          responseData.message = "charge failed";
+          responseData.data = response;
+          return respond.json(responseData)
+        }
       }
       responseData.status = true;
       responseData.message = "something went wrong";
