@@ -1132,6 +1132,22 @@ const reverseTrx = async (req,res)=>{
   checkTrx = checkTrx.toLowerCase();
   let time = new Date();
   time = time.toLocaleString();
+  let reversedType ;
+  if(checkTrx==="debit"){
+    reversedType = 'credit';
+  }else{
+    reversedType = 'debit'
+  }
+  const logTrx = await models.transactionLog.create(
+    {
+      id:uuid.v4(),
+      adminId:admin.id,
+      transactionId:transaction.id,
+      description:`${admin.firstName+' '+admin.lasName} reversed transaction with reference ${reference}`,
+      trxType:reversedType,
+      time:time
+    }
+  );
   if(checkTrx ==="credit"){
     if(transaction.status ==="successful"){
       const createTransaction = await models.reversedTransaction.create(
