@@ -114,6 +114,26 @@ const getAccount = async (req,res)=>{
   responseData.data = account;
   return res.json(responseData);
 }
+const getAccountAdmin = async (req,res)=>{
+  const id = req.params.id;
+  const account = await models.user.findOne(
+    {
+      where:{
+        id:id
+      }
+    }
+  );
+  if(!account){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = account;
+  return res.json(responseData);
+}
 const deleteAccount = async (req,res)=>{
   const user = req.user;
   const account = await models.user.destroy(
@@ -441,4 +461,5 @@ module.exports = {
   updateKyc,
   getAllUsers,
   getActiveUsers,
+  getAccountAdmin
 }
