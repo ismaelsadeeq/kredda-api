@@ -77,6 +77,10 @@ router.get('/pending',
   passport.authenticate('jwt',{session:false}),
   controller.allPendingTransactions
 );
+router.get('/reversed',
+  passport.authenticate('jwt',{session:false}),
+  controller.allReversedTransactions
+);
 router.get('/info/:reference',
   passport.authenticate('jwt',{session:false}),
   controller.getATransactionInfo

@@ -335,6 +335,23 @@ const allPendingTransactions = async (req,res)=>{
   responseData.data = transactions;
   return res.json(responseData);
 }
+const allReversedTransactions = async (req,res)=>{
+  const transactions = await models.reversedTransaction.findAll(
+    {
+      order:[['createdAt','DESC']]
+    }
+  );
+  if(!transactions){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = transactions;
+  return res.json(responseData);
+}
 const getTransaction = async (req,res)=>{
   const id = req.params.id;
   const transaction = await models.transaction.findOne(
@@ -697,6 +714,7 @@ module.exports = {
   allFailedTransactions,
   allSuccessfulTransactions,
   allPendingTransactions,
+  allReversedTransactions,
 
   //widthraw
   createTransferRecipient,
