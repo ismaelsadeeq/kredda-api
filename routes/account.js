@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/account.controller');
+const userController =  require('../controllers/user.controller');
 
 router.get('/get/admin/:id', 
   passport.authenticate('jwt',{session:false}),
@@ -39,13 +40,9 @@ router.get('/',
   passport.authenticate('jwt',{session:false}),
   controller.getAccounts
 );
-router.get('/user',
-  passport.authenticate('jwt',{session:false}),
-  controller.getAccount
-);
 router.get('/admin/:id',
   passport.authenticate('jwt',{session:false}),
-  controller.getAccountAdmin
+  userController.getAccountAdmin
 );
 router.delete('/:id',
   passport.authenticate('jwt',{session:false}),

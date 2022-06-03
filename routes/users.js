@@ -28,7 +28,7 @@ router.put('/create',
   passport.authenticate('jwt',{session:false}),
   controller.updateAccount
 );
-router.get('/:id',
+router.get('/',
   passport.authenticate('jwt',{session:false}),
   controller.getAccount
 );
