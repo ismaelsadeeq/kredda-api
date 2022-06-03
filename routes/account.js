@@ -8,6 +8,10 @@ router.get('/get/admin/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getAdminWithId
 );
+router.get('/admin/:id',
+  passport.authenticate('jwt',{session:false}),
+  userController.getAccountAdmin
+);
 router.post('/type',
   passport.authenticate('jwt',{session:false}),
   controller.createAccountType
@@ -39,10 +43,6 @@ router.put('/fund/:id',
 router.get('/',
   passport.authenticate('jwt',{session:false}),
   controller.getAccounts
-);
-router.get('/admin/:id',
-  passport.authenticate('jwt',{session:false}),
-  userController.getAccountAdmin
 );
 router.delete('/:id',
   passport.authenticate('jwt',{session:false}),
