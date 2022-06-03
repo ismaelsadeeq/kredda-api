@@ -1128,6 +1128,12 @@ const reverseTrx = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData)
   }
+  if(transaction.status =="pending"){
+    responseData.message = "pending transaction cant be reversed";
+    responseData.status = false;
+    responseData.data = undefined;
+    return res.json(responseData)
+  }
   let checkTrx = transaction.transactionType;
   checkTrx = checkTrx.toLowerCase();
   let time = new Date();
@@ -1148,8 +1154,9 @@ const reverseTrx = async (req,res)=>{
       time:time
     }
   );
+  transaction.status = transaction.status.toLowerCase();
   if(checkTrx ==="credit"){
-    if(transaction.status ==="successful"){
+    if(transaction.status ==="successful"|| transaction.status ==="failed"){
       const createTransaction = await models.reversedTransaction.create(
         {
           id:uuid.v4(),
@@ -1184,7 +1191,7 @@ const reverseTrx = async (req,res)=>{
     }
   }
   if(checkTrx ==="debit"){
-    if(transaction.status ==="successful"){
+    if(transaction.status ==="successful" ||transaction.status ==="failed" ){
       const createTransaction = await models.reversedTransaction.create(
         {
           id:uuid.v4(),
