@@ -89,5 +89,10 @@ router.get('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getTransaction
 );
+router.get('/log/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.getTransactionLog
+);
+
 
 module.exports = router;

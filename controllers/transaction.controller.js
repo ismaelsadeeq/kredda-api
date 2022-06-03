@@ -694,6 +694,30 @@ const pendingToFailed = async (req,res)=>{
   responseData.data = undefined;
   return res.json(responseData);
 }
+const getTransactionLog = async (req,res)=>{
+  const isAdmin = await checkAdmin(req)
+  if(!isAdmin){
+    res.statusCode = 401;
+    return res.json('Unauthorize');
+  }
+  const transactionLogs = await models.transactionLog.findAll(
+    {
+      where:{
+        id:req.params.id
+      }
+    }
+  );
+  if(!transactionLogs){
+    responseData.status = false;
+    responseData.message = 'no log available now';
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = 'completed';
+  responseData.data = transactionLogs;
+  return res.json(responseData);
+}
 module.exports = {
   //service 
   userNewServiceTransactions,
@@ -720,6 +744,7 @@ module.exports = {
   createTransferRecipient,
   initiateATransfer,
   validatePayment,
+  getTransactionLog,
 
   //validation
   pendingToFailed,
