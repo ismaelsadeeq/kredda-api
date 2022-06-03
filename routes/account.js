@@ -39,7 +39,7 @@ router.get('/',
   passport.authenticate('jwt',{session:false}),
   controller.getAccounts
 );
-router.get('/:id',
+router.get('/',
   passport.authenticate('jwt',{session:false}),
   controller.getAccount
 );
