@@ -1149,7 +1149,7 @@ const reverseTrx = async (req,res)=>{
       id:uuid.v4(),
       adminId:admin.id,
       transactionId:transaction.id,
-      description:`${admin.firstName+' '+admin.lasName} reversed transaction with reference ${reference}`,
+      description:`${admin.firstName+' '+admin.lastName} reversed transaction with reference ${reference}`,
       trxType:reversedType,
       time:time
     }
