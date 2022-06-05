@@ -703,7 +703,7 @@ const getTransactionLog = async (req,res)=>{
   const transactionLogs = await models.transactionLog.findAll(
     {
       where:{
-        id:req.params.id
+        transactionId:req.params.id
       }
     }
   );
