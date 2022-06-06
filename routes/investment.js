@@ -11,6 +11,10 @@ router.put('/edit/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editInvestmentPlan
 );
+router.put('/deactivate/plan/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.restoreInvestmentPlan
+);
 router.put('/restore/plan/:id',
   passport.authenticate('jwt',{session:false}),
   controller.restoreInvestmentPlan
