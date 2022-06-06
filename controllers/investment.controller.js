@@ -76,22 +76,57 @@ const editInvestmentPlan = async (req,res)=>{
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
+  const data = req.body;
+  const createInvestment = await models.investmentCategory.update(
+    {
+      name:data.name,
+      type:data.type,
+      organization:data.organization,
+      maximumPurchaseUnit:data.maximumPurchaseUnit,
+      pricePerUnit:parseInt(data.pricePerUnit),
+      interestRate:parseInt(data.interestRate),
+      period:data.period,
+      picture:req.file.path
+    },
+    {
+      where:{
+        id:req.params.id
+      }
+    }
+  );
+  if(!createInvestment){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "updated";
+  responseData.data = undefined;
+  return res.json(responseData);
+}
+const editInvestmentPlanPicture = async (req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
   multerConfig.singleUpload(req, res, async function(err) {
     if (err instanceof multer.MulterError) {
       return res.json(err.message);
     } else if (err) {
       return res.json(err);
     } 
-    const data = req.body;
+  
     const createInvestment = await models.investmentCategory.update(
       {
-        name:data.name,
-        type:data.type,
-        organization:data.organization,
-        maximumPurchaseUnit:data.maximumPurchaseUnit,
-        pricePerUnit:parseInt(data.pricePerUnit),
-        interestRate:parseInt(data.interestRate),
-        period:data.period,
         picture:req.file.path
       },
       {
@@ -561,6 +596,7 @@ const getInvestment = async (req,res)=>{
 module.exports = {
   createInvestmentPlan,
   editInvestmentPlan,
+  editInvestmentPlanPicture,
   getAllInvestmentPlan,
   getAllUnactiveInvestmentPlan,
   getInvestmentPlan,
