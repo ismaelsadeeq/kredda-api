@@ -38,6 +38,7 @@ const createInvestmentPlan = async (req,res)=>{
           name:data.name,
           type:data.type,
           organization:data.organization,
+          maximumPurchaseUnit:data.maximumPurchaseUnit,
           pricePerUnit:parseInt(data.pricePerUnit),
           interestRate:parseInt(data.interestRate),
           period:data.period,
@@ -87,6 +88,7 @@ const editInvestmentPlan = async (req,res)=>{
         name:data.name,
         type:data.type,
         organization:data.organization,
+        maximumPurchaseUnit:data.maximumPurchaseUnit,
         pricePerUnit:parseInt(data.pricePerUnit),
         interestRate:parseInt(data.interestRate),
         period:data.period,
@@ -271,6 +273,13 @@ const invest = async (req,res)=>{
     responseData.data = undefined;
     return res.json(responseData);
   }
+  const unit = amount / parseInt(investmentPlan.pricePerUnit);
+  if(investmentPlan.maximumPurchaseUnit>unit){
+    responseData.status = false;
+    responseData.message = "amount exceeds maximum units";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
   const wallet = await models.wallet.findOne(
     {
       where:{
@@ -312,7 +321,6 @@ const invest = async (req,res)=>{
     )
   }
   if(payment.siteName =='paystack'){
-    let unit = amount / parseInt(investmentPlan.pricePerUnit);
     let interestAmount = parseInt(parseFloat(investmentPlan.interestRate)/100 * amount);
     let payout = amount + interestAmount;
     Date.prototype.addDays = function(days) {
