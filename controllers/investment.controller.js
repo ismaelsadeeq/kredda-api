@@ -41,6 +41,7 @@ const createInvestmentPlan = async (req,res)=>{
           pricePerUnit:parseInt(data.pricePerUnit),
           interestRate:parseInt(data.interestRate),
           period:data.period,
+          status:true,
           picture:req.file.path
         }
       );
@@ -115,14 +116,32 @@ const editInvestmentPlan = async (req,res)=>{
   })
 }
 const getAllInvestmentPlan = async (req,res)=>{
-  let pageLimit = parseInt(req.query.pageLimit);
-  let currentPage = parseInt(req.query.currentPage);
-  let	skip = currentPage * pageLimit;
   const investmentPlans = await models.investmentCategory.findAll(
     {
       order:[['createdAt','DESC']],
-      offset:skip,
-      limit:pageLimit
+      where:{
+        status:true
+      }
+    }
+  );
+  if(!investmentPlans){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = investmentPlans;
+  return res.json(responseData);
+}
+const getAllUnactiveInvestmentPlan = async (req,res)=>{
+  const investmentPlans = await models.investmentCategory.findAll(
+    {
+      order:[['createdAt','DESC']],
+      where:{
+        status:false
+      }
     }
   );
   if(!investmentPlans){
@@ -157,6 +176,50 @@ const getInvestmentPlan = async (req,res)=>{
 }
 const deleteInvestmentPlan = async (req,res)=>{
   const investmentPlan = await models.investmentCategory.destroy(
+    {
+      where:{
+        id:req.params.id
+      }
+    }
+  );
+  if(!investmentPlan){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = investmentPlan;
+  return res.json(responseData);
+}
+const deactivateInvestmentPlan = async (req,res)=>{
+  const investmentPlan = await models.investmentCategory.update(
+    {
+      status:false
+    },
+    {
+      where:{
+        id:req.params.id
+      }
+    }
+  );
+  if(!investmentPlan){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = investmentPlan;
+  return res.json(responseData);
+}
+const restoreInvestmentPlan = async (req,res)=>{
+  const investmentPlan = await models.investmentCategory.update(
+    {
+      status:true
+    },
     {
       where:{
         id:req.params.id
@@ -496,9 +559,12 @@ module.exports = {
   createInvestmentPlan,
   editInvestmentPlan,
   getAllInvestmentPlan,
+  getAllUnactiveInvestmentPlan,
   getInvestmentPlan,
-  deleteInvestmentPlan,
+  restoreInvestmentPlan,
+  deactivateInvestmentPlan,
   invest,
+  deleteInvestmentPlan,
   getInvestment,
   getAllUserInvestments,
   getAllPlanInvestments,

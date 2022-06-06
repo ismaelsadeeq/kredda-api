@@ -11,6 +11,10 @@ router.put('/edit/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editInvestmentPlan
 );
+router.put('/restore/plan/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.restoreInvestmentPlan
+);
 router.delete('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.deleteInvestmentPlan
@@ -35,9 +39,13 @@ router.get('/user',
   passport.authenticate('jwt',{session:false}),
   controller.getAllUserInvestments
 );
-router.get('/all',
+router.get('/all/active',
   passport.authenticate('jwt',{session:false}),
   controller.getAllInvestmentPlan
+);
+router.get('/all/unactive',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllUnactiveInvestmentPlan
 );
 router.get('/:id',
   passport.authenticate('jwt',{session:false}),
