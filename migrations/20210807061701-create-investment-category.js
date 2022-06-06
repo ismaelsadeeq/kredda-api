@@ -19,6 +19,9 @@ module.exports = {
       organization: {
         type: Sequelize.STRING
       },
+      maximumPurchaseUnit:{
+        type: Sequelize.INTEGER
+      },
       pricePerUnit :{
         type: Sequelize.INTEGER
       },
