@@ -80,37 +80,32 @@ const editInvestmentPlan = async (req,res)=>{
       return res.json(err.message);
     } else if (err) {
       return res.json(err);
-    } else if(req.body){
-      const data = req.body;
-      const createInvestment = await models.investmentCategory.update(
-        {
-          name:data.name,
-          type:data.type,
-          organization:data.organization,
-          pricePerUnit:parseInt(data.pricePerUnit),
-          interestRate:parseInt(data.interestRate),
-          period:data.period,
-          picture:req.file.path
-        },
-        {
-          where:{
-            id:req.params.id
-          }
+    } 
+    const data = req.body;
+    const createInvestment = await models.investmentCategory.update(
+      {
+        name:data.name,
+        type:data.type,
+        organization:data.organization,
+        pricePerUnit:parseInt(data.pricePerUnit),
+        interestRate:parseInt(data.interestRate),
+        period:data.period,
+        picture:req.file.path
+      },
+      {
+        where:{
+          id:req.params.id
         }
-      );
-      if(!createInvestment){
+      }
+    );
+    if(!createInvestment){
       responseData.status = false;
       responseData.message = "something went wrong";
       responseData.data = undefined;
       return res.json(responseData);
-      }
-      responseData.status = true;
-      responseData.message = "updated";
-      responseData.data = undefined;
-      return res.json(responseData);
     }
-    responseData.status = false;
-    responseData.message = "empty post";
+    responseData.status = true;
+    responseData.message = "updated";
     responseData.data = undefined;
     return res.json(responseData);
   })
