@@ -85,8 +85,7 @@ const editInvestmentPlan = async (req,res)=>{
       maximumPurchaseUnit:data.maximumPurchaseUnit,
       pricePerUnit:parseInt(data.pricePerUnit),
       interestRate:parseInt(data.interestRate),
-      period:data.period,
-      picture:req.file.path
+      period:data.period
     },
     {
       where:{
