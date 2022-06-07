@@ -11,7 +11,7 @@ router.put('/edit/picture/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editInvestmentPlanPicture
 );
-router.put('/edit/:id',
+router.put('/edit/text/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editInvestmentPlan
 );
