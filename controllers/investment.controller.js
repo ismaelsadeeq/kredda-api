@@ -357,13 +357,8 @@ const invest = async (req,res)=>{
   if(payment.siteName =='paystack'){
     let interestAmount = parseInt(parseFloat(investmentPlan.interestRate)/100 * amount);
     let payout = amount + interestAmount;
-    Date.prototype.addDays = function(days) {
-      var date = new Date(this.valueOf());
-      date.setDate(date.getDate() + days);
-      return date;
-    };
     let date = new Date();
-    date = date.addDays(parseInt(investmentPlan.period));
+    let newDate = new Date(date.setMonth(date.getMonth()+parseInt(investmentPlan.period)))
     const createInvestment = await models.investment.create(
       {
         id:uuid.v4(),
@@ -371,7 +366,7 @@ const invest = async (req,res)=>{
         unit:unit,
         investmentCategoryId:planId,
         userId:user.id,
-        dueDate:date,
+        dueDate:newDate,
         isRedemmed:false,
         status:false
       }

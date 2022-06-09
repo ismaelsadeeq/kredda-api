@@ -486,13 +486,8 @@ const approveALoan = async(req,res)=>{
   }else{
     amountToBePaid = parseInt(loanCategory.interestAmount) + parseInt(loan.amount);
   }
-  Date.prototype.addDays = function(days) {
-    var date = new Date(this.valueOf());
-    date.setDate(date.getDate() + days);
-    return date;
-  };
   let date = new Date();
-  date = date.addDays(parseInt(loanCategory.maximumDuration));
+  let newDate = new Date(date.setMonth(date.getMonth()+parseInt(loanCategory.maximumDuration)))
   await models.loan.update(
     {
       isApproved:true,
@@ -500,7 +495,7 @@ const approveALoan = async(req,res)=>{
       amoundPaid:0,
       remainingBalance:amountToBePaid,
       isPaid:false,
-      dueDate:date
+      dueDate:newDate
     },
     {
       where:{
