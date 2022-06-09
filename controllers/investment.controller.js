@@ -187,7 +187,7 @@ const getAllUnactiveInvestmentPlan = async (req,res)=>{
   return res.json(responseData);
 }
 const getInvestmentPlan = async (req,res)=>{
-  const investmentPlan = await models.investmentCategory.findAll(
+  const investmentPlan = await models.investmentCategory.findOne(
     {
       where:{
         id:req.params.id
