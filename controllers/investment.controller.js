@@ -308,7 +308,7 @@ const invest = async (req,res)=>{
     return res.json(responseData);
   }
   const unit = amount / parseInt(investmentPlan.pricePerUnit);
-  if(investmentPlan.maximumPurchaseUnit>unit){
+  if(parseInt(investmentPlan.maximumPurchaseUnit)>unit){
     responseData.status = false;
     responseData.message = "amount exceeds maximum units";
     responseData.data = undefined;
