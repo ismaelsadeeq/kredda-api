@@ -527,14 +527,9 @@ const getAllUserInvestments = async (req,res)=>{
   return res.json(responseData);
 }
 const getAllInvestments = async (req,res)=>{
-  let pageLimit = parseInt(req.query.pageLimit);
-  let currentPage = parseInt(req.query.currentPage);
-  let	skip = currentPage * pageLimit;
   const investments = await models.investment.findAll(
     {
       order:[['createdAt','DESC']],
-      offset:skip,
-      limit:pageLimit
     }
   );
   if(!investments){
@@ -549,14 +544,9 @@ const getAllInvestments = async (req,res)=>{
   return res.json(responseData);
 }
 const getAllPlanInvestments = async (req,res)=>{
-  let pageLimit = parseInt(req.query.pageLimit);
-  let currentPage = parseInt(req.query.currentPage);
-  let	skip = currentPage * pageLimit;
   const investments = await models.investment.findAll(
     {
       order:[['createdAt','DESC']],
-      offset:skip,
-      limit:pageLimit,
       where:{
         investmentCategoryId:req.params.planId
       }
