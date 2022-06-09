@@ -260,9 +260,9 @@ const pendingTransactions = async (req,res)=>{
 }
 const allNewTransactions = async (req,res)=>{
   const transactions = await models.transaction.findAll(
-    // {
-    //   // order:[['createdAt','ACS']]
-    // }
+    {
+      order:[['createdAt','ACS']]
+    }
   );
   if(!transactions){
     responseData.status = false;
