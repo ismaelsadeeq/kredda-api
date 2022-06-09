@@ -426,7 +426,7 @@ const walletpayment = async (user,amount,trxRef,time,investmentPlan,res)=>{
         transactionType:"debit",
         message:"investment",
         beneficiary:investmentPlan.id,
-        description:user.firstName + " investing",
+        description:user.firstName + " investing on a plan",
         userId:user.id,
         totalServiceFee:amount,
         reference:trxRef,
