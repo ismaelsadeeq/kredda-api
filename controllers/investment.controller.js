@@ -371,7 +371,7 @@ const invest = async (req,res)=>{
         unit:unit,
         investmentCategoryId:planId,
         userId:user.id,
-        dueDate:date,
+        dueDate:date.toString(),
         isRedemmed:false,
         status:false
       }
