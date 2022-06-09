@@ -17,7 +17,7 @@ const userNewServiceTransactions = async (req,res)=>{
   let	skip = currentPage * pageLimit;
   const transactions = await models.serviceTransaction.findAll(
     {
-      order:[['createdAt','DESC']],
+      order:[['createdAt','ASC']],
       offset:skip,
       limit:pageLimit,
       where:{
@@ -42,7 +42,7 @@ const failedServiceTransactions = async (req,res)=>{
   let	skip = currentPage * pageLimit;
   const transactions = await models.serviceTransaction.findAll(
     {
-      order:[['createdAt','DESC']],
+      order:[['createdAt','ASC']],
       offset:skip,
       limit:pageLimit,
       where:{
@@ -68,7 +68,7 @@ const successfulServiceTransactions = async (req,res)=>{
   let	skip = currentPage * pageLimit;
   const transactions = await models.serviceTransaction.findAll(
     {
-      order:[['createdAt','DESC']],
+      order:[['createdAt','ASC']],
       offset:skip,
       limit:pageLimit,
       where:{
@@ -94,7 +94,7 @@ const pendingServiceTransactions = async (req,res)=>{
   let	skip = currentPage * pageLimit;
   const transactions = await models.serviceTransaction.findAll(
     {
-      order:[['createdAt','DESC']],
+      order:[['createdAt','ASC']],
       offset:skip,
       limit:pageLimit,
       where:{
@@ -161,7 +161,7 @@ const userNewTransactions = async (req,res)=>{
   let	skip = currentPage * pageLimit;
   const transactions = await models.transaction.findAll(
     {
-      order:[['createdAt','DESC']],
+      order:[['createdAt','ASC']],
       offset:skip,
       limit:pageLimit,
       where:{
@@ -186,7 +186,7 @@ const failedTransactions = async (req,res)=>{
   let	skip = currentPage * pageLimit;
   const transactions = await models.transaction.findAll(
     {
-      order:[['createdAt','DESC']],
+      order:[['createdAt','ASC']],
       offset:skip,
       limit:pageLimit,
       where:{
@@ -212,7 +212,7 @@ const successfulTransactions = async (req,res)=>{
   let	skip = currentPage * pageLimit;
   const transactions = await models.transaction.findAll(
     {
-      order:[['createdAt','DESC']],
+      order:[['createdAt','ASC']],
       offset:skip,
       limit:pageLimit,
       where:{
@@ -238,7 +238,7 @@ const pendingTransactions = async (req,res)=>{
   let	skip = currentPage * pageLimit;
   const transactions = await models.transaction.findAll(
     {
-      order:[['createdAt','DESC']],
+      order:[['createdAt','ASC']],
       offset:skip,
       limit:pageLimit,
       where:{
@@ -261,7 +261,7 @@ const pendingTransactions = async (req,res)=>{
 const allNewTransactions = async (req,res)=>{
   const transactions = await models.transaction.findAll(
     {
-      order:[['createdAt','ACS']]
+      order:[['createdAt','ASC']]
     }
   );
   if(!transactions){
@@ -278,7 +278,7 @@ const allNewTransactions = async (req,res)=>{
 const allFailedTransactions = async (req,res)=>{
   const transactions = await models.transaction.findAll(
     {
-      order:[['createdAt','DESC']],
+      order:[['createdAt','ASC']],
       where:{
         status:"failed"
       }
@@ -298,7 +298,7 @@ const allFailedTransactions = async (req,res)=>{
 const allSuccessfulTransactions = async (req,res)=>{
   const transactions = await models.transaction.findAll(
     {
-      order:[['createdAt','DESC']],
+      order:[['createdAt','ASC']],
       where:{
         status:"successful"
       }
@@ -318,7 +318,7 @@ const allSuccessfulTransactions = async (req,res)=>{
 const allPendingTransactions = async (req,res)=>{
   const transactions = await models.transaction.findAll(
     {
-      order:[['createdAt','DESC']],
+      order:[['createdAt','ASC']],
       where:{
         status:"pending"
       }
@@ -338,7 +338,7 @@ const allPendingTransactions = async (req,res)=>{
 const allReversedTransactions = async (req,res)=>{
   const transactions = await models.reversedTransaction.findAll(
     {
-      order:[['createdAt','DESC']]
+      order:[['createdAt','ASC']]
     }
   );
   if(!transactions){
