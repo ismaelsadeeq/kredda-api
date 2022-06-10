@@ -196,16 +196,31 @@ const getAllLoanCategories = async (req,res)=>{
   return res.json(responseData);
 }
 const getAllActiveLoanCategories = async (req,res)=>{
-  let pageLimit = parseInt(req.query.pageLimit);
-  let currentPage = parseInt(req.query.currentPage);
-  let	skip = currentPage * pageLimit;
   const loanCategory = await models.loanCategory.findAll(
     {
       order:[['createdAt','DESC']],
-      offset:skip,
-      limit:pageLimit,
       where:{
         status:true
+      }
+    }
+  );
+  if(!loanCategory){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = loanCategory;
+  return res.json(responseData);
+}
+const getAllUnactiveLoanCategories = async (req,res)=>{
+  const loanCategory = await models.loanCategory.findAll(
+    {
+      order:[['createdAt','DESC']],
+      where:{
+        status:false
       }
     }
   );
@@ -775,6 +790,7 @@ module.exports = {
   editLoanCategory,
   getAllLoanCategories,
   getAllActiveLoanCategories,
+  getAllUnactiveLoanCategories,
   getLoanCategory,
   deleteLoanCategory,
   applyForAloan,

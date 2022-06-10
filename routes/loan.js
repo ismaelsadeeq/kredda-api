@@ -51,6 +51,10 @@ router.get('/active/all',
   passport.authenticate('jwt',{session:false}),
   controller.getAllActiveLoanCategories
 );
+router.get('/un-active/all',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllUnactiveLoanCategories
+);
 router.get('/all',
   passport.authenticate('jwt',{session:false}),
   controller.getAllLoanCategories
