@@ -693,7 +693,7 @@ const approveALoan = async(req,res)=>{
       userId:loan.userId,
       reference:trxRef,
       totalServiceFee:parseInt(loan.amount),
-      addon:addons,
+      addon:addon,
       profit:amountToBePaid - parseInt(loan.amount),
       amount:parseInt(loan.amount),
       status:"successful",
@@ -959,5 +959,5 @@ module.exports = {
   getAppliedLoan,
   approveALoan,
   disapproveALoan,
-  userPayLoan,
+  userPayLoan
 }
