@@ -951,7 +951,7 @@ module.exports = {
   userGetLoans,
   getAppliedLoans,
   getPaidLoans,
-  getUnpaidLoans
+  getUnpaidLoans,
   getRejectedLoans,
   getApprovedLoans,
   getAllLoans,
