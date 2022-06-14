@@ -236,7 +236,7 @@ const getAllUnactiveLoanCategories = async (req,res)=>{
   return res.json(responseData);
 }
 const getLoanCategory = async (req,res)=>{
-  const loanCategory = await models.loanCategory.findAll(
+  const loanCategory = await models.loanCategory.findOne(
     {
       where:{
         id:req.params.id
@@ -635,7 +635,7 @@ const approveALoan = async(req,res)=>{
     return res.json(responseData);
   }
   if(loan.isApproved){
-    responseData.status = false;
+    responseData.status = true;
     responseData.message = "loan already aproved";
     responseData.data = undefined;
     return res.json(responseData);
