@@ -403,17 +403,171 @@ const getAppliedLoans = async(req,res)=>{
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
-  let pageLimit = parseInt(req.query.pageLimit);
-  let currentPage = parseInt(req.query.currentPage);
-  let	skip = currentPage * pageLimit;
   const loans = await models.loan.findAll(
     {
       order:[['createdAt','DESC']],
-      offset:skip,
-      limit:pageLimit,
       where:{
         isApproved:null
       }
+    }
+  );
+  if(!loans){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = loans;
+  return res.json(responseData);
+}
+const getUnpaidLoans = async(req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const loans = await models.loan.findAll(
+    {
+      order:[['createdAt','DESC']],
+      where:{
+        isApproved:true,
+        isPaid:false
+      }
+    }
+  );
+  if(!loans){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = loans;
+  return res.json(responseData);
+}
+const getPaidLoans = async(req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const loans = await models.loan.findAll(
+    {
+      order:[['createdAt','DESC']],
+      where:{
+        isApproved:true,
+        isPaid:false
+      }
+    }
+  );
+  if(!loans){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = loans;
+  return res.json(responseData);
+}
+const getApprovedLoans = async(req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const loans = await models.loan.findAll(
+    {
+      order:[['createdAt','DESC']],
+      where:{
+        isApproved:true
+      }
+    }
+  );
+  if(!loans){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = loans;
+  return res.json(responseData);
+}
+const getRejectedLoans = async(req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const loans = await models.loan.findAll(
+    {
+      order:[['createdAt','DESC']],
+      where:{
+        isApproved:false
+      }
+    }
+  );
+  if(!loans){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = loans;
+  return res.json(responseData);
+}
+const getAllLoans = async(req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const loans = await models.loan.findAll(
+    {
+      order:[['createdAt','DESC']]
     }
   );
   if(!loans){
@@ -796,6 +950,11 @@ module.exports = {
   applyForAloan,
   userGetLoans,
   getAppliedLoans,
+  getPaidLoans,
+  getUnpaidLoans
+  getRejectedLoans,
+  getApprovedLoans,
+  getAllLoans,
   getAppliedLoan,
   approveALoan,
   disapproveALoan,

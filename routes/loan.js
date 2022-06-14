@@ -19,6 +19,22 @@ router.get('/applied/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getAppliedLoan
 );
+router.get('/paid',
+  passport.authenticate('jwt',{session:false}),
+  controller.getPaidLoans
+);
+router.get('/un-paid',
+  passport.authenticate('jwt',{session:false}),
+  controller.getUnpaidLoans
+);
+router.get('/rejected',
+  passport.authenticate('jwt',{session:false}),
+  controller.getRejectedLoans
+);
+router.get('/approved',
+  passport.authenticate('jwt',{session:false}),
+  controller.getApprovedLoans
+);
 router.put('/approve/:id',
   passport.authenticate('jwt',{session:false}),
   controller.approveALoan
