@@ -11,6 +11,10 @@ router.get('/user',
   passport.authenticate('jwt',{session:false}),
   controller.userGetLoans
 );
+router.get('/all',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllLoans
+);
 router.get('/applied',
   passport.authenticate('jwt',{session:false}),
   controller.getAppliedLoans
