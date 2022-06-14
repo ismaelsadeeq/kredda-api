@@ -959,5 +959,5 @@ module.exports = {
   getAppliedLoan,
   approveALoan,
   disapproveALoan,
-  userPayLoan
+  userPayLoan,
 }
