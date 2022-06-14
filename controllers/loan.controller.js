@@ -648,9 +648,10 @@ const approveALoan = async(req,res)=>{
     }
   );
   let amountToBePaid 
+  let interestAmount
   if(loanCategory.interestRate){
     let interestRate = parseFloat(loanCategory.interestRate) / 100;
-    let interestAmount = interestRate * parseInt(loan.amount);
+    interestAmount = interestRate * parseInt(loan.amount);
     amountToBePaid = interestAmount + parseInt(loan.amount);
   }else{
     amountToBePaid = parseInt(loanCategory.interestAmount) + parseInt(loan.amount);
