@@ -457,6 +457,7 @@ const walletpayment = async (user,amount,trxRef,time,investmentPlan,res)=>{
   date = date.addDays(parseInt(investmentPlan.period));
   const createInvestment = await models.investment.create(
     {
+      id:uuid.v4(),
       payout:payout,
       unit:unit,
       investmentCategoryId:investmentPlan.id,
