@@ -542,14 +542,29 @@ const getAllCategoryServices = async (req,res)=>{
   return res.json(responseData);
 }
 const getAllActiveService = async (req,res)=>{
-  let pageLimit = parseInt(req.query.pageLimit);
-  let currentPage = parseInt(req.query.currentPage);
-  let	skip = currentPage * pageLimit;
   const services = await models.service.findAll(
     {
       order:[['createdAt','DESC']],
-      offset:skip,
-      limit:pageLimit,
+      where:{
+        status:true
+      }
+    }
+  );
+  if(!services){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = services;
+  return res.json(responseData);
+}
+const getAllUnactiveService = async (req,res)=>{
+  const services = await models.service.findAll(
+    {
+      order:[['createdAt','DESC']],
       where:{
         status:true
       }
@@ -624,6 +639,7 @@ module.exports = {
   getAllServiceCategories,
   getServiceCategory,
   getAllActiveServiceCategories,
+  getAllUnactiveService,
   getAllUnactiveServiceCategories,
   deleteServiceCategory,
   //service

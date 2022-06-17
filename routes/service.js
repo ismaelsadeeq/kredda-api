@@ -69,6 +69,10 @@ router.get('/active',
   passport.authenticate('jwt',{session:false}),
   controller.getAllActiveService
 );
+router.get('/unactive',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllUnactiveService
+);
 router.put('/true/:id',
   passport.authenticate('jwt',{session:false}),
   controller.changeStatusToTrue
