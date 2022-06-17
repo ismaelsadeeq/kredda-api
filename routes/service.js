@@ -16,6 +16,10 @@ router.get('/category/active/all',
   passport.authenticate('jwt',{session:false}),
   controller.getAllActiveServiceCategories
 );
+router.get('/category/unactive/all',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllUnactiveServiceCategories
+);
 router.put('/category/true/:id',
   passport.authenticate('jwt',{session:false}),
   controller.changeServiceCategoryStatusToTrue
