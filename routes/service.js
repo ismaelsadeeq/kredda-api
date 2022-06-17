@@ -28,6 +28,14 @@ router.get('/category/all',
   passport.authenticate('jwt',{session:false}),
   controller.getAllServiceCategories
 );
+router.get('/category/all/active',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllActiveServiceCategories
+);
+router.get('/category/all/unactive',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllUnactiveServiceCategories
+);
 router.get('/category/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getServiceCategory

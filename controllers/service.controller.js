@@ -221,10 +221,28 @@ const getAllActiveServiceCategories = async (req,res)=>{
   const serviceCategories = await models.serviceCategory.findAll(
     {
       order:[['createdAt','DESC']],
-      offset:skip,
-      limit:pageLimit,
       where:{
         status:true
+      }
+    }
+  );
+  if(!serviceCategories){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = serviceCategories;
+  return res.json(responseData);
+}
+const getAllUnactiveServiceCategories = async (req,res)=>{
+  const serviceCategories = await models.serviceCategory.findAll(
+    {
+      order:[['createdAt','DESC']],
+      where:{
+        status:false
       }
     }
   );
@@ -606,6 +624,7 @@ module.exports = {
   getAllServiceCategories,
   getServiceCategory,
   getAllActiveServiceCategories,
+  getAllUnactiveServiceCategories,
   deleteServiceCategory,
   //service
   createService,
