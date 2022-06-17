@@ -609,7 +609,7 @@ const getAllUnactiveService = async (req,res)=>{
     {
       order:[['createdAt','DESC']],
       where:{
-        status:true
+        status:false
       }
     }
   );
