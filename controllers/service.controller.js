@@ -532,7 +532,7 @@ const editServicePicture = async (req,res)=>{
       ):null
       responseData.status = true;
       responseData.message = "completed";
-      responseData.data = service;
+      responseData.data = undefined;
       return res.json(responseData);
     }
   })
