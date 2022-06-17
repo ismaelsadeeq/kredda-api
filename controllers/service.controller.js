@@ -208,14 +208,8 @@ const editServiceCategoryPicture = async (req,res)=>{
           }
         }
       ):null
-      if(!createServiceCategory){
-        responseData.status = false;
-        responseData.message = "something went wrong";
-        responseData.data = undefined;
-        return res.json(responseData);
-      }
       responseData.status = true;
-      responseData.message = "service category updated";
+      responseData.message = "completed";
       responseData.data = undefined;
       return res.json(responseData);
     }
@@ -536,12 +530,6 @@ const editServicePicture = async (req,res)=>{
           }
         }
       ):null
-      if(!service){
-        responseData.status = false;
-        responseData.message = "something went wrong";
-        responseData.data = undefined;
-        return res.json(responseData);
-      }
       responseData.status = true;
       responseData.message = "completed";
       responseData.data = service;
