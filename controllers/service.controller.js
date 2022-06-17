@@ -201,14 +201,9 @@ const editServiceCategory = async (req,res)=>{
   })
 }
 const getAllServiceCategories = async (req,res)=>{
-  let pageLimit = parseInt(req.query.pageLimit);
-  let currentPage = parseInt(req.query.currentPage);
-  let	skip = currentPage * pageLimit;
   const serviceCategories = await models.serviceCategory.findAll(
     {
-      order:[['createdAt','DESC']],
-      offset:skip,
-      limit:pageLimit
+      order:[['createdAt','DESC']]
     }
   );
   if(!serviceCategories){
@@ -223,9 +218,6 @@ const getAllServiceCategories = async (req,res)=>{
   return res.json(responseData);
 }
 const getAllActiveServiceCategories = async (req,res)=>{
-  let pageLimit = parseInt(req.query.pageLimit);
-  let currentPage = parseInt(req.query.currentPage);
-  let	skip = currentPage * pageLimit;
   const serviceCategories = await models.serviceCategory.findAll(
     {
       order:[['createdAt','DESC']],
