@@ -12,6 +12,10 @@ router.put('/category/edit/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editServiceCategory
 );
+router.put('/category/edit/picture/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.editServiceCategoryPicture
+);
 router.get('/category/active/all',
   passport.authenticate('jwt',{session:false}),
   controller.getAllActiveServiceCategories
@@ -56,6 +60,10 @@ router.post('/create/:categoryId',
 router.put('/edit/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editService
+);
+router.put('/edit/picture/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.editServicePicture
 );
 router.get('/all',
   passport.authenticate('jwt',{session:false}),

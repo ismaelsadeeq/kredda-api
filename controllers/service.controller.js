@@ -152,26 +152,51 @@ const editServiceCategory = async (req,res)=>{
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
+  const data = req.body;
+  const createServiceCategory = await models.serviceCategory.update(
+    {
+      name:data.name,
+      type:data.type,
+      serviceCharge:parseInt(data.serviceCharge),
+      vat:parseInt(data.vat)
+    },
+    {
+      where:{
+        id:req.params.id
+      }
+    }
+  );
+  if(!createServiceCategory){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "service category updated";
+  responseData.data = undefined;
+  return res.json(responseData);
+}
+
+const editServiceCategoryPicture = async (req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
   multerConfig.singleUpload(req, res, async function(err) {
     if (err instanceof multer.MulterError) {
       return res.json(err.message);
     } else if (err) {
       return res.json(err);
     } else if(req.body){
-      const data = req.body;
-      const createServiceCategory = await models.serviceCategory.update(
-        {
-          name:data.name,
-          type:data.type,
-          serviceCharge:parseInt(data.serviceCharge),
-          vat:parseInt(data.vat)
-        },
-        {
-          where:{
-            id:req.params.id
-          }
-        }
-      );
       req.file ?
       await models.serviceCategory.update(
         {
@@ -448,28 +473,58 @@ const editService = async (req,res)=>{
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
+  if(req.body){
+    const data = req.body;
+    const categoryId = req.params.categoryId
+    const service = await models.service.update(
+      {
+        name:data.name,
+        code:data.code,
+        serviceCategoryId:categoryId,
+        discount:parseInt(data.discount),
+        amount:parseInt(data.amount)
+      },
+      {
+        where:{
+          id:req.params.id
+        }
+      }
+    );
+    if(!service){
+      responseData.status = false;
+      responseData.message = "something went wrong";
+      responseData.data = undefined;
+      return res.json(responseData);
+    }
+    responseData.status = true;
+    responseData.message = "completed";
+    responseData.data = service;
+    return res.json(responseData);
+  }
+  responseData.status = false;
+  responseData.message = "empty post";
+  responseData.data = undefined;
+  return res.json(responseData);
+}
+const editServicePicture = async (req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
   multerConfig.singleUpload(req, res, async function(err) {
     if (err instanceof multer.MulterError) {
       return res.json(err.message);
     } else if (err) {
       return res.json(err);
-    } else if(req.body){
-      const data = req.body;
-      const categoryId = req.params.categoryId
-      const service = await models.service.update(
-        {
-          name:data.name,
-          code:data.code,
-          serviceCategoryId:categoryId,
-          discount:parseInt(data.discount),
-          amount:parseInt(data.amount)
-        },
-        {
-          where:{
-            id:req.params.id
-          }
-        }
-      );
+    } else {
       req.file ?
       await models.service.update(
         {
@@ -634,6 +689,7 @@ const deleteService = async (req,res)=>{
 module.exports = {
   createServiceCategory,
   editServiceCategory,
+  editServiceCategoryPicture,
   changeServiceCategoryStatusToFalse,
   changeServiceCategoryStatusToTrue,
   getAllServiceCategories,
@@ -647,6 +703,7 @@ module.exports = {
   changeStatusToFalse,
   changeStatusToTrue,
   editService,
+  editServicePicture,
   getAllServices,
   getAllCategoryServices,
   getAllActiveService,
