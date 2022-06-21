@@ -11,6 +11,14 @@ router.get('/check/:id',
   passport.authenticate('jwt',{session:false}),
   controller.checkPartnerWithCategory
 );
+router.get('/admin/get/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.adminGetPartnerWithCategory
+);
+router.get('/get/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.userGetPartnerWithCategory
+);
 router.post('/',
   passport.authenticate('jwt',{session:false}),
   controller.createUserCategory
