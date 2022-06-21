@@ -134,6 +134,74 @@ const getAccountAdmin = async (req,res)=>{
   responseData.data = account;
   return res.json(responseData);
 }
+const activateAccount = async (req,res)=>{
+  const id = req.params.id;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:req.user.id
+      }
+    }
+  );
+  if(user){
+    const account = await models.user.update(
+      {
+        isActive:true
+      },
+      {
+        where:{
+          id:id
+        }
+      }
+    );
+    if(!account){
+      responseData.status = false;
+      responseData.message = "something went wrong";
+      responseData.data = undefined;
+      return res.json(responseData);
+    }
+    responseData.status = true;
+    responseData.message = "completed";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  res.statusCode = 401;
+  return res.send('Unauthorized');
+}
+const deactivateAccount = async (req,res)=>{
+  const id = req.params.id;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:req.user.id
+      }
+    }
+  );
+  if(user){
+    const account = await models.user.update(
+      {
+        isActive:false
+      },
+      {
+        where:{
+          id:id
+        }
+      }
+    );
+    if(!account){
+      responseData.status = false;
+      responseData.message = "something went wrong";
+      responseData.data = undefined;
+      return res.json(responseData);
+    }
+    responseData.status = true;
+    responseData.message = "completed";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  res.statusCode = 401;
+  return res.send('Unauthorized');
+}
 const deleteAccount = async (req,res)=>{
   const user = req.user;
   const account = await models.user.destroy(
@@ -484,5 +552,7 @@ module.exports = {
   getAllUsers,
   getUnActiveUsers,
   getActiveUsers,
-  getAccountAdmin
+  getAccountAdmin,
+  activateAccount,
+  deactivateAccount
 }

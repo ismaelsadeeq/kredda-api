@@ -42,5 +42,13 @@ router.delete('/',
   passport.authenticate('jwt',{session:false}),
   controller.deleteAccount
 );
+router.put('/activate/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.activateAccount
+);
+router.put('/deactivate/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.deactivateAccount
+);
 
 module.exports = router;
