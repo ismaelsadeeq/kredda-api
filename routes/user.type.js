@@ -7,7 +7,7 @@ router.post('/partner/:id',
   passport.authenticate('jwt',{session:false}),
   controller.partnerWithCategory
 );
-router.post('/check/:id',
+router.get('/check/:id',
   passport.authenticate('jwt',{session:false}),
   controller.checkPartnerWithCategory
 );
