@@ -12,7 +12,7 @@ router.get('/all',
   passport.authenticate('jwt',{session:false}),
   controller.getAllKyc
 );
-router.get('/:userId',
+router.get('/user/:userId',
   passport.authenticate('jwt',{session:false}),
   controller.getUserKyc
 );
