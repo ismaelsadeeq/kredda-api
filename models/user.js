@@ -58,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     emailVerifiedAt: DataTypes.DATE,
     city: DataTypes.STRING,
-    isActive: DataTypes.STRING,
+    isActive: DataTypes.BOOLEAN,
     profilePicture: DataTypes.STRING,
     referralCode: DataTypes.STRING,
     birthday:DataTypes.STRING,

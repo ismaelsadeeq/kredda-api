@@ -34,6 +34,10 @@ router.get('/',
   passport.authenticate('jwt',{session:false}),
   controller.getAccount
 );
+router.get('/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAccountAdmin
+);
 router.delete('/',
   passport.authenticate('jwt',{session:false}),
   controller.deleteAccount
