@@ -326,10 +326,42 @@ const partnerWithCategory = async (req,res)=>{
     return res.json(responseData);
   }
 }
+const checkPartnerWithCategory = async (req,res)=>{
+  const admin = await models.admin.findOne(
+    {
+      where:{
+        id:req.user.id
+      }
+    }
+  );
+  if(!admin){
+    res.statusCode = 401;
+    return res.json('Unauthorize')
+  }
+  const id = req.params.id;
+  const check = await models.userType.findOne(
+    {
+      where:{
+        id:id
+      }
+    }
+  );
+  if(check){
+    responseData.data = undefined;
+    responseData.status = true;
+    responseData.message = "completed";
+    return res.json(responseData)
+  }
+  responseData.data = undefined;
+  responseData.status = false;
+  responseData.message = "failed";
+  return res.json(responseData)
+}
 module.exports = {
   createUserCategory,
   editUserCategory,
   getUserCategories,
   deleteUserCategory,
-  partnerWithCategory
+  partnerWithCategory,
+  checkPartnerWithCategory
 }

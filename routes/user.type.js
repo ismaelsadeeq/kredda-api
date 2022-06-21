@@ -7,6 +7,10 @@ router.post('/partner/:id',
   passport.authenticate('jwt',{session:false}),
   controller.partnerWithCategory
 );
+router.post('/check/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.checkPartnerWithCategory
+);
 router.post('/',
   passport.authenticate('jwt',{session:false}),
   controller.createUserCategory
