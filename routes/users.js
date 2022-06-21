@@ -8,11 +8,14 @@ router.get('/admin',
   passport.authenticate('jwt',{session:false}),
   controller.getAllUsers
 );
+router.get('/admin/un-active',
+  passport.authenticate('jwt',{session:false}),
+  controller.getUnActiveUsers
+);
 router.get('/admin/active',
   passport.authenticate('jwt',{session:false}),
   controller.getActiveUsers
 );
-
 router.post('/kyc',
   passport.authenticate('jwt',{session:false}),
   controller.updateKyc
