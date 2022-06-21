@@ -382,12 +382,12 @@ const getAllUsers = async (req,res)=>{
     }
   );
   if(user){
-    const kyc = await models.user.findAll(
+    const users = await models.user.findAll(
       {
         order:[['createdAt','DESC']]
       }
     );
-    if(!kyc){
+    if(!users){
       responseData.status = false;
       responseData.message = "something went wrong";
       responseData.data = undefined;
@@ -395,7 +395,7 @@ const getAllUsers = async (req,res)=>{
     }
     responseData.status = true;
     responseData.message = "completed";
-    responseData.data = kyc;
+    responseData.data = users;
     return res.json(responseData);
   }
   res.statusCode = 401;
@@ -411,7 +411,7 @@ const getActiveUsers = async (req,res)=>{
     }
   );
   if(user){
-    const kyc = await models.user.findAll(
+    const users = await models.user.findAll(
       {
         order:[['createdAt','DESC']],
         where:{
@@ -419,7 +419,7 @@ const getActiveUsers = async (req,res)=>{
         }
       }
     );
-    if(!kyc){
+    if(!users){
       responseData.status = false;
       responseData.message = "something went wrong";
       responseData.data = undefined;
@@ -427,7 +427,7 @@ const getActiveUsers = async (req,res)=>{
     }
     responseData.status = true;
     responseData.message = "completed";
-    responseData.data = kyc;
+    responseData.data = users;
     return res.json(responseData);
   }
   res.statusCode = 401;
@@ -443,7 +443,7 @@ const getUnActiveUsers = async (req,res)=>{
     }
   );
   if(user){
-    const kyc = await models.user.findAll(
+    const users = await models.user.findAll(
       {
         order:[['createdAt','DESC']],
         where:{
@@ -451,7 +451,7 @@ const getUnActiveUsers = async (req,res)=>{
         }
       }
     );
-    if(!kyc){
+    if(!users){
       responseData.status = false;
       responseData.message = "something went wrong";
       responseData.data = undefined;
@@ -459,7 +459,7 @@ const getUnActiveUsers = async (req,res)=>{
     }
     responseData.status = true;
     responseData.message = "completed";
-    responseData.data = kyc;
+    responseData.data = users;
     return res.json(responseData);
   }
   res.statusCode = 401;

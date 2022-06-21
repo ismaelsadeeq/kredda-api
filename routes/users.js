@@ -3,7 +3,6 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/user.controller');
 
-//not tested
 router.get('/admin',
   passport.authenticate('jwt',{session:false}),
   controller.getAllUsers
