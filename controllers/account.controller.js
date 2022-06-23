@@ -160,7 +160,6 @@ const deleteAccountType = async (req,res)=>{
 }
 const createAccount = async (req,res)=>{
   const user = req.user;
-  console.log(req.params.accountTypeId)
   const accountType = await models.accountType.findOne(
     {
       where:{
@@ -169,7 +168,6 @@ const createAccount = async (req,res)=>{
       }
     }
   );
-  console.log(accountType)
   if(!accountType){
     responseData.status = false;
     responseData.message = "account type doesnt exist or suspended";
