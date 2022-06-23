@@ -50,6 +50,6 @@ router.delete('/:id',
 );
 router.get('/admin/profile/:id',
   passport.authenticate('jwt',{session:false}),
-  controller.userController
+  userController.userProfile
 );
 module.exports = router;
