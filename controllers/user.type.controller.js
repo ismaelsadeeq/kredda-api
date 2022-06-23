@@ -399,7 +399,7 @@ const userGetPartnerWithCategory = async (req,res)=>{
   const check = await models.userType.findOne(
     {
       where:{
-        id:req.user.id
+        userId:req.user.id
       }
     }
   );
