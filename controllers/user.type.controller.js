@@ -385,7 +385,9 @@ const adminGetPartnerWithCategory = async (req,res)=>{
         }
       }
     )
-    responseData.data = {check,category};
+    let date = new Date(check.dueDate);
+    date = date.toLocaleString();
+    responseData.data = {category,dueDate:date}
     responseData.status = true;
     responseData.message = "completed";
     return res.json(responseData)
