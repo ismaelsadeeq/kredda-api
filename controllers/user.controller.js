@@ -595,7 +595,8 @@ const userProfile = async (req,res)=>{
   const otherAccounts = await models.otherAccount.findAll({
     where:{
       userId:id
-    }
+    },
+    include:[{model:models.accountType}]
   });
   const saving = await models.saving.findOne({
     where:{
