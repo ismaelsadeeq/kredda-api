@@ -413,8 +413,7 @@ const userGetPartnerWithCategory = async (req,res)=>{
     )
     let date = new Date(check.dueDate);
     date = date.toLocaleString();
-    category.dueDate = date
-    responseData.data = category
+    responseData.data = {category,dueDate:date}
     responseData.status = true;
     responseData.message = "completed";
     return res.json(responseData)
