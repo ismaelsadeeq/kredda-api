@@ -446,7 +446,7 @@ const adminGetFunds = async(req,res)=>{
     res.statusCode = 401;
     return res.json('Unauthorize');
   }
-  const getBankDetail = await models.bankDetail.findAll({
+  const getBankDetail = await models.bank.findAll({
     where:{
       userId:userId
     }
