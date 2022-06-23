@@ -373,7 +373,7 @@ const adminGetPartnerWithCategory = async (req,res)=>{
   const check = await models.userType.findOne(
     {
       where:{
-        id:id
+        userId:id
       }
     }
   );
@@ -407,7 +407,7 @@ const userGetPartnerWithCategory = async (req,res)=>{
     const category =  await models.userCategories.findOne(
       {
         where:{
-          id:check.userCategoryId
+          userId:check.userCategoryId
         }
       }
     )
