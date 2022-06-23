@@ -562,6 +562,7 @@ const userProfile = async (req,res)=>{
     }
   );
   let category
+  let date ;
   if(check){
     category =  await models.userCategory.findOne(
       {
@@ -570,7 +571,7 @@ const userProfile = async (req,res)=>{
         }
       }
     )
-    let date = new Date(check.dueDate);
+    date = new Date(check.dueDate);
     date = date.toLocaleString();
   }
   const kyc = await models.kyc.findOne(
