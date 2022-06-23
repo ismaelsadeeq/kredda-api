@@ -434,7 +434,47 @@ const checkChargeStatusFlutterwave = async (req,res)=>{
   }
   await flutterwaveApi.verifyPayment(payload,payment,res);
 }
+const adminGetFunds = async(req,res)=>{
+  const id = req.user.id;
+  const userId = req.params.id;
+  const admin = await models.admin.findOne({
+    where:{
+      id:id
+    }
+  });
+  if(!admin){
+    res.statusCode = 401;
+    return res.json('Unauthorize');
+  }
+  const getBankDetail = await models.bankDetail.findAll({
+    where:{
+      userId:userId
+    }
+  });
 
+  const wallet = await models.wallet.findOne({
+    where:{
+      userId:userId
+    }
+  })
+  const otherAccounts = await models.otherAccount.findAll({
+    where:{
+      userId:userId
+    }
+  });
+
+  const saving = await models.saving.findOne({
+    where:{
+      userId:userId
+    }
+  });
+  responseData.status = 200;
+  responseData.status = true
+  responseData.message = "payment getway not set";
+  responseData.data = {getBankDetail,wallet,otherAccounts,saving};
+  return res.json(responseData);
+   
+}
 module.exports = {
   verifyPaymentWithPin,
   verifyPaymentWithOtp,
@@ -449,5 +489,6 @@ module.exports = {
   deleteBankDetail,
   fundAccount,
   checkChargeStatusFlutterwave,
-  validateChargeFlutterwave
+  validateChargeFlutterwave,
+  adminGetFunds
 }

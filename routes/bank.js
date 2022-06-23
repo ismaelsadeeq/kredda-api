@@ -63,5 +63,9 @@ router.delete("/:id",
   passport.authenticate("jwt",{session:false}),
   controller.deleteBankDetail
 );
+router.get('/admin-funds/:id',
+  passport.authenticate("jwt",{session:false}),
+  controller.adminGetFunds
+)
 
 module.exports = router;

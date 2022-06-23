@@ -8,7 +8,6 @@ const mailer = require('../utilities/mailjet');
 const helpers = require('../utilities/helpers');
 const multer = require('multer');
 const multerConfig = require('../config/multer');
-const { response } = require('express');
 
 // imports
 // ------------------------------------------------------------------------------------------//
