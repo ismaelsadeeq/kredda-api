@@ -378,7 +378,7 @@ const adminGetPartnerWithCategory = async (req,res)=>{
     }
   );
   if(check){
-    const category =  await models.userCategories.findOne(
+    const category =  await models.userCategory.findOne(
       {
         where:{
           id:check.userCategoryId
@@ -404,7 +404,7 @@ const userGetPartnerWithCategory = async (req,res)=>{
     }
   );
   if(check){
-    const category =  await models.userCategories.findOne(
+    const category =  await models.userCategory.findOne(
       {
         where:{
           userId:check.userCategoryId
