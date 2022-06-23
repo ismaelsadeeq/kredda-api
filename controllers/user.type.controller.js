@@ -347,12 +347,12 @@ const checkPartnerWithCategory = async (req,res)=>{
     }
   );
   if(check){
-    responseData.data = undefined;
+    responseData.data = "Subscribed";
     responseData.status = true;
     responseData.message = "completed";
     return res.json(responseData)
   }
-  responseData.data = undefined;
+  responseData.data = Regular;
   responseData.status = false;
   responseData.message = "failed";
   return res.json(responseData)
