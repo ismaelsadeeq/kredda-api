@@ -533,6 +533,89 @@ const getUnActiveUsers = async (req,res)=>{
   res.statusCode = 401;
   return res.send('Unauthorized');
 }
+const userProfile = async (req,res)=>{
+  const id = req.params.id;
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    res.json('Unauthorize'); 
+  }
+  const account = await models.user.findOne(
+    {
+      where:{
+        id:id
+      }
+    }
+  );
+  const check = await models.userType.findOne(
+    {
+      where:{
+        userId:id
+      }
+    }
+  );
+  let category
+  if(check){
+    category =  await models.userCategory.findOne(
+      {
+        where:{
+          id:check.userCategoryId
+        }
+      }
+    )
+    let date = new Date(check.dueDate);
+    date = date.toLocaleString();
+  }
+  const kyc = await models.kyc.findOne(
+    {
+      where:{
+        userId:id
+      }
+    }
+  );
+  const getBankDetail = await models.bank.findAll({
+    where:{
+      userId:id
+    }
+  });
+
+  const wallet = await models.wallet.findOne({
+    where:{
+      userId:id
+    }
+  })
+  const otherAccounts = await models.otherAccount.findAll({
+    where:{
+      userId:id
+    }
+  });
+  const saving = await models.saving.findOne({
+    where:{
+      userId:id
+    }
+  });
+  const loans = await models.loan.findAll({
+    where:{
+      userId:id
+    }
+  })
+  const investments = await models.investment.findOne({
+    where:{
+      userId:id
+    }
+  })
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = {account,category,partnershipDueDate:date,kyc,getBankDetail,wallet,otherAccounts,saving,loans,investments};
+  return res.json(responseData);
+}
 
 const sendEmail= (data)=>{
   const sendMail = mailer.sendMail(data.email, data.variables,data.msg)
@@ -554,5 +637,6 @@ module.exports = {
   getActiveUsers,
   getAccountAdmin,
   activateAccount,
-  deactivateAccount
+  deactivateAccount,
+  userProfile
 }
