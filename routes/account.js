@@ -48,4 +48,8 @@ router.delete('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.disableAccount
 );
+router.get('/admin/profile/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.userController
+);
 module.exports = router;

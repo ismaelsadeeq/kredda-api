@@ -3,10 +3,6 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/user.controller');
 
-router.get('/admin/profile/:id',
-  passport.authenticate('jwt',{session:false}),
-  controller.getAllUsers
-);
 router.get('/admin',
   passport.authenticate('jwt',{session:false}),
   controller.getAllUsers
