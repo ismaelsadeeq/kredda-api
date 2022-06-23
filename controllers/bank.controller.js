@@ -470,7 +470,7 @@ const adminGetFunds = async(req,res)=>{
   });
   responseData.status = 200;
   responseData.status = true
-  responseData.message = "payment getway not set";
+  responseData.message = "completed";
   responseData.data = {getBankDetail,wallet,otherAccounts,saving};
   return res.json(responseData);
    
