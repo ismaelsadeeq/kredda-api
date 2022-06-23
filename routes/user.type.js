@@ -15,7 +15,7 @@ router.get('/admin/get/:id',
   passport.authenticate('jwt',{session:false}),
   controller.adminGetPartnerWithCategory
 );
-router.get('/get/:id',
+router.get('/get',
   passport.authenticate('jwt',{session:false}),
   controller.userGetPartnerWithCategory
 );
