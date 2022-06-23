@@ -378,7 +378,14 @@ const adminGetPartnerWithCategory = async (req,res)=>{
     }
   );
   if(check){
-    responseData.data = check;
+    const category =  await models.userCategories.findOne(
+      {
+        where:{
+          id:check.userCategoryId
+        }
+      }
+    )
+    responseData.data = {check,category};
     responseData.status = true;
     responseData.message = "completed";
     return res.json(responseData)
