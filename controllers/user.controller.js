@@ -606,12 +606,14 @@ const userProfile = async (req,res)=>{
   const loans = await models.loan.findAll({
     where:{
       userId:id
-    }
+    },
+    include:[{model:models.loanCategory}]
   })
   const investments = await models.investment.findAll({
     where:{
       userId:id
-    }
+    },
+    include:[{model:models.investmentCategory}]
   })
   responseData.status = true;
   responseData.message = "completed";
