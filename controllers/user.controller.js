@@ -608,7 +608,7 @@ const userProfile = async (req,res)=>{
       userId:id
     }
   })
-  const investments = await models.investment.findOne({
+  const investments = await models.investment.findAll({
     where:{
       userId:id
     }
