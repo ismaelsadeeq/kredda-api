@@ -40,6 +40,10 @@ router.get('/all',
   passport.authenticate('jwt',{session:false}),
   controller.getAllUserOfCategories
 );
+router.get('/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.getCategory
+);
 router.delete('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.deleteUserCategory

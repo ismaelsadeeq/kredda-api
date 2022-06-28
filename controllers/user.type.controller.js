@@ -226,6 +226,37 @@ const deleteUserCategory = async (req,res)=>{
   responseData.data = userCategory;
   return res.json(responseData);
 }
+const getCategory = async (req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const userCategory = await models.userCategory.findOne(
+    {
+      where:{
+        id:req.params.id
+      }
+    }
+  );
+  if(!userCategory){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "deleted";
+  responseData.data = userCategory;
+  return res.json(responseData);
+}
 const partnerWithCategory = async (req,res)=>{
   const data = req.body;
   const categoryId = req.params.id;
@@ -506,5 +537,6 @@ module.exports = {
   adminGetPartnerWithCategory,
   userGetPartnerWithCategory,
   getUserOfCategories,
-  getAllUserOfCategories
+  getAllUserOfCategories,
+  getCategory
 }
