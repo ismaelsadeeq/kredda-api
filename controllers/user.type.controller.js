@@ -147,13 +147,11 @@ const getUserOfCategories = async (req,res)=>{
   }
   const userCategories = await models.userType.findAll(
     {
-      order:[['createdAt','DESC']],
-      include:[{model:models.user}]
-    },
-    {
       where:{
         userCategoryId:id
-      }
+      },
+      order:[['createdAt','DESC']],
+      include:[{model:models.user}]
     }
   );
   if(!userCategories){
@@ -169,7 +167,6 @@ const getUserOfCategories = async (req,res)=>{
 }
 const getAllUserOfCategories = async (req,res)=>{
   const admin = req.user;
-  const id = req.param.id;
   const user = await models.admin.findOne(
     {
       where:{
