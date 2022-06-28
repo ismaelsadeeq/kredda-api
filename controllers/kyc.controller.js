@@ -17,14 +17,9 @@ const getAllKyc = async (req,res)=>{
     }
   );
   if(user){
-    let pageLimit = parseInt(req.query.pageLimit);
-    let currentPage = parseInt(req.query.currentPage);
-    let	skip = currentPage * pageLimit;
     const kyc = await models.kyc.findAll(
       {
-        order:[['createdAt','DESC']],
-        offset:skip,
-        limit:pageLimit,
+        order:[['createdAt','DESC']]
       }
     );
     if(!kyc){
