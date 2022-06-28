@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     bvnNumber: DataTypes.STRING,
     isBvnVerified: DataTypes.STRING,
     meansOfIdentification: DataTypes.STRING,
-    status: DataTypes.STRING,
+    status: DataTypes.BOOLEAN,
     kycLevel:DataTypes.STRING,
   }, {
     sequelize,
