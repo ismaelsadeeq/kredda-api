@@ -250,42 +250,7 @@ const verifyKyc = async (req,res)=>{
       return res.json(responseData);
     }
     responseData.status = true;
-    responseData.message = "kyc verified";
-    responseData.data = kyc;
-    return res.json(responseData);
-  }
-  res.statusCode = 401;
-  return res.send('Unauthorized');
-}
-const rejectKyc = async (req,res)=>{
-  const admin = req.user;
-  const user = await models.admin.findOne(
-    {
-      where:{
-        id:admin.id
-      }
-    }
-  );
-  if(user){
-    let id = req.params.id;
-    const kyc = await models.kyc.update(
-      {
-        status:false
-      },
-      {
-        where:{
-          id:id
-        }
-      }
-    );
-    if(!kyc){
-      responseData.status = false;
-      responseData.message = "something went wrong";
-      responseData.data = undefined;
-      return res.json(responseData);
-    }
-    responseData.status = true;
-    responseData.message = "kyc rejected";
+    responseData.message = "completed";
     responseData.data = kyc;
     return res.json(responseData);
   }
