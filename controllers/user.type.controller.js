@@ -253,7 +253,7 @@ const getCategory = async (req,res)=>{
     return res.json(responseData);
   }
   responseData.status = true;
-  responseData.message = "deleted";
+  responseData.message = "completed";
   responseData.data = userCategory;
   return res.json(responseData);
 }
