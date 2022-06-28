@@ -37,7 +37,7 @@ router.get('/all',
   passport.authenticate('jwt',{session:false}),
   controller.getAllUserOfCategories
 );
-router.get('/specific/',
+router.get('/specific/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getUserOfCategories
 );
