@@ -3,10 +3,17 @@ var router = express.Router();
 const passport = require('passport');
 const controller = require('../controllers/kyc.controller');
 
-//Not Tested
 router.get('/all/un-verified',
   passport.authenticate('jwt',{session:false}),
   controller.getAllUnverified
+);
+router.get('/all/verified',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllVerified
+);
+router.get('/all/rejected',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllRejected
 );
 router.get('/all',
   passport.authenticate('jwt',{session:false}),
