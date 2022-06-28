@@ -133,7 +133,7 @@ const getUserCategories = async (req,res)=>{
 }
 const getUserOfCategories = async (req,res)=>{
   const admin = req.user;
-  const id = req.param.id;
+  const id = req.params.id;
   const user = await models.admin.findOne(
     {
       where:{
