@@ -33,6 +33,14 @@ router.get('/',
   passport.authenticate('jwt',{session:false}),
   controller.getUserCategories
 );
+router.get('/all',
+  passport.authenticate('jwt',{session:false}),
+  controller.getAllUserOfCategories
+);
+router.get('specific/',
+  passport.authenticate('jwt',{session:false}),
+  controller.getUserOfCategories
+);
 
 router.delete('/:id',
   passport.authenticate('jwt',{session:false}),

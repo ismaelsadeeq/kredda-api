@@ -103,14 +103,88 @@ const editUserCategory = async (req,res)=>{
   return res.json(responseData);
 }
 const getUserCategories = async (req,res)=>{
-  let pageLimit = parseInt(req.query.pageLimit);
-  let currentPage = parseInt(req.query.currentPage);
-  let	skip = currentPage * pageLimit;
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
   const userCategories = await models.userCategory.findAll(
     {
+      order:[['createdAt','DESC']]
+    }
+  );
+  if(!userCategories){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = userCategories;
+  return res.json(responseData);
+}
+const getUserOfCategories = async (req,res)=>{
+  const admin = req.user;
+  const id = req.param.id;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const userCategories = await models.userType.findAll(
+    {
       order:[['createdAt','DESC']],
-      offset:skip,
-      limit:pageLimit
+      include:[{model:models.user}]
+    },
+    {
+      where:{
+        userCategoryId:id
+      }
+    }
+  );
+  if(!userCategories){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = userCategories;
+  return res.json(responseData);
+}
+const getAllUserOfCategories = async (req,res)=>{
+  const admin = req.user;
+  const id = req.param.id;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const userCategories = await models.userType.findAll(
+    {
+      order:[['createdAt','DESC']],
+      include:[{model:models.user}]
     }
   );
   if(!userCategories){
@@ -433,5 +507,7 @@ module.exports = {
   partnerWithCategory,
   checkPartnerWithCategory,
   adminGetPartnerWithCategory,
-  userGetPartnerWithCategory
+  userGetPartnerWithCategory,
+  getUserOfCategories,
+  getAllUserOfCategories
 }
