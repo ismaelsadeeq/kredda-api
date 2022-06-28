@@ -28,7 +28,10 @@ router.put('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.editUserCategory
 );
-
+router.get('/specific/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.getUserOfCategories
+);
 router.get('/',
   passport.authenticate('jwt',{session:false}),
   controller.getUserCategories
@@ -37,11 +40,6 @@ router.get('/all',
   passport.authenticate('jwt',{session:false}),
   controller.getAllUserOfCategories
 );
-router.get('/specific/:id',
-  passport.authenticate('jwt',{session:false}),
-  controller.getUserOfCategories
-);
-
 router.delete('/:id',
   passport.authenticate('jwt',{session:false}),
   controller.deleteUserCategory
