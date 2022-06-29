@@ -78,7 +78,7 @@ const editSetting = async (req,res)=>{
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
-  const editSetting = await models.appSetting.create(
+  const editSetting = await models.appSetting.update(
     {
       siteName:data.siteName,
       testPublicKey:data.testPublicKey,
