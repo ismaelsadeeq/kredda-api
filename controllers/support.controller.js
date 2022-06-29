@@ -383,7 +383,7 @@ const closeTicket = async (req,res)=>{
     return res.json(responseData);
   }
   responseData.status = true;
-  responseData.message = "ticket closed";
+  responseData.message = "completed";
   responseData.data = undefined;
   return res.json(responseData);
 }
@@ -406,7 +406,7 @@ const openTicket = async (req,res)=>{
     return res.json(responseData);
   }
   responseData.status = true;
-  responseData.message = "ticket closed";
+  responseData.message = "completed";
   responseData.data = undefined;
   return res.json(responseData);
 }
