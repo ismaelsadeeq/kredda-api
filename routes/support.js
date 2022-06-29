@@ -45,7 +45,7 @@ router.put('/admin/tiket/close/:id',
 );
 router.put('/admin/tiket/open/:id',
   passport.authenticate('jwt',{session:false}),
-  controller.closeTicket
+  controller.openTicket
 );
 router.get('/tiket/:id',
   passport.authenticate('jwt',{session:false}),

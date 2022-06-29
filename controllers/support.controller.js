@@ -421,5 +421,6 @@ module.exports = {
   getNewOpenTickets,
   getTicket,
   closeTicket,
+  openTicket,
   getTickets
 }
