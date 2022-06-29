@@ -302,7 +302,7 @@ const getNewOpenTickets = async (req,res)=>{
   }
   const tickets = await models.ticket.findAll(
     {
-      order:[['createdAt','DESC']]
+      order:[['createdAt','DESC']],
       where:{
         status:1
       }
