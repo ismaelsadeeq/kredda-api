@@ -206,13 +206,13 @@ const getTicketReply = async (req,res)=>{
   return res.json(responseData);
 }
 const getTicketReplies = async (req,res)=>{
-  let	skip = currentPage * pageLimit;
   const ticketReplies = await models.ticketReply.findAll(
     {
       order:[['createdAt','DESC']],
       where:{
         ticketId:req.params.ticketId
-      }
+      },
+      include:[{model:models.user},{model:models.admin}]
     }
   );
   if(!ticketReplies){
