@@ -387,6 +387,29 @@ const closeTicket = async (req,res)=>{
   responseData.data = undefined;
   return res.json(responseData);
 }
+const openTicket = async (req,res)=>{
+  const id = req.params.id;
+  const closeTicket = await models.ticket.update(
+    {
+      status:1
+    },
+    {
+      where:{
+        id:id
+      }
+    }
+  );
+  if(!closeTicket){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "ticket closed";
+  responseData.data = undefined;
+  return res.json(responseData);
+}
 module.exports = {
   userCreateATicket,
   adminReplyToTicket,

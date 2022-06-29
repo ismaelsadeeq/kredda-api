@@ -43,6 +43,10 @@ router.put('/admin/tiket/close/:id',
   passport.authenticate('jwt',{session:false}),
   controller.closeTicket
 );
+router.put('/admin/tiket/open/:id',
+  passport.authenticate('jwt',{session:false}),
+  controller.closeTicket
+);
 router.get('/tiket/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getTicket
