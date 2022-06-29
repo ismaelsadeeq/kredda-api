@@ -394,7 +394,7 @@ module.exports = {
   getTicketReply,
   getTicketReplies,
   getAllTickets,
-  getClosedTickets
+  getClosedTickets,
   getNewOpenTickets,
   getTicket,
   closeTicket,
