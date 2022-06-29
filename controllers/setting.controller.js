@@ -150,15 +150,9 @@ const getSettings = async (req,res)=>{
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
-  const currentPage = parseInt(req.query.currentPage);
-  const pageLimit = parseInt(req.query.pageLimit);
-
-  const skip = currentPage * pageLimit;
   const settings = await models.appSetting.findAll(
     {
-      order:[['createdAt','DESC']],
-      offset:skip,
-      limit:pageLimit,
+      order:[['createdAt','DESC']]
     }
   );
   if(settings){
