@@ -23,13 +23,17 @@ router.get('/reply/:id',
   passport.authenticate('jwt',{session:false}),
   controller.getTicketReply
 );
-router.get('/admin/tiket/new',
+router.get('/admin/tiket/all',
   passport.authenticate('jwt',{session:false}),
-  controller.getNewTickets
+  controller.getAllTickets
 );
 router.get('/admin/tiket/open',
   passport.authenticate('jwt',{session:false}),
   controller.getNewOpenTickets
+);
+router.get('/admin/tiket/closed',
+  passport.authenticate('jwt',{session:false}),
+  controller.getClosedTickets
 );
 router.get('/user/tiket',
   passport.authenticate('jwt',{session:false}),

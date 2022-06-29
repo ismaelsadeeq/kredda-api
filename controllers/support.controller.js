@@ -206,14 +206,10 @@ const getTicketReply = async (req,res)=>{
   return res.json(responseData);
 }
 const getTicketReplies = async (req,res)=>{
-  let pageLimit = parseInt(req.query.pageLimit);
-  let currentPage = parseInt(req.query.currentPage);
   let	skip = currentPage * pageLimit;
   const ticketReplies = await models.ticketReply.findAll(
     {
       order:[['createdAt','DESC']],
-      offset:skip,
-      limit:pageLimit,
       where:{
         ticketId:req.params.ticketId
       }
@@ -230,7 +226,7 @@ const getTicketReplies = async (req,res)=>{
   responseData.data = ticketReplies;
   return res.json(responseData);
 }
-const getNewTickets = async (req,res)=>{
+const getClosedTickets = async (req,res)=>{
   const admin = req.user;
   const user = await models.admin.findOne(
     {
@@ -243,14 +239,41 @@ const getNewTickets = async (req,res)=>{
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
-  let pageLimit = parseInt(req.query.pageLimit);
-  let currentPage = parseInt(req.query.currentPage);
-  let	skip = currentPage * pageLimit;
   const tickets = await models.ticket.findAll(
     {
       order:[['createdAt','DESC']],
-      offset:skip,
-      limit:pageLimit
+      where:{
+        status:0
+      }
+    }
+  );
+  if(!tickets){
+    responseData.status = false;
+    responseData.message = "something went wrong";
+    responseData.data = undefined;
+    return res.json(responseData);
+  }
+  responseData.status = true;
+  responseData.message = "completed";
+  responseData.data = tickets;
+  return res.json(responseData);
+}
+const getAllTickets = async (req,res)=>{
+  const admin = req.user;
+  const user = await models.admin.findOne(
+    {
+      where:{
+        id:admin.id
+      }
+    }
+  );
+  if(!user){
+    res.statusCode = 401;
+    return res.send('Unauthorized');
+  }
+  const tickets = await models.ticket.findAll(
+    {
+      order:[['createdAt','DESC']]
     }
   );
   if(!tickets){
@@ -277,14 +300,9 @@ const getNewOpenTickets = async (req,res)=>{
     res.statusCode = 401;
     return res.send('Unauthorized');
   }
-  let pageLimit = parseInt(req.query.pageLimit);
-  let currentPage = parseInt(req.query.currentPage);
-  let	skip = currentPage * pageLimit;
   const tickets = await models.ticket.findAll(
     {
-      order:[['createdAt','DESC']],
-      offset:skip,
-      limit:pageLimit,
+      order:[['createdAt','DESC']]
       where:{
         status:1
       }
@@ -375,7 +393,8 @@ module.exports = {
   userReplyToTicket,
   getTicketReply,
   getTicketReplies,
-  getNewTickets,
+  getAllTickets,
+  getClosedTickets
   getNewOpenTickets,
   getTicket,
   closeTicket,
