@@ -92,7 +92,7 @@ const adminReplyToTicket = async (req,res)=>{
       const reply = await models.ticketReply.create(
         {
           id:uuid.v4(),
-          userId:ticket.userId,
+          userId:null,
           adminId:user.id,
           ticketId:ticketId,
           body:data.body
@@ -208,7 +208,7 @@ const getTicketReply = async (req,res)=>{
 const getTicketReplies = async (req,res)=>{
   const ticketReplies = await models.ticketReply.findAll(
     {
-      order:[['createdAt','DESC']],
+      order:[['createdAt','ASC']],
       where:{
         ticketId:req.params.ticketId
       },
